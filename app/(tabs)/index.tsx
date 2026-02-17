@@ -1,98 +1,265 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useState, useCallback } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Colors } from '@/constants/theme';
+import { MOCK_FEED, FeedPost } from '@/data/mock-feed';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.light }) {
+  const [isLiked, setIsLiked] = useState(item.isLiked);
+  const [isBookmarked, setIsBookmarked] = useState(item.isBookmarked);
+  const [likesCount, setLikesCount] = useState(item.likes);
+
+  const handleLike = useCallback(() => {
+    setIsLiked((prev) => {
+      setLikesCount((count) => (prev ? count - 1 : count + 1));
+      return !prev;
+    });
+  }, []);
+
+  const handleBookmark = useCallback(() => {
+    setIsBookmarked((prev) => !prev);
+  }, []);
+
+  return (
+    <View style={[styles.postContainer, { backgroundColor: colors.background }]}>
+      {/* Header */}
+      <View style={styles.postHeader}>
+        <View style={styles.userInfo}>
+          <Image source={{ uri: item.user.avatar }} style={styles.avatar} />
+          <Text style={[styles.username, { color: colors.text }]}>
+            {item.user.username}
+          </Text>
+        </View>
+        <TouchableOpacity>
+          <Text style={[styles.moreButton, { color: colors.text }]}>•••</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Image */}
+      <Image
+        source={{ uri: item.image }}
+        style={styles.postImage}
+        contentFit="cover"
+      />
+
+      {/* Actions */}
+      <View style={styles.actionsContainer}>
+        <View style={styles.leftActions}>
+          <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
+            <IconSymbol
+              name={isLiked ? 'heart.fill' : 'heart'}
+              size={26}
+              color={isLiked ? '#ed4956' : colors.text}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <IconSymbol name="bubble.right" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <IconSymbol name="paperplane" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={handleBookmark}>
+          <IconSymbol
+            name={isBookmarked ? 'bookmark.fill' : 'bookmark'}
+            size={24}
+            color={colors.text}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Likes */}
+      <Text style={[styles.likesCount, { color: colors.text }]}>
+        {likesCount.toLocaleString()} likes
+      </Text>
+
+      {/* Caption */}
+      <View style={styles.captionContainer}>
+        <Text style={[styles.caption, { color: colors.text }]}>
+          <Text style={styles.captionUsername}>{item.user.username}</Text>{' '}
+          {item.caption}
+        </Text>
+      </View>
+
+      {/* Comments */}
+      {item.comments > 0 && (
+        <TouchableOpacity>
+          <Text style={[styles.viewComments, { color: colors.icon }]}>
+            View all {item.comments} comments
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Timestamp */}
+      <Text style={[styles.timestamp, { color: colors.icon }]}>
+        {item.timestamp}
+      </Text>
+    </View>
+  );
+}
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const insets = useSafeAreaInsets();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const renderItem = useCallback(
+    ({ item }: { item: FeedPost }) => <FeedItem item={item} colors={colors} />,
+    [colors]
+  );
+
+  const keyExtractor = useCallback((item: FeedPost) => item.id, []);
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Header */}
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top,
+            backgroundColor: colors.background,
+            borderBottomColor: colors.icon + '30',
+          },
+        ]}
+      >
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Instagram
+        </Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.headerActionButton}>
+            <IconSymbol name="heart" size={26} color={colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerActionButton}>
+            <IconSymbol name="paperplane" size={26} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Feed */}
+      <FlatList
+        data={MOCK_FEED}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.feedContainer}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    borderBottomWidth: 0.5,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    fontStyle: 'italic',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  headerActionButton: {
+    padding: 4,
+  },
+  feedContainer: {
+    paddingBottom: 20,
+  },
+  postContainer: {
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  postHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  username: {
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  moreButton: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  postImage: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_WIDTH,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  leftActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  actionButton: {
+    padding: 2,
+  },
+  likesCount: {
+    fontWeight: '600',
+    paddingHorizontal: 12,
+    fontSize: 14,
+  },
+  captionContainer: {
+    paddingHorizontal: 12,
+    paddingTop: 4,
+  },
+  caption: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  captionUsername: {
+    fontWeight: '600',
+  },
+  viewComments: {
+    paddingHorizontal: 12,
+    paddingTop: 4,
+    fontSize: 14,
+  },
+  timestamp: {
+    paddingHorizontal: 12,
+    paddingTop: 4,
+    paddingBottom: 8,
+    fontSize: 12,
   },
 });
