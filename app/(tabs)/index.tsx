@@ -1,9 +1,9 @@
-import { Image } from 'expo-image';
 import { useState, useCallback } from 'react';
 import {
   StyleSheet,
   View,
   Text,
+  Image,
   FlatList,
   TouchableOpacity,
   Dimensions,
@@ -52,7 +52,7 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
       <Image
         source={{ uri: item.image }}
         style={styles.postImage}
-        contentFit="cover"
+        resizeMode="cover"
       />
 
       {/* Actions */}
