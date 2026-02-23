@@ -30,6 +30,17 @@ export interface FeedPost {
   isSponsored: boolean;
 }
 
+export interface SuggestedUser {
+  username: string;
+  avatar: string;
+  isVerified: boolean;
+  latestPost: string;
+}
+
+export type FeedItem =
+  | { type: "post"; data: FeedPost }
+  | { type: "suggestions"; data: SuggestedUser[] };
+
 const usernames = [
   "travel_adventures",
   "foodie_delights",
@@ -191,3 +202,35 @@ export const MOCK_FEED: FeedPost[] = Array.from({ length: 200 }, (_, i) => {
     isSponsored,
   };
 });
+
+function generateSuggestions(seed: number): SuggestedUser[] {
+  return Array.from({ length: 15 }, (_, j) => {
+    const idx = (seed * 7 + j * 3) % usernames.length;
+    return {
+      username: usernames[idx],
+      avatar: `https://i.pravatar.cc/450?img=${((idx + j * 5 + seed) % 70) + 1}`,
+      isVerified: (seed + j) % 3 === 0,
+      latestPost: `https://picsum.photos/seed/suggest${seed}_${j}/400/400`,
+    };
+  });
+}
+
+// Interleave suggestion cards into the feed every 4-6 posts
+export const FEED_DATA: FeedItem[] = (() => {
+  const items: FeedItem[] = [];
+  let suggestionIndex = 0;
+  const interval = 5;
+
+  for (let i = 0; i < MOCK_FEED.length; i++) {
+    items.push({ type: "post", data: MOCK_FEED[i] });
+
+    if ((i + 1) % interval === 0) {
+      items.push({
+        type: "suggestions",
+        data: generateSuggestions(suggestionIndex++),
+      });
+    }
+  }
+
+  return items;
+})();
