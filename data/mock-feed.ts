@@ -14,9 +14,12 @@ export interface FeedPost {
   user: {
     username: string;
     avatar: string;
+    isVerified: boolean;
   };
   images: string[];
-  caption: string;
+  imageAspectRatio: number;
+  caption: string | null;
+  location: string | null;
   likes: number;
   comments: number;
   timestamp: string;
@@ -24,6 +27,7 @@ export interface FeedPost {
   isBookmarked: boolean;
   likedBy: LikedByUser[];
   topComments: CommentPreview[];
+  isSponsored: boolean;
 }
 
 const usernames = [
@@ -108,19 +112,37 @@ const commentTexts = [
   "This is everything",
 ];
 
+const locations = [
+  "New York, NY",
+  "Los Angeles, CA",
+  "Tokyo, Japan",
+  "Paris, France",
+  "London, United Kingdom",
+  "Bali, Indonesia",
+  "Barcelona, Spain",
+  "Sydney, Australia",
+  "Santorini, Greece",
+  "Reykjavik, Iceland",
+];
+
 export const MOCK_FEED: FeedPost[] = Array.from({ length: 200 }, (_, i) => {
   const imageCount = (i % 5) + 1;
 
-  const likedByCount = 3;
-  const likedBy = Array.from({ length: likedByCount }, (_, j) => {
-    const idx = (i * 7 + j * 3 + 2) % usernames.length;
-    return {
-      username: usernames[idx],
-      avatar: `https://i.pravatar.cc/450?img=${((idx * 2 + j) % 70) + 1}`,
-    };
-  });
+  // Some posts have liked-by avatars, others just show count
+  const showLikedBy = i % 3 !== 2;
+  const likedBy = showLikedBy
+    ? Array.from({ length: 3 }, (_, j) => {
+        const idx = (i * 7 + j * 3 + 2) % usernames.length;
+        return {
+          username: usernames[idx],
+          avatar: `https://i.pravatar.cc/450?img=${((idx * 2 + j) % 70) + 1}`,
+        };
+      })
+    : [];
 
-  const commentCount = (i % 3) + 1;
+  // Some posts have comment previews, some don't
+  const hasCommentPreviews = i % 4 !== 0;
+  const commentCount = hasCommentPreviews ? (i % 3) + 1 : 0;
   const topComments = Array.from({ length: commentCount }, (_, j) => {
     const idx = (i * 5 + j * 4 + 1) % usernames.length;
     return {
@@ -130,17 +152,35 @@ export const MOCK_FEED: FeedPost[] = Array.from({ length: 200 }, (_, i) => {
     };
   });
 
+  // Some posts have no caption (photo-only posts)
+  const hasCaption = i % 7 !== 0;
+
+  // Some posts have location, some don't
+  const hasLocation = i % 3 === 0;
+
+  // Occasional sponsored post
+  const isSponsored = i % 11 === 0;
+
+  // Vary aspect ratios: square, portrait (4:5), landscape (16:9)
+  const aspectRatios = [1, 4 / 5, 16 / 9, 1, 4 / 5];
+  const imageAspectRatio = aspectRatios[i % aspectRatios.length];
+  const imgW = 1600;
+  const imgH = Math.round(imgW / imageAspectRatio);
+
   return {
     id: String(i + 1),
     user: {
       username: usernames[i % usernames.length],
       avatar: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`,
+      isVerified: i % 4 === 0,
     },
     images: Array.from(
       { length: imageCount },
-      (_, j) => `https://picsum.photos/seed/post${i + 1}_${j}/1600/1600`,
+      (_, j) => `https://picsum.photos/seed/post${i + 1}_${j}/${imgW}/${imgH}`,
     ),
-    caption: captions[i % captions.length],
+    imageAspectRatio,
+    caption: hasCaption ? captions[i % captions.length] : null,
+    location: hasLocation ? locations[i % locations.length] : null,
     likes: Math.floor(Math.random() * 5000) + 100,
     comments: Math.floor(Math.random() * 400) + 5,
     timestamp: timestamps[i % timestamps.length],
@@ -148,5 +188,6 @@ export const MOCK_FEED: FeedPost[] = Array.from({ length: 200 }, (_, i) => {
     isBookmarked: i % 5 === 0,
     likedBy,
     topComments,
+    isSponsored,
   };
 });

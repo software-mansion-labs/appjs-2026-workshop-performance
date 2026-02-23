@@ -19,8 +19,15 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-function ImageCarousel({ images }: { images: string[] }) {
+function ImageCarousel({
+  images,
+  aspectRatio,
+}: {
+  images: string[];
+  aspectRatio: number;
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const imageHeight = SCREEN_WIDTH / aspectRatio;
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
@@ -40,7 +47,7 @@ function ImageCarousel({ images }: { images: string[] }) {
           <Image
             key={index}
             source={{ uri }}
-            style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+            style={{ width: SCREEN_WIDTH, height: imageHeight }}
             resizeMode="cover"
           />
         ))}
@@ -106,9 +113,29 @@ function FeedItem({
             source={{ uri: item.user.avatar }}
             style={{ width: 32, height: 32, borderRadius: 16 }}
           />
-          <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>
-            {item.user.username}
-          </Text>
+          <View>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+            >
+              <Text
+                style={{ fontWeight: "600", fontSize: 14, color: colors.text }}
+              >
+                {item.user.username}
+              </Text>
+              {item.user.isVerified && (
+                <IconSymbol
+                  name="checkmark.seal.fill"
+                  size={14}
+                  color="#0095f6"
+                />
+              )}
+            </View>
+            {item.location && (
+              <Text style={{ fontSize: 12, color: colors.icon }}>
+                {item.location}
+              </Text>
+            )}
+          </View>
         </View>
         <TouchableOpacity>
           <Text
@@ -119,8 +146,22 @@ function FeedItem({
         </TouchableOpacity>
       </View>
 
+      {/* Sponsored label */}
+      {item.isSponsored && (
+        <Text
+          style={{
+            paddingHorizontal: 12,
+            paddingBottom: 6,
+            fontSize: 12,
+            color: colors.icon,
+          }}
+        >
+          Sponsored
+        </Text>
+      )}
+
       {/* Carousel */}
-      <ImageCarousel images={item.images} />
+      <ImageCarousel images={item.images} aspectRatio={item.imageAspectRatio} />
 
       {/* Actions */}
       <View
@@ -165,77 +206,64 @@ function FeedItem({
       </View>
 
       {/* Liked by */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 12,
-        }}
-      >
-        <View style={{ flexDirection: "row", marginRight: 8 }}>
-          {item.likedBy.map((user, index) => (
-            <Image
-              key={user.username}
-              source={{ uri: user.avatar }}
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: 10,
-                borderWidth: 1.5,
-                borderColor: colors.background,
-                marginLeft: index > 0 ? -8 : 0,
-              }}
-            />
-          ))}
-        </View>
-        <Text style={{ fontSize: 13, color: colors.text }}>
-          Liked by{" "}
-          <Text style={{ fontWeight: "600" }}>
-            {item.likedBy[0].username}
-          </Text>{" "}
-          and{" "}
-          <Text style={{ fontWeight: "600" }}>
-            {formattedLikes} others
-          </Text>
-        </Text>
-      </View>
-
-      {/* Caption */}
-      <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
-        <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>
-          <Text style={{ fontWeight: "600" }}>{item.user.username}</Text>{" "}
-          {item.caption}
-        </Text>
-      </View>
-
-      {/* Top comments */}
-      {item.topComments.map((comment, index) => (
+      {item.likedBy.length > 0 ? (
         <View
-          key={index}
           style={{
             flexDirection: "row",
             alignItems: "center",
             paddingHorizontal: 12,
-            paddingTop: 4,
-            gap: 6,
           }}
         >
-          <Image
-            source={{ uri: comment.avatar }}
-            style={{ width: 18, height: 18, borderRadius: 9 }}
-          />
-          <Text
-            style={{ fontSize: 13, color: colors.text, flex: 1 }}
-            numberOfLines={1}
-          >
-            <Text style={{ fontWeight: "600" }}>{comment.username}</Text>{" "}
-            {comment.text}
+          <View style={{ flexDirection: "row", marginRight: 8 }}>
+            {item.likedBy.map((user, index) => (
+              <Image
+                key={user.username}
+                source={{ uri: user.avatar }}
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  borderWidth: 1.5,
+                  borderColor: colors.background,
+                  marginLeft: index > 0 ? -8 : 0,
+                }}
+              />
+            ))}
+          </View>
+          <Text style={{ fontSize: 13, color: colors.text }}>
+            Liked by{" "}
+            <Text style={{ fontWeight: "600" }}>
+              {item.likedBy[0].username}
+            </Text>{" "}
+            and{" "}
+            <Text style={{ fontWeight: "600" }}>{formattedLikes} others</Text>
           </Text>
         </View>
-      ))}
+      ) : (
+        <Text
+          style={{
+            fontWeight: "600",
+            paddingHorizontal: 12,
+            fontSize: 14,
+            color: colors.text,
+          }}
+        >
+          {formattedLikes} likes
+        </Text>
+      )}
+
+      {/* Caption */}
+      {item.caption && (
+        <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
+          <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>
+            <Text style={{ fontWeight: "600" }}>{item.user.username}</Text>{" "}
+            {item.caption}
+          </Text>
+        </View>
+      )}
 
       {/* View all comments */}
-      {item.comments > 0 && (
+      {item.comments > 0 && item.topComments.length === 0 && (
         <TouchableOpacity>
           <Text
             style={{
@@ -248,6 +276,50 @@ function FeedItem({
             View all {item.comments} comments
           </Text>
         </TouchableOpacity>
+      )}
+
+      {/* Top comments */}
+      {item.topComments.length > 0 && (
+        <>
+          {item.topComments.map((comment, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingHorizontal: 12,
+                paddingTop: 4,
+                gap: 6,
+              }}
+            >
+              <Image
+                source={{ uri: comment.avatar }}
+                style={{ width: 18, height: 18, borderRadius: 9 }}
+              />
+              <Text
+                style={{ fontSize: 13, color: colors.text, flex: 1 }}
+                numberOfLines={1}
+              >
+                <Text style={{ fontWeight: "600" }}>{comment.username}</Text>{" "}
+                {comment.text}
+              </Text>
+            </View>
+          ))}
+          {item.comments > item.topComments.length && (
+            <TouchableOpacity>
+              <Text
+                style={{
+                  paddingHorizontal: 12,
+                  paddingTop: 4,
+                  fontSize: 14,
+                  color: colors.icon,
+                }}
+              >
+                View all {item.comments} comments
+              </Text>
+            </TouchableOpacity>
+          )}
+        </>
       )}
 
       {/* Timestamp */}
