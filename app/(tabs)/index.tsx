@@ -17,10 +17,33 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+// Expensive computation that runs on every render
+function computeEngagementScore(likes: number, comments: number, caption: string): string {
+  // Simulate heavy work: hash the caption character by character
+  let hash = 0;
+  for (let i = 0; i < 1000; i++) {
+    for (let j = 0; j < caption.length; j++) {
+      hash = ((hash << 5) - hash + caption.charCodeAt(j)) | 0;
+    }
+  }
+
+  const score = (likes * 0.7 + comments * 0.3 + Math.abs(hash % 100)) / 100;
+  return score.toFixed(1);
+}
+
 function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.light }) {
   const [isLiked, setIsLiked] = useState(item.isLiked);
   const [isBookmarked, setIsBookmarked] = useState(item.isBookmarked);
   const [likesCount, setLikesCount] = useState(item.likes);
+
+  // Create new Intl formatter on every render (violates js-hoist-intl)
+  const formattedLikes = new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(likesCount);
+
+  // Run expensive computation on every render (violates list-performance-item-expensive)
+  const engagementScore = computeEngagementScore(item.likes, item.comments, item.caption);
 
   const handleLike = useCallback(() => {
     setIsLiked((prev) => {
@@ -83,7 +106,7 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
 
       {/* Likes */}
       <Text style={[styles.likesCount, { color: colors.text }]}>
-        {likesCount.toLocaleString()} likes
+        {formattedLikes} likes · {engagementScore} engagement
       </Text>
 
       {/* Caption */}
