@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -44,17 +44,6 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
   // Run expensive computation on every render (violates list-performance-item-expensive)
   const engagementScore = computeEngagementScore(item.likes, item.comments, item.caption);
 
-  const handleLike = useCallback(() => {
-    setIsLiked((prev) => {
-      setLikesCount((count) => (prev ? count - 1 : count + 1));
-      return !prev;
-    });
-  }, []);
-
-  const handleBookmark = useCallback(() => {
-    setIsBookmarked((prev) => !prev);
-  }, []);
-
   return (
     <View style={{ marginBottom: 8, backgroundColor: colors.background }}>
       {/* Header */}
@@ -80,7 +69,12 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
       {/* Actions */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-          <TouchableOpacity onPress={handleLike} style={{ padding: 2 }}>
+          <TouchableOpacity onPress={() => {
+            setIsLiked((prev) => {
+              setLikesCount((count) => (prev ? count - 1 : count + 1));
+              return !prev;
+            });
+          }} style={{ padding: 2 }}>
             <IconSymbol
               name={isLiked ? 'heart.fill' : 'heart'}
               size={26}
@@ -94,7 +88,7 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
             <IconSymbol name="paperplane" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={handleBookmark}>
+        <TouchableOpacity onPress={() => setIsBookmarked((prev) => !prev)}>
           <IconSymbol
             name={isBookmarked ? 'bookmark.fill' : 'bookmark'}
             size={24}
@@ -138,13 +132,6 @@ export default function HomeScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
 
-  const renderItem = useCallback(
-    ({ item }: { item: FeedPost }) => <FeedItem item={item} colors={colors} />,
-    [colors]
-  );
-
-  const keyExtractor = useCallback((item: FeedPost) => item.id, []);
-
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
@@ -177,8 +164,8 @@ export default function HomeScreen() {
       {/* Feed */}
       <FlatList
         data={MOCK_FEED}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
+        renderItem={({ item }: { item: FeedPost }) => <FeedItem item={item} colors={colors} />}
+        keyExtractor={(item: FeedPost) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       />
