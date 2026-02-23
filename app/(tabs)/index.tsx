@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   Image,
@@ -57,41 +56,41 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
   }, []);
 
   return (
-    <View style={[styles.postContainer, { backgroundColor: colors.background }]}>
+    <View style={{ marginBottom: 8, backgroundColor: colors.background }}>
       {/* Header */}
-      <View style={styles.postHeader}>
-        <View style={styles.userInfo}>
-          <Image source={{ uri: item.user.avatar }} style={styles.avatar} />
-          <Text style={[styles.username, { color: colors.text }]}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Image source={{ uri: item.user.avatar }} style={{ width: 32, height: 32, borderRadius: 16 }} />
+          <Text style={{ fontWeight: '600', fontSize: 14, color: colors.text }}>
             {item.user.username}
           </Text>
         </View>
         <TouchableOpacity>
-          <Text style={[styles.moreButton, { color: colors.text }]}>•••</Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text }}>•••</Text>
         </TouchableOpacity>
       </View>
 
       {/* Image */}
       <Image
         source={{ uri: item.image }}
-        style={styles.postImage}
+        style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
         resizeMode="cover"
       />
 
       {/* Actions */}
-      <View style={styles.actionsContainer}>
-        <View style={styles.leftActions}>
-          <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <TouchableOpacity onPress={handleLike} style={{ padding: 2 }}>
             <IconSymbol
               name={isLiked ? 'heart.fill' : 'heart'}
               size={26}
               color={isLiked ? '#ed4956' : colors.text}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={{ padding: 2 }}>
             <IconSymbol name="bubble.right" size={24} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={{ padding: 2 }}>
             <IconSymbol name="paperplane" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -105,14 +104,14 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
       </View>
 
       {/* Likes */}
-      <Text style={[styles.likesCount, { color: colors.text }]}>
+      <Text style={{ fontWeight: '600', paddingHorizontal: 12, fontSize: 14, color: colors.text }}>
         {formattedLikes} likes · {engagementScore} engagement
       </Text>
 
       {/* Caption */}
-      <View style={styles.captionContainer}>
-        <Text style={[styles.caption, { color: colors.text }]}>
-          <Text style={styles.captionUsername}>{item.user.username}</Text>{' '}
+      <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
+        <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>
+          <Text style={{ fontWeight: '600' }}>{item.user.username}</Text>{' '}
           {item.caption}
         </Text>
       </View>
@@ -120,14 +119,14 @@ function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.ligh
       {/* Comments */}
       {item.comments > 0 && (
         <TouchableOpacity>
-          <Text style={[styles.viewComments, { color: colors.icon }]}>
+          <Text style={{ paddingHorizontal: 12, paddingTop: 4, fontSize: 14, color: colors.icon }}>
             View all {item.comments} comments
           </Text>
         </TouchableOpacity>
       )}
 
       {/* Timestamp */}
-      <Text style={[styles.timestamp, { color: colors.icon }]}>
+      <Text style={{ paddingHorizontal: 12, paddingTop: 4, paddingBottom: 8, fontSize: 12, color: colors.icon }}>
         {item.timestamp}
       </Text>
     </View>
@@ -147,26 +146,29 @@ export default function HomeScreen() {
   const keyExtractor = useCallback((item: FeedPost) => item.id, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <View
-        style={[
-          styles.header,
-          {
-            paddingTop: insets.top,
-            backgroundColor: colors.background,
-            borderBottomColor: colors.icon + '30',
-          },
-        ]}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          paddingBottom: 10,
+          borderBottomWidth: 0.5,
+          paddingTop: insets.top,
+          backgroundColor: colors.background,
+          borderBottomColor: colors.icon + '30',
+        }}
       >
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
+        <Text style={{ fontSize: 24, fontWeight: '700', fontStyle: 'italic', color: colors.text }}>
           Instagram
         </Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerActionButton}>
+        <View style={{ flexDirection: 'row', gap: 16 }}>
+          <TouchableOpacity style={{ padding: 4 }}>
             <IconSymbol name="heart" size={26} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerActionButton}>
+          <TouchableOpacity style={{ padding: 4 }}>
             <IconSymbol name="paperplane" size={26} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -178,111 +180,8 @@ export default function HomeScreen() {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.feedContainer}
+        contentContainerStyle={{ paddingBottom: 20 }}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-    borderBottomWidth: 0.5,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    fontStyle: 'italic',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  headerActionButton: {
-    padding: 4,
-  },
-  feedContainer: {
-    paddingBottom: 20,
-  },
-  postContainer: {
-    marginBottom: 8,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-  },
-  username: {
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  moreButton: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  postImage: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH,
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  leftActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-  },
-  actionButton: {
-    padding: 2,
-  },
-  likesCount: {
-    fontWeight: '600',
-    paddingHorizontal: 12,
-    fontSize: 14,
-  },
-  captionContainer: {
-    paddingHorizontal: 12,
-    paddingTop: 4,
-  },
-  caption: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  captionUsername: {
-    fontWeight: '600',
-  },
-  viewComments: {
-    paddingHorizontal: 12,
-    paddingTop: 4,
-    fontSize: 14,
-  },
-  timestamp: {
-    paddingHorizontal: 12,
-    paddingTop: 4,
-    paddingBottom: 8,
-    fontSize: 12,
-  },
-});
