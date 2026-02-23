@@ -3,6 +3,9 @@ import {
   Dimensions,
   FlatList,
   Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -16,6 +19,60 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+function ImageCarousel({ images }: { images: string[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+    setActiveIndex(index);
+  };
+
+  return (
+    <View>
+      <ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+      >
+        {images.map((uri, index) => (
+          <Image
+            key={index}
+            source={{ uri }}
+            style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+            resizeMode="cover"
+          />
+        ))}
+      </ScrollView>
+      {images.length > 1 && (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 4,
+            paddingTop: 8,
+          }}
+        >
+          {images.map((_, index) => (
+            <View
+              key={index}
+              style={{
+                width: index === activeIndex ? 7 : 6,
+                height: index === activeIndex ? 7 : 6,
+                borderRadius: 4,
+                backgroundColor:
+                  index === activeIndex ? "#0095f6" : "#0095f6" + "40",
+              }}
+            />
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
 function FeedItem({
   item,
   colors,
@@ -27,7 +84,6 @@ function FeedItem({
   const [isBookmarked, setIsBookmarked] = useState(item.isBookmarked);
   const [likesCount, setLikesCount] = useState(item.likes);
 
-  // Create new Intl formatter on every render (violates js-hoist-intl)
   const formattedLikes = new Intl.NumberFormat("en-US", {
     notation: "compact",
     maximumFractionDigits: 1,
@@ -63,12 +119,8 @@ function FeedItem({
         </TouchableOpacity>
       </View>
 
-      {/* Image */}
-      <Image
-        source={{ uri: item.image }}
-        style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-        resizeMode="cover"
-      />
+      {/* Carousel */}
+      <ImageCarousel images={item.images} />
 
       {/* Actions */}
       <View
@@ -112,17 +164,41 @@ function FeedItem({
         </TouchableOpacity>
       </View>
 
-      {/* Likes */}
-      <Text
+      {/* Liked by */}
+      <View
         style={{
-          fontWeight: "600",
+          flexDirection: "row",
+          alignItems: "center",
           paddingHorizontal: 12,
-          fontSize: 14,
-          color: colors.text,
         }}
       >
-        {formattedLikes} likes
-      </Text>
+        <View style={{ flexDirection: "row", marginRight: 8 }}>
+          {item.likedBy.map((user, index) => (
+            <Image
+              key={user.username}
+              source={{ uri: user.avatar }}
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: 10,
+                borderWidth: 1.5,
+                borderColor: colors.background,
+                marginLeft: index > 0 ? -8 : 0,
+              }}
+            />
+          ))}
+        </View>
+        <Text style={{ fontSize: 13, color: colors.text }}>
+          Liked by{" "}
+          <Text style={{ fontWeight: "600" }}>
+            {item.likedBy[0].username}
+          </Text>{" "}
+          and{" "}
+          <Text style={{ fontWeight: "600" }}>
+            {formattedLikes} others
+          </Text>
+        </Text>
+      </View>
 
       {/* Caption */}
       <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
@@ -132,7 +208,33 @@ function FeedItem({
         </Text>
       </View>
 
-      {/* Comments */}
+      {/* Top comments */}
+      {item.topComments.map((comment, index) => (
+        <View
+          key={index}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 12,
+            paddingTop: 4,
+            gap: 6,
+          }}
+        >
+          <Image
+            source={{ uri: comment.avatar }}
+            style={{ width: 18, height: 18, borderRadius: 9 }}
+          />
+          <Text
+            style={{ fontSize: 13, color: colors.text, flex: 1 }}
+            numberOfLines={1}
+          >
+            <Text style={{ fontWeight: "600" }}>{comment.username}</Text>{" "}
+            {comment.text}
+          </Text>
+        </View>
+      ))}
+
+      {/* View all comments */}
       {item.comments > 0 && (
         <TouchableOpacity>
           <Text

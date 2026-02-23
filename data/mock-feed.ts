@@ -1,16 +1,29 @@
+export interface CommentPreview {
+  username: string;
+  avatar: string;
+  text: string;
+}
+
+export interface LikedByUser {
+  username: string;
+  avatar: string;
+}
+
 export interface FeedPost {
   id: string;
   user: {
     username: string;
     avatar: string;
   };
-  image: string;
+  images: string[];
   caption: string;
   likes: number;
   comments: number;
   timestamp: string;
   isLiked: boolean;
   isBookmarked: boolean;
+  likedBy: LikedByUser[];
+  topComments: CommentPreview[];
 }
 
 const usernames = [
@@ -82,17 +95,58 @@ const timestamps = [
   "4 days ago",
 ];
 
-export const MOCK_FEED: FeedPost[] = Array.from({ length: 200 }, (_, i) => ({
-  id: String(i + 1),
-  user: {
-    username: usernames[i % usernames.length],
-    avatar: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`,
-  },
-  image: `https://picsum.photos/seed/post${i + 1}/1600/1600`,
-  caption: captions[i % captions.length],
-  likes: Math.floor(Math.random() * 5000) + 100,
-  comments: Math.floor(Math.random() * 400) + 5,
-  timestamp: timestamps[i % timestamps.length],
-  isLiked: i % 3 === 0,
-  isBookmarked: i % 5 === 0,
-}));
+const commentTexts = [
+  "This is amazing!",
+  "Love this so much",
+  "Wow, incredible shot!",
+  "Need to visit this place!",
+  "Goals",
+  "This made my day",
+  "So beautiful!",
+  "Can't stop looking at this",
+  "Absolutely stunning",
+  "This is everything",
+];
+
+export const MOCK_FEED: FeedPost[] = Array.from({ length: 200 }, (_, i) => {
+  const imageCount = (i % 5) + 1;
+
+  const likedByCount = 3;
+  const likedBy = Array.from({ length: likedByCount }, (_, j) => {
+    const idx = (i * 7 + j * 3 + 2) % usernames.length;
+    return {
+      username: usernames[idx],
+      avatar: `https://i.pravatar.cc/450?img=${((idx * 2 + j) % 70) + 1}`,
+    };
+  });
+
+  const commentCount = (i % 3) + 1;
+  const topComments = Array.from({ length: commentCount }, (_, j) => {
+    const idx = (i * 5 + j * 4 + 1) % usernames.length;
+    return {
+      username: usernames[idx],
+      avatar: `https://i.pravatar.cc/450?img=${((idx * 3 + j + 10) % 70) + 1}`,
+      text: commentTexts[(i * 2 + j) % commentTexts.length],
+    };
+  });
+
+  return {
+    id: String(i + 1),
+    user: {
+      username: usernames[i % usernames.length],
+      avatar: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`,
+    },
+    images: Array.from(
+      { length: imageCount },
+      (_, j) => `https://picsum.photos/seed/post${i + 1}_${j}/1600/1600`,
+    ),
+    caption: captions[i % captions.length],
+    likes: Math.floor(Math.random() * 5000) + 100,
+    comments: Math.floor(Math.random() * 400) + 5,
+    timestamp: timestamps[i % timestamps.length],
+    isLiked: i % 3 === 0,
+    isBookmarked: i % 5 === 0,
+    likedBy,
+    topComments,
+  };
+});
