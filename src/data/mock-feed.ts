@@ -11,147 +11,116 @@ export interface FeedPost {
   timestamp: string;
   isLiked: boolean;
   isBookmarked: boolean;
+  tags: string[];
 }
 
-export const MOCK_FEED: FeedPost[] = [
-  {
-    id: '1',
-    user: {
-      username: 'travel_adventures',
-      avatar: 'https://i.pravatar.cc/150?img=1',
-    },
-    image: 'https://picsum.photos/seed/post1/400/400',
-    caption: 'Exploring the beautiful mountains today! The view is absolutely breathtaking 🏔️ #travel #adventure #nature',
-    likes: 1243,
-    comments: 89,
-    timestamp: '2 hours ago',
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: '2',
-    user: {
-      username: 'foodie_delights',
-      avatar: 'https://i.pravatar.cc/150?img=2',
-    },
-    image: 'https://picsum.photos/seed/post2/400/400',
-    caption: 'Homemade pasta with fresh tomato sauce 🍝 Recipe coming soon!',
-    likes: 856,
-    comments: 42,
-    timestamp: '4 hours ago',
-    isLiked: true,
-    isBookmarked: true,
-  },
-  {
-    id: '3',
-    user: {
-      username: 'urban_explorer',
-      avatar: 'https://i.pravatar.cc/150?img=3',
-    },
-    image: 'https://picsum.photos/seed/post3/400/400',
-    caption: 'City lights at night ✨ There is something magical about the urban landscape after dark',
-    likes: 2156,
-    comments: 134,
-    timestamp: '6 hours ago',
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: '4',
-    user: {
-      username: 'fitness_guru',
-      avatar: 'https://i.pravatar.cc/150?img=4',
-    },
-    image: 'https://picsum.photos/seed/post4/400/400',
-    caption: 'Morning workout complete! 💪 Remember: consistency is key to reaching your goals',
-    likes: 567,
-    comments: 28,
-    timestamp: '8 hours ago',
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: '5',
-    user: {
-      username: 'nature_photography',
-      avatar: 'https://i.pravatar.cc/150?img=5',
-    },
-    image: 'https://picsum.photos/seed/post5/400/400',
-    caption: 'Captured this stunning sunset yesterday 🌅 Nature never fails to amaze me',
-    likes: 3421,
-    comments: 201,
-    timestamp: '10 hours ago',
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: '6',
-    user: {
-      username: 'coffee_lover',
-      avatar: 'https://i.pravatar.cc/150?img=6',
-    },
-    image: 'https://picsum.photos/seed/post6/400/400',
-    caption: 'Perfect latte art to start the day ☕️ #coffeeaddict #morningvibes',
-    likes: 789,
-    comments: 45,
-    timestamp: '12 hours ago',
-    isLiked: false,
-    isBookmarked: true,
-  },
-  {
-    id: '7',
-    user: {
-      username: 'pet_paradise',
-      avatar: 'https://i.pravatar.cc/150?img=7',
-    },
-    image: 'https://picsum.photos/seed/post7/400/400',
-    caption: 'Someone is enjoying their weekend 🐕 #dogsofinstagram #puppylove',
-    likes: 4523,
-    comments: 312,
-    timestamp: '14 hours ago',
-    isLiked: true,
-    isBookmarked: false,
-  },
-  {
-    id: '8',
-    user: {
-      username: 'art_studio',
-      avatar: 'https://i.pravatar.cc/150?img=8',
-    },
-    image: 'https://picsum.photos/seed/post8/400/400',
-    caption: 'New painting finished! 🎨 This one took me about 3 weeks to complete',
-    likes: 1876,
-    comments: 98,
-    timestamp: '1 day ago',
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: '9',
-    user: {
-      username: 'beach_vibes',
-      avatar: 'https://i.pravatar.cc/150?img=9',
-    },
-    image: 'https://picsum.photos/seed/post9/400/400',
-    caption: 'Paradise found 🏖️ #beachlife #vacation #summervibes',
-    likes: 2987,
-    comments: 156,
-    timestamp: '1 day ago',
-    isLiked: false,
-    isBookmarked: false,
-  },
-  {
-    id: '10',
-    user: {
-      username: 'bookworm_reads',
-      avatar: 'https://i.pravatar.cc/150?img=10',
-    },
-    image: 'https://picsum.photos/seed/post10/400/400',
-    caption: 'Cozy reading corner setup 📚 Currently reading: The Midnight Library',
-    likes: 654,
-    comments: 67,
-    timestamp: '2 days ago',
-    isLiked: true,
-    isBookmarked: true,
-  },
+const usernames = [
+  'travel_adventures',
+  'foodie_delights',
+  'urban_explorer',
+  'fitness_guru',
+  'nature_photography',
+  'coffee_lover',
+  'pet_paradise',
+  'art_studio',
+  'beach_vibes',
+  'bookworm_reads',
+  'tech_geek',
+  'fashion_forward',
+  'music_maniac',
+  'garden_goals',
+  'skateboard_life',
+  'yoga_daily',
+  'street_food',
+  'vintage_finds',
+  'drone_shots',
+  'surf_culture',
 ];
+
+const captions = [
+  'Exploring the beautiful mountains today! The view is absolutely breathtaking. #travel #adventure #nature #mountains #hiking #outdoors #wanderlust',
+  'Homemade pasta with fresh tomato sauce. Recipe coming soon! #foodie #pasta #homecooking #italianfood #delicious',
+  'City lights at night. There is something magical about the urban landscape after dark. #citylife #nightphotography #urban',
+  'Morning workout complete! Remember: consistency is key to reaching your goals. #fitness #motivation #workout #gym',
+  'Captured this stunning sunset yesterday. Nature never fails to amaze me. #sunset #photography #nature #beautiful',
+  'Perfect latte art to start the day. #coffeeaddict #morningvibes #latteart #barista',
+  'Someone is enjoying their weekend! #dogsofinstagram #puppylove #weekendvibes #cute',
+  'New painting finished! This one took me about 3 weeks to complete. #art #painting #creative #artwork',
+  'Paradise found. #beachlife #vacation #summervibes #tropical #ocean',
+  'Cozy reading corner setup. Currently reading: The Midnight Library. #bookstagram #reading #cozy',
+  'Just tried the new restaurant downtown - absolutely incredible! The ambiance was perfect and the food was out of this world. Highly recommend!',
+  'Throwback to last summer adventures. Can not wait for warmer days again. #throwback #summer #memories',
+  'Learning something new every day. Today it is watercolor techniques. #art #learning #watercolor #creative',
+  'Best coffee shop in the city, hands down. The pour-over here is perfection. #coffee #coffeeshop #specialty',
+  'Rainy day vibes. Sometimes the best thing to do is stay in and enjoy the sound of rain. #rainyDay #cozy #mood',
+  'Fresh flowers from the farmers market this morning. Spring is finally here! #flowers #spring #farmersmarket',
+  'This view from the rooftop was worth every step. 47 floors up! #rooftop #cityview #skyline #amazing',
+  'Homegrown tomatoes are just different. Nothing beats garden-fresh produce! #gardening #organic #homegrown',
+  'Golden hour at the beach. The light was absolutely perfect today. #goldenhour #beach #photography',
+  'Weekend project: building a bookshelf from reclaimed wood. Turned out better than expected! #diy #woodworking',
+];
+
+const tagSets = [
+  ['travel', 'adventure', 'nature', 'outdoors', 'wanderlust', 'explore', 'mountains', 'hiking'],
+  ['food', 'cooking', 'recipe', 'homemade', 'delicious', 'yummy', 'foodporn', 'chef'],
+  ['city', 'urban', 'architecture', 'night', 'lights', 'photography', 'street', 'downtown'],
+  ['fitness', 'gym', 'workout', 'health', 'motivation', 'training', 'muscle', 'strong'],
+  ['nature', 'sunset', 'landscape', 'beautiful', 'sky', 'earth', 'wilderness', 'scenic'],
+  ['coffee', 'morning', 'cafe', 'latte', 'espresso', 'barista', 'coffeetime', 'brew'],
+  ['pets', 'dogs', 'cats', 'animals', 'cute', 'love', 'furry', 'adorable'],
+  ['art', 'painting', 'creative', 'artist', 'drawing', 'gallery', 'artwork', 'design'],
+  ['beach', 'ocean', 'tropical', 'vacation', 'summer', 'waves', 'sand', 'paradise'],
+  ['books', 'reading', 'literature', 'library', 'bookworm', 'novel', 'story', 'author'],
+];
+
+const timestamps = [
+  '1 minute ago',
+  '2 minutes ago',
+  '5 minutes ago',
+  '10 minutes ago',
+  '15 minutes ago',
+  '30 minutes ago',
+  '1 hour ago',
+  '2 hours ago',
+  '3 hours ago',
+  '4 hours ago',
+  '6 hours ago',
+  '8 hours ago',
+  '10 hours ago',
+  '12 hours ago',
+  '14 hours ago',
+  '16 hours ago',
+  '1 day ago',
+  '2 days ago',
+  '3 days ago',
+  '4 days ago',
+];
+
+function generateMockFeed(count: number): FeedPost[] {
+  const posts: FeedPost[] = [];
+  for (let i = 0; i < count; i++) {
+    const userIndex = i % usernames.length;
+    const captionIndex = i % captions.length;
+    const tagIndex = i % tagSets.length;
+    const timestampIndex = i % timestamps.length;
+
+    posts.push({
+      id: String(i + 1),
+      user: {
+        username: usernames[userIndex],
+        avatar: `https://i.pravatar.cc/150?img=${(userIndex % 70) + 1}`,
+      },
+      image: `https://picsum.photos/seed/post${i + 1}/1080/1080`,
+      caption: captions[captionIndex],
+      likes: Math.floor(Math.random() * 10000),
+      comments: Math.floor(Math.random() * 500),
+      timestamp: timestamps[timestampIndex],
+      isLiked: Math.random() > 0.7,
+      isBookmarked: Math.random() > 0.8,
+      tags: tagSets[tagIndex],
+    });
+  }
+  return posts;
+}
+
+export const MOCK_FEED = generateMockFeed(500);
