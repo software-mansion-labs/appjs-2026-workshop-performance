@@ -15,6 +15,11 @@ export interface SuggestedPost {
   caption: string;
 }
 
+export interface FeedImage {
+  uri: string;
+  aspectRatio: number; // width / height
+}
+
 export interface FeedPost {
   id: string;
   user: {
@@ -22,7 +27,7 @@ export interface FeedPost {
     avatar: string;
     isVerified: boolean;
   };
-  images: string[];
+  images: FeedImage[];
   caption: string;
   likes: number;
   comments: FeedComment[];
@@ -176,9 +181,18 @@ function generateMockFeed(count: number): FeedPost[] {
     const imageCount =
       imageVariant < 3 ? 1 : imageVariant < 7 ? 2 + (i % 2) : 4 + (i % 2);
 
-    const images: string[] = [];
+    // Vary aspect ratios: square (1:1), portrait (4:5), landscape (16:9), wide (2:1)
+    const aspectRatios = [1, 0.8, 16 / 9, 2, 4 / 5, 1.2, 3 / 4];
+    const postAspectRatio = aspectRatios[i % aspectRatios.length];
+    const imgWidth = 1080;
+    const imgHeight = Math.round(imgWidth / postAspectRatio);
+
+    const images: FeedImage[] = [];
     for (let j = 0; j < imageCount; j++) {
-      images.push(`https://picsum.photos/seed/post${i + 1}-img${j}/1080/1080`);
+      images.push({
+        uri: `https://picsum.photos/seed/post${i + 1}-img${j}/${imgWidth}/${imgHeight}`,
+        aspectRatio: postAspectRatio,
+      });
     }
 
     // Vary caption: ~25% short/empty, ~75% long

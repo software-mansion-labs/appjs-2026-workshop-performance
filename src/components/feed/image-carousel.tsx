@@ -9,12 +9,15 @@ import {
 } from 'react-native';
 
 import { ColorsContext } from '@/context/colors-context';
+import { FeedImage } from '@/data/mock-feed';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-export function ImageCarousel({ images }: { images: string[] }) {
+export function ImageCarousel({ images }: { images: FeedImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const colors = useContext(ColorsContext);
+
+  const imageHeight = Math.round(SCREEN_WIDTH / images[0].aspectRatio);
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = e.nativeEvent.contentOffset.x;
@@ -33,37 +36,39 @@ export function ImageCarousel({ images }: { images: string[] }) {
         onScroll={handleScroll}
         scrollEventThrottle={16}
       >
-        {images.map((uri, i) => (
+        {images.map((image, i) => (
           <Image
-            key={`${uri}-${i}`}
-            source={{ uri }}
-            style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+            key={`${image.uri}-${i}`}
+            source={{ uri: image.uri }}
+            style={{ width: SCREEN_WIDTH, height: imageHeight }}
             resizeMode="cover"
           />
         ))}
       </ScrollView>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingVertical: 8,
-          gap: 4,
-        }}
-      >
-        {images.map((_, i) => (
-          <View
-            key={`dot-${i}`}
-            style={{
-              width: i === activeIndex ? 8 : 6,
-              height: i === activeIndex ? 8 : 6,
-              borderRadius: i === activeIndex ? 4 : 3,
-              backgroundColor:
-                i === activeIndex ? colors.tint : colors.icon + '40',
-            }}
-          />
-        ))}
-      </View>
+      {images.length > 1 && (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 8,
+            gap: 4,
+          }}
+        >
+          {images.map((_, i) => (
+            <View
+              key={`dot-${i}`}
+              style={{
+                width: i === activeIndex ? 8 : 6,
+                height: i === activeIndex ? 8 : 6,
+                borderRadius: i === activeIndex ? 4 : 3,
+                backgroundColor:
+                  i === activeIndex ? colors.tint : colors.icon + '40',
+              }}
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
