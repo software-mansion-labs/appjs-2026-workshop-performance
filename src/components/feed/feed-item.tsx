@@ -183,51 +183,62 @@ export function FeedItem({
         {likesText}
       </Text>
 
-      {/* Caption */}
-      <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
-        <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>
-          <Text style={{ fontWeight: '600' }}>{item.user.username}</Text>{' '}
-          {item.caption}
-        </Text>
-      </View>
-
-      {/* Tags */}
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          paddingHorizontal: 12,
-          paddingTop: 4,
-          gap: 4,
-        }}
-      >
-        {formattedTags.map((tag, i) => (
-          <Text key={`${tag}-${i}`} style={{ fontSize: 13, color: colors.tint }}>
-            {tag}
+      {/* Caption - only if non-empty */}
+      {item.caption.length > 0 && (
+        <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
+          <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>
+            <Text style={{ fontWeight: '600' }}>{item.user.username}</Text>{' '}
+            {item.caption}
           </Text>
-        ))}
-      </View>
+        </View>
+      )}
 
-      {/* View all comments link */}
-      <TouchableOpacity>
-        <Text
+      {/* Tags - only if present */}
+      {formattedTags.length > 0 && (
+        <View
           style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
             paddingHorizontal: 12,
-            paddingTop: 6,
-            fontSize: 14,
-            color: colors.icon,
+            paddingTop: 4,
+            gap: 4,
           }}
         >
-          View all {item.totalComments} comments
-        </Text>
-      </TouchableOpacity>
+          {formattedTags.map((tag, i) => (
+            <Text
+              key={`${tag}-${i}`}
+              style={{ fontSize: 13, color: colors.tint }}
+            >
+              {tag}
+            </Text>
+          ))}
+        </View>
+      )}
 
-      {/* Comment Previews */}
-      <View style={{ paddingTop: 4 }}>
-        {item.comments.map((comment) => (
-          <CommentPreview key={comment.id} comment={comment} />
-        ))}
-      </View>
+      {/* View all comments link - only if there are comments */}
+      {item.totalComments > 0 && (
+        <TouchableOpacity>
+          <Text
+            style={{
+              paddingHorizontal: 12,
+              paddingTop: 6,
+              fontSize: 14,
+              color: colors.icon,
+            }}
+          >
+            View all {item.totalComments} comments
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Comment Previews - variable count */}
+      {item.comments.length > 0 && (
+        <View style={{ paddingTop: 4 }}>
+          {item.comments.map((comment) => (
+            <CommentPreview key={comment.id} comment={comment} />
+          ))}
+        </View>
+      )}
 
       {/* Timestamp */}
       <Text
@@ -243,8 +254,8 @@ export function FeedItem({
         {formattedTime}
       </Text>
 
-      {/* Suggested Posts - every 3rd post shows suggestions */}
-      {item.suggestedPosts.length > 0 && Number(item.id) % 3 === 0 && (
+      {/* Suggested Posts - only on flagged posts */}
+      {item.showSuggestions && item.suggestedPosts.length > 0 && (
         <SuggestedPostsSection posts={item.suggestedPosts} />
       )}
     </View>

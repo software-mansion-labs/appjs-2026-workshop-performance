@@ -33,6 +33,7 @@ export interface FeedPost {
   tags: string[];
   location: string;
   suggestedPosts: SuggestedPost[];
+  showSuggestions: boolean;
 }
 
 const usernames = [
@@ -73,6 +74,19 @@ const captions = [
   'Homegrown tomatoes are just different. Nothing beats garden-fresh produce picked at the peak of ripeness. Started this garden three years ago and it keeps getting better. #gardening #organic',
   'Golden hour at the beach. The light was absolutely perfect today, casting long shadows across the sand. These are the moments I live for. #goldenhour #beach #photography #magic',
   'Weekend project: building a bookshelf from reclaimed wood. Turned out better than expected! Spent 12 hours sanding, staining, and assembling. Now I need more books to fill it. #diy #woodworking',
+];
+
+const shortCaptions = [
+  '🔥',
+  '❤️',
+  'No caption needed.',
+  '📸',
+  'Mood.',
+  '✨',
+  'Sunday.',
+  'Vibes.',
+  '👀',
+  '',
 ];
 
 const commentTexts = [
@@ -155,15 +169,45 @@ function generateMockFeed(count: number): FeedPost[] {
   const posts: FeedPost[] = [];
   for (let i = 0; i < count; i++) {
     const userIndex = i % usernames.length;
-    const captionIndex = i % captions.length;
-    const tagIndex = i % tagSets.length;
     const timestampIndex = i % timestamps.length;
-    const imageCount = 3 + (i % 3); // 3-5 images per post
+
+    // Vary image count: ~30% single image, ~40% 2-3 images, ~30% 4-5 images
+    const imageVariant = i % 10;
+    const imageCount =
+      imageVariant < 3 ? 1 : imageVariant < 7 ? 2 + (i % 2) : 4 + (i % 2);
 
     const images: string[] = [];
     for (let j = 0; j < imageCount; j++) {
       images.push(`https://picsum.photos/seed/post${i + 1}-img${j}/1080/1080`);
     }
+
+    // Vary caption: ~25% short/empty, ~75% long
+    const useShortCaption = i % 4 === 0;
+    const caption = useShortCaption
+      ? shortCaptions[i % shortCaptions.length]
+      : captions[i % captions.length];
+
+    // Vary comments: ~20% no comments, ~40% 1-2 comments, ~25% 3 comments, ~15% 5-8 comments
+    const commentVariant = i % 20;
+    let commentCount: number;
+    if (commentVariant < 4) {
+      commentCount = 0;
+    } else if (commentVariant < 12) {
+      commentCount = 1 + (i % 2);
+    } else if (commentVariant < 17) {
+      commentCount = 3;
+    } else {
+      commentCount = 5 + (i % 4);
+    }
+
+    const totalComments =
+      commentCount === 0 ? 0 : Math.floor(Math.random() * 500) + commentCount;
+
+    // Vary tags: ~30% no tags, ~70% has tags
+    const hasTags = i % 10 < 7;
+
+    // Suggestions: ~20% of posts show suggestions
+    const showSuggestions = i % 5 === 0;
 
     posts.push({
       id: String(i + 1),
@@ -173,16 +217,17 @@ function generateMockFeed(count: number): FeedPost[] {
         isVerified: i % 3 === 0,
       },
       images,
-      caption: captions[captionIndex],
+      caption,
       likes: Math.floor(Math.random() * 10000),
-      comments: generateComments(i, 3),
-      totalComments: Math.floor(Math.random() * 500) + 3,
+      comments: generateComments(i, commentCount),
+      totalComments,
       timestamp: timestamps[timestampIndex],
       isLiked: Math.random() > 0.7,
       isBookmarked: Math.random() > 0.8,
-      tags: tagSets[tagIndex],
+      tags: hasTags ? tagSets[i % tagSets.length] : [],
       location: locations[i % locations.length],
-      suggestedPosts: generateSuggestedPosts(i),
+      suggestedPosts: showSuggestions ? generateSuggestedPosts(i) : [],
+      showSuggestions,
     });
   }
   return posts;
