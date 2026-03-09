@@ -14,6 +14,10 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
     router.push(`/profile/${post.username}`);
   };
 
+  const openPost = () => {
+    router.push(`/post/${post.id}`);
+  };
+
   return (
     <View
       style={{
@@ -26,7 +30,9 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
         backgroundColor: colors.cardBackground
       }}
     >
-      <Image source={{ uri: post.image }} style={{ width: 160, height: 160 }} resizeMode="cover" />
+      <TouchableOpacity onPress={openPost}>
+        <Image source={{ uri: post.image }} style={{ width: 160, height: 160 }} resizeMode="cover" />
+      </TouchableOpacity>
       <View style={{ padding: 8 }}>
         <TouchableOpacity onPress={openProfile} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
           <Image source={{ uri: post.avatar }} style={{ width: 20, height: 20, borderRadius: 10 }} />
@@ -82,6 +88,11 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
 
 export function SuggestedPostsSection({ posts }: { posts: SuggestedPost[] }) {
   const colors = useContext(ColorsContext);
+  const router = useRouter();
+
+  const openSuggestions = () => {
+    router.push("/suggestions");
+  };
 
   return (
     <View style={{ paddingVertical: 12 }}>
@@ -94,7 +105,7 @@ export function SuggestedPostsSection({ posts }: { posts: SuggestedPost[] }) {
         }}
       >
         <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>Suggested for you</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={openSuggestions}>
           <Text style={{ fontSize: 14, fontWeight: "600", color: colors.tint }}>See All</Text>
         </TouchableOpacity>
       </View>

@@ -23,6 +23,10 @@ export function CommentPreview({ comment, postId }: { comment: FeedComment; post
     router.push(`/post/comments/${postId}`);
   };
 
+  const openProfile = () => {
+    router.push(`/profile/${comment.username}`);
+  };
+
   return (
     <View
       style={{
@@ -33,10 +37,15 @@ export function CommentPreview({ comment, postId }: { comment: FeedComment; post
         gap: 10
       }}
     >
-      <Image source={{ uri: comment.avatar }} style={{ width: 28, height: 28, borderRadius: 14 }} />
+      <TouchableOpacity onPress={openProfile}>
+        <Image source={{ uri: comment.avatar }} style={{ width: 28, height: 28, borderRadius: 14 }} />
+      </TouchableOpacity>
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 13, color: colors.text, lineHeight: 18 }}>
-          <Text style={{ fontWeight: "600" }}>{comment.username}</Text> {comment.text}
+          <Text style={{ fontWeight: "600" }} onPress={openProfile}>
+            {comment.username}
+          </Text>{" "}
+          {comment.text}
         </Text>
         <View style={{ flexDirection: "row", gap: 12, marginTop: 4 }}>
           <Text style={{ fontSize: 11, color: colors.icon }}>{formattedTime}</Text>

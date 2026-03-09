@@ -19,11 +19,13 @@ function CommentItem({
   comment,
   colors,
   onReply,
+  onProfilePress,
   isReply = false
 }: {
   comment: FeedComment;
   colors: typeof Colors.light;
   onReply: (commentId: string, username: string) => void;
+  onProfilePress: (username: string) => void;
   isReply?: boolean;
 }) {
   const [isLiked, setIsLiked] = useState(false);
@@ -45,18 +47,26 @@ function CommentItem({
           gap: 12
         }}
       >
-        <Image
-          source={{ uri: comment.avatar }}
-          style={{
-            width: isReply ? 28 : 36,
-            height: isReply ? 28 : 36,
-            borderRadius: isReply ? 14 : 18
-          }}
-        />
+        <TouchableOpacity onPress={() => onProfilePress(comment.username)}>
+          <Image
+            source={{ uri: comment.avatar }}
+            style={{
+              width: isReply ? 28 : 36,
+              height: isReply ? 28 : 36,
+              borderRadius: isReply ? 14 : 18
+            }}
+          />
+        </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, color: colors.text, lineHeight: 20 }}>
-            <Text style={{ fontWeight: "600" }}>{comment.username}</Text>{" "}
-            {comment.replyingTo && <Text style={{ color: "#3d2847" }}>@{comment.replyingTo} </Text>}
+            <Text style={{ fontWeight: "600" }} onPress={() => onProfilePress(comment.username)}>
+              {comment.username}
+            </Text>{" "}
+            {comment.replyingTo && (
+              <Text style={{ color: "#3d2847" }} onPress={() => onProfilePress(comment.replyingTo!)}>
+                @{comment.replyingTo}{" "}
+              </Text>
+            )}
             {comment.text}
           </Text>
           <View style={{ flexDirection: "row", gap: 16, marginTop: 6 }}>
@@ -109,7 +119,14 @@ function CommentItem({
       {showReplies &&
         hasReplies &&
         comment.replies!.map(reply => (
-          <CommentItem key={reply.id} comment={reply} colors={colors} onReply={onReply} isReply />
+          <CommentItem
+            key={reply.id}
+            comment={reply}
+            colors={colors}
+            onReply={onReply}
+            onProfilePress={onProfilePress}
+            isReply
+          />
         ))}
     </View>
   );
@@ -221,10 +238,15 @@ export default function CommentsScreen() {
             gap: 12
           }}
         >
-          <Image source={{ uri: post.user.avatar }} style={{ width: 36, height: 36, borderRadius: 18 }} />
+          <TouchableOpacity onPress={() => router.push(`/profile/${post.user.username}`)}>
+            <Image source={{ uri: post.user.avatar }} style={{ width: 36, height: 36, borderRadius: 18 }} />
+          </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 14, color: colors.text, lineHeight: 20 }}>
-              <Text style={{ fontWeight: "600" }}>{post.user.username}</Text> {post.caption}
+              <Text style={{ fontWeight: "600" }} onPress={() => router.push(`/profile/${post.user.username}`)}>
+                {post.user.username}
+              </Text>{" "}
+              {post.caption}
             </Text>
             <Text style={{ fontSize: 12, color: colors.icon, marginTop: 6 }}>{formatRelativeTime(post.timestamp)}</Text>
           </View>
@@ -275,7 +297,14 @@ export default function CommentsScreen() {
         <FlatList
           data={comments}
           ListHeaderComponent={renderHeader}
-          renderItem={({ item }) => <CommentItem comment={item} colors={colors} onReply={handleReply} />}
+          renderItem={({ item }) => (
+            <CommentItem
+              comment={item}
+              colors={colors}
+              onReply={handleReply}
+              onProfilePress={username => router.push(`/profile/${username}`)}
+            />
+          )}
           keyExtractor={item => item.id}
           contentContainerStyle={{ paddingBottom: 20 }}
           ListEmptyComponent={

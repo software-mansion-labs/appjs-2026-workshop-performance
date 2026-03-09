@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useEffect } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions, Linking, Alert, Share } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -161,7 +161,33 @@ export default function UserProfileScreen() {
           </Text>
           {profile.isVerified && <IconSymbol name="checkmark.seal.fill" size={16} color="#3d2847" />}
         </View>
-        <TouchableOpacity style={{ padding: 4 }}>
+        <TouchableOpacity
+          style={{ padding: 4 }}
+          onPress={() => {
+            Alert.alert(profile.username, undefined, [
+              {
+                text: "Share Profile",
+                onPress: () =>
+                  Share.share({
+                    message: `Check out @${profile.username}'s profile: https://example.com/profile/${profile.username}`,
+                    url: `https://example.com/profile/${profile.username}`
+                  })
+              },
+              { text: "Copy Profile URL", onPress: () => Alert.alert("Copied", "Profile URL copied to clipboard") },
+              {
+                text: "Block",
+                style: "destructive",
+                onPress: () => Alert.alert("Blocked", `You have blocked @${profile.username}`)
+              },
+              {
+                text: "Report",
+                style: "destructive",
+                onPress: () => Alert.alert("Reported", "Thank you for your report. We will review this account.")
+              },
+              { text: "Cancel", style: "cancel" }
+            ]);
+          }}
+        >
           <IconSymbol name="ellipsis" size={22} color={colors.text} />
         </TouchableOpacity>
       </View>
@@ -199,13 +225,19 @@ export default function UserProfileScreen() {
                 <Text style={{ fontSize: 18, fontWeight: "700", color: colors.text }}>{profile.postsCount}</Text>
                 <Text style={{ fontSize: 13, color: colors.icon }}>Posts</Text>
               </View>
-              <TouchableOpacity style={{ alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() => router.push(`/followers/${username}?type=followers`)}
+                style={{ alignItems: "center" }}
+              >
                 <Text style={{ fontSize: 18, fontWeight: "700", color: colors.text }}>
                   {formatNumber(profile.followersCount)}
                 </Text>
                 <Text style={{ fontSize: 13, color: colors.icon }}>Followers</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() => router.push(`/followers/${username}?type=following`)}
+                style={{ alignItems: "center" }}
+              >
                 <Text style={{ fontSize: 18, fontWeight: "700", color: colors.text }}>
                   {formatNumber(profile.followingCount)}
                 </Text>
@@ -235,7 +267,12 @@ export default function UserProfileScreen() {
           >
             {profile.bio}
           </Text>
-          <Text style={{ fontSize: 14, color: "#3d2847" }}>{profile.website}</Text>
+          <Text
+            style={{ fontSize: 14, color: "#3d2847" }}
+            onPress={() => Linking.openURL(`https://${profile.website}`)}
+          >
+            {profile.website}
+          </Text>
 
           {/* Action Buttons */}
           <View
@@ -265,6 +302,7 @@ export default function UserProfileScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={() => Alert.alert("Message", `Opening chat with @${profile.username}...`)}
               style={{
                 flex: 1,
                 backgroundColor: colors.icon + "20",

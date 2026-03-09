@@ -46,6 +46,11 @@ export default function RootLayout() {
         <Stack.Screen name="post/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="post/comments/[id]" options={{ headerShown: false, presentation: "modal" }} />
         <Stack.Screen name="profile/[username]" options={{ headerShown: false }} />
+        <Stack.Screen name="hashtag/[tag]" options={{ headerShown: false }} />
+        <Stack.Screen name="location/[name]" options={{ headerShown: false }} />
+        <Stack.Screen name="followers/[username]" options={{ headerShown: false }} />
+        <Stack.Screen name="likes/[postId]" options={{ headerShown: false }} />
+        <Stack.Screen name="suggestions" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
       </Stack>
       <StatusBar style="auto" />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, Image, TouchableOpacity, Pressable, GestureResponderEvent } from "react-native";
+import { View, Text, Image, TouchableOpacity, Pressable, GestureResponderEvent, Share } from "react-native";
 import { useRouter } from "expo-router";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -30,6 +30,30 @@ export function FeedItem({
 
   const openComments = () => {
     router.push(`/post/comments/${item.id}`);
+  };
+
+  const openLocation = () => {
+    router.push(`/location/${encodeURIComponent(item.location.name)}`);
+  };
+
+  const openLikes = () => {
+    router.push(`/likes/${item.id}`);
+  };
+
+  const openHashtag = (tag: string) => {
+    const cleanTag = tag.replace("#", "");
+    router.push(`/hashtag/${encodeURIComponent(cleanTag)}`);
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Check out this post by @${item.user.username}: https://example.com/post/${item.id}`,
+        url: `https://example.com/post/${item.id}`
+      });
+    } catch {
+      // User cancelled
+    }
   };
 
   // Redundant state synced from props
@@ -107,7 +131,9 @@ export function FeedItem({
               <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{item.user.username}</Text>
               {item.user.isVerified && <IconSymbol name="checkmark.seal.fill" size={14} color="#3d2847" />}
             </View>
-            <Text style={{ fontSize: 11, color: colors.icon }}>{item.location}</Text>
+            <TouchableOpacity onPress={openLocation}>
+              <Text style={{ fontSize: 11, color: colors.icon }}>{item.location.name}</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -159,7 +185,7 @@ export function FeedItem({
           <TouchableOpacity style={{ padding: 2 }} onPress={openComments}>
             <IconSymbol name="bubble.right" size={24} color={colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 2 }}>
+          <TouchableOpacity style={{ padding: 2 }} onPress={handleShare}>
             <IconSymbol name="paperplane" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -174,16 +200,18 @@ export function FeedItem({
       </View>
 
       {/* Likes */}
-      <Text
-        style={{
-          fontWeight: "600",
-          paddingHorizontal: 12,
-          fontSize: 14,
-          color: colors.text
-        }}
-      >
-        {likesText}
-      </Text>
+      <TouchableOpacity onPress={openLikes}>
+        <Text
+          style={{
+            fontWeight: "600",
+            paddingHorizontal: 12,
+            fontSize: 14,
+            color: colors.text
+          }}
+        >
+          {likesText}
+        </Text>
+      </TouchableOpacity>
 
       {/* Caption - only if non-empty */}
       {item.caption.length > 0 && (
@@ -206,9 +234,9 @@ export function FeedItem({
           }}
         >
           {formattedTags.map((tag, i) => (
-            <Text key={`${tag}-${i}`} style={{ fontSize: 13, color: colors.tint }}>
-              {tag}
-            </Text>
+            <TouchableOpacity key={`${tag}-${i}`} onPress={() => openHashtag(tag)}>
+              <Text style={{ fontSize: 13, color: colors.tint }}>{tag}</Text>
+            </TouchableOpacity>
           ))}
         </View>
       )}

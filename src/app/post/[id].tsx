@@ -9,7 +9,8 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
-  GestureResponderEvent
+  GestureResponderEvent,
+  Share
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -32,11 +33,13 @@ function CommentItem({
   comment,
   colors,
   onReply,
+  onProfilePress,
   isReply = false
 }: {
   comment: FeedComment;
   colors: typeof Colors.light;
   onReply: (commentId: string, username: string) => void;
+  onProfilePress: (username: string) => void;
   isReply?: boolean;
 }) {
   const [isLiked, setIsLiked] = useState(false);
@@ -58,18 +61,26 @@ function CommentItem({
           gap: 12
         }}
       >
-        <Image
-          source={{ uri: comment.avatar }}
-          style={{
-            width: isReply ? 28 : 36,
-            height: isReply ? 28 : 36,
-            borderRadius: isReply ? 14 : 18
-          }}
-        />
+        <TouchableOpacity onPress={() => onProfilePress(comment.username)}>
+          <Image
+            source={{ uri: comment.avatar }}
+            style={{
+              width: isReply ? 28 : 36,
+              height: isReply ? 28 : 36,
+              borderRadius: isReply ? 14 : 18
+            }}
+          />
+        </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, color: colors.text, lineHeight: 20 }}>
-            <Text style={{ fontWeight: "600" }}>{comment.username}</Text>{" "}
-            {comment.replyingTo && <Text style={{ color: "#3d2847" }}>@{comment.replyingTo} </Text>}
+            <Text style={{ fontWeight: "600" }} onPress={() => onProfilePress(comment.username)}>
+              {comment.username}
+            </Text>{" "}
+            {comment.replyingTo && (
+              <Text style={{ color: "#3d2847" }} onPress={() => onProfilePress(comment.replyingTo!)}>
+                @{comment.replyingTo}{" "}
+              </Text>
+            )}
             {comment.text}
           </Text>
           <View style={{ flexDirection: "row", gap: 16, marginTop: 6 }}>
@@ -122,7 +133,14 @@ function CommentItem({
       {showReplies &&
         hasReplies &&
         comment.replies!.map(reply => (
-          <CommentItem key={reply.id} comment={reply} colors={colors} onReply={onReply} isReply />
+          <CommentItem
+            key={reply.id}
+            comment={reply}
+            colors={colors}
+            onReply={onReply}
+            onProfilePress={onProfilePress}
+            isReply
+          />
         ))}
     </View>
   );
@@ -263,7 +281,9 @@ export default function PostDetailScreen() {
               <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{post.user.username}</Text>
               {post.user.isVerified && <IconSymbol name="checkmark.seal.fill" size={14} color="#3d2847" />}
             </View>
-            <Text style={{ fontSize: 11, color: colors.icon }}>{post.location}</Text>
+            <TouchableOpacity onPress={() => router.push(`/location/${encodeURIComponent(post.location.name)}`)}>
+              <Text style={{ fontSize: 11, color: colors.icon }}>{post.location.name}</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -302,7 +322,15 @@ export default function PostDetailScreen() {
           <TouchableOpacity onPress={handleLike} style={{ padding: 2 }}>
             <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#FF6B6B" : colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 2 }}>
+          <TouchableOpacity
+            style={{ padding: 2 }}
+            onPress={() =>
+              Share.share({
+                message: `Check out this post by @${post.user.username}: https://example.com/post/${post.id}`,
+                url: `https://example.com/post/${post.id}`
+              })
+            }
+          >
             <IconSymbol name="paperplane" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -312,22 +340,27 @@ export default function PostDetailScreen() {
       </View>
 
       {/* Likes */}
-      <Text
-        style={{
-          fontWeight: "600",
-          paddingHorizontal: 12,
-          fontSize: 14,
-          color: colors.text
-        }}
-      >
-        {likesCount.toLocaleString()} likes
-      </Text>
+      <TouchableOpacity onPress={() => router.push(`/likes/${post.id}`)}>
+        <Text
+          style={{
+            fontWeight: "600",
+            paddingHorizontal: 12,
+            fontSize: 14,
+            color: colors.text
+          }}
+        >
+          {likesCount.toLocaleString()} likes
+        </Text>
+      </TouchableOpacity>
 
       {/* Caption */}
       {post.caption.length > 0 && (
         <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
           <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>
-            <Text style={{ fontWeight: "600" }}>{post.user.username}</Text> {post.caption}
+            <Text style={{ fontWeight: "600" }} onPress={() => router.push(`/profile/${post.user.username}`)}>
+              {post.user.username}
+            </Text>{" "}
+            {post.caption}
           </Text>
         </View>
       )}
@@ -401,7 +434,14 @@ export default function PostDetailScreen() {
         <FlatList
           data={comments}
           ListHeaderComponent={renderHeader}
-          renderItem={({ item }) => <CommentItem comment={item} colors={colors} onReply={handleReply} />}
+          renderItem={({ item }) => (
+            <CommentItem
+              comment={item}
+              colors={colors}
+              onReply={handleReply}
+              onProfilePress={username => router.push(`/profile/${username}`)}
+            />
+          )}
           keyExtractor={item => item.id}
           contentContainerStyle={{ paddingBottom: 20 }}
           ListEmptyComponent={
