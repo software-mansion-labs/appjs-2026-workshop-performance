@@ -1,265 +1,103 @@
-import { Image } from 'expo-image';
-import { useState, useCallback } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { useState, useEffect } from 'react';
+import { FlatList, View, Text, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { FeedItem } from '@/components/feed/feed-item';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
+import { ColorsContext } from '@/context/colors-context';
 import { MOCK_FEED, FeedPost } from '@/data/mock-feed';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-function FeedItem({ item, colors }: { item: FeedPost; colors: typeof Colors.light }) {
-  const [isLiked, setIsLiked] = useState(item.isLiked);
-  const [isBookmarked, setIsBookmarked] = useState(item.isBookmarked);
-  const [likesCount, setLikesCount] = useState(item.likes);
-
-  const handleLike = useCallback(() => {
-    setIsLiked((prev) => {
-      setLikesCount((count) => (prev ? count - 1 : count + 1));
-      return !prev;
-    });
-  }, []);
-
-  const handleBookmark = useCallback(() => {
-    setIsBookmarked((prev) => !prev);
-  }, []);
-
-  return (
-    <View style={[styles.postContainer, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={styles.postHeader}>
-        <View style={styles.userInfo}>
-          <Image source={{ uri: item.user.avatar }} style={styles.avatar} />
-          <Text style={[styles.username, { color: colors.text }]}>
-            {item.user.username}
-          </Text>
-        </View>
-        <TouchableOpacity>
-          <Text style={[styles.moreButton, { color: colors.text }]}>•••</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Image */}
-      <Image
-        source={{ uri: item.image }}
-        style={styles.postImage}
-        contentFit="cover"
-      />
-
-      {/* Actions */}
-      <View style={styles.actionsContainer}>
-        <View style={styles.leftActions}>
-          <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
-            <IconSymbol
-              name={isLiked ? 'heart.fill' : 'heart'}
-              size={26}
-              color={isLiked ? '#ed4956' : colors.text}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <IconSymbol name="bubble.right" size={24} color={colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <IconSymbol name="paperplane" size={24} color={colors.text} />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity onPress={handleBookmark}>
-          <IconSymbol
-            name={isBookmarked ? 'bookmark.fill' : 'bookmark'}
-            size={24}
-            color={colors.text}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Likes */}
-      <Text style={[styles.likesCount, { color: colors.text }]}>
-        {likesCount.toLocaleString()} likes
-      </Text>
-
-      {/* Caption */}
-      <View style={styles.captionContainer}>
-        <Text style={[styles.caption, { color: colors.text }]}>
-          <Text style={styles.captionUsername}>{item.user.username}</Text>{' '}
-          {item.caption}
-        </Text>
-      </View>
-
-      {/* Comments */}
-      {item.comments > 0 && (
-        <TouchableOpacity>
-          <Text style={[styles.viewComments, { color: colors.icon }]}>
-            View all {item.comments} comments
-          </Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Timestamp */}
-      <Text style={[styles.timestamp, { color: colors.icon }]}>
-        {item.timestamp}
-      </Text>
-    </View>
-  );
-}
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
 
-  const renderItem = useCallback(
-    ({ item }: { item: FeedPost }) => <FeedItem item={item} colors={colors} />,
-    [colors]
-  );
+  const [feedData, setFeedData] = useState<FeedPost[]>([]);
 
-  const keyExtractor = useCallback((item: FeedPost) => item.id, []);
+  useEffect(() => {
+    setFeedData(MOCK_FEED);
+  }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View
-        style={[
-          styles.header,
-          {
+    <ColorsContext.Provider value={colors}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        {/* Header */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingBottom: 10,
             paddingTop: insets.top,
             backgroundColor: colors.background,
+            borderBottomWidth: 0.5,
             borderBottomColor: colors.icon + '30',
-          },
-        ]}
-      >
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Instagram
-        </Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerActionButton}>
-            <IconSymbol name="heart" size={26} color={colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerActionButton}>
-            <IconSymbol name="paperplane" size={26} color={colors.text} />
-          </TouchableOpacity>
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: '700',
+              fontStyle: 'italic',
+              color: colors.text,
+            }}
+          >
+            Instagram
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            <TouchableOpacity style={{ padding: 4 }}>
+              <IconSymbol name="heart" size={26} color={colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ padding: 4 }}>
+              <IconSymbol name="paperplane" size={26} color={colors.text} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      {/* Feed */}
-      <FlatList
-        data={MOCK_FEED}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.feedContainer}
-      />
-    </View>
+        {/* Feed */}
+        <FlatList
+          data={feedData}
+          renderItem={({ item }) => (
+            <FeedItem
+              item={item}
+              onLike={(id) => {
+                setFeedData((prev) =>
+                  prev.map((post) =>
+                    post.id === id
+                      ? {
+                          ...post,
+                          isLiked: !post.isLiked,
+                          likes: post.isLiked
+                            ? post.likes - 1
+                            : post.likes + 1,
+                        }
+                      : post
+                  )
+                );
+              }}
+              onBookmark={(id) => {
+                setFeedData((prev) =>
+                  prev.map((post) =>
+                    post.id === id
+                      ? { ...post, isBookmarked: !post.isBookmarked }
+                      : post
+                  )
+                );
+              }}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          windowSize={21}
+          maxToRenderPerBatch={10}
+          initialNumToRender={5}
+          removeClippedSubviews={false}
+        />
+      </View>
+    </ColorsContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-    borderBottomWidth: 0.5,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    fontStyle: 'italic',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  headerActionButton: {
-    padding: 4,
-  },
-  feedContainer: {
-    paddingBottom: 20,
-  },
-  postContainer: {
-    marginBottom: 8,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-  },
-  username: {
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  moreButton: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  postImage: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH,
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  leftActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-  },
-  actionButton: {
-    padding: 2,
-  },
-  likesCount: {
-    fontWeight: '600',
-    paddingHorizontal: 12,
-    fontSize: 14,
-  },
-  captionContainer: {
-    paddingHorizontal: 12,
-    paddingTop: 4,
-  },
-  caption: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  captionUsername: {
-    fontWeight: '600',
-  },
-  viewComments: {
-    paddingHorizontal: 12,
-    paddingTop: 4,
-    fontSize: 14,
-  },
-  timestamp: {
-    paddingHorizontal: 12,
-    paddingTop: 4,
-    paddingBottom: 8,
-    fontSize: 12,
-  },
-});
