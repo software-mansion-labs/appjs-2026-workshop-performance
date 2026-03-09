@@ -1,24 +1,20 @@
-import { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useState, useEffect, useContext } from "react";
+import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { ColorsContext } from '@/context/colors-context';
-import { FeedPost } from '@/data/mock-feed';
-import {
-  computeEngagementRate,
-  formatTags,
-  formatRelativeTime,
-} from '@/utils/feed-utils';
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { ColorsContext } from "@/context/colors-context";
+import { FeedPost } from "@/data/mock-feed";
+import { computeEngagementRate, formatTags, formatRelativeTime } from "@/utils/feed-utils";
 
-import { CommentPreview } from './comment-preview';
-import { ImageCarousel } from './image-carousel';
-import { SuggestedPostsSection } from './suggested-posts';
+import { CommentPreview } from "./comment-preview";
+import { ImageCarousel } from "./image-carousel";
+import { SuggestedPostsSection } from "./suggested-posts";
 
 export function FeedItem({
   item,
   onLike,
-  onBookmark,
+  onBookmark
 }: {
   item: FeedPost;
   onLike: (id: string) => void;
@@ -53,20 +49,16 @@ export function FeedItem({
   }, [item.likes]);
 
   // Expensive work in render path
-  const engagementRate = computeEngagementRate(
-    item.likes,
-    item.totalComments,
-    item.caption
-  );
+  const engagementRate = computeEngagementRate(item.likes, item.totalComments, item.caption);
   const formattedTags = formatTags(item.tags);
   const formattedTime = formatRelativeTime(item.timestamp);
 
   const likesText = (() => {
-    let text = '';
+    let text = "";
     for (let i = 0; i < 100; i++) {
       text = displayLikes.toLocaleString();
     }
-    return text + ' likes';
+    return text + " likes";
   })();
 
   return (
@@ -75,20 +67,23 @@ export function FeedItem({
         backgroundColor: colors.background,
         marginBottom: 4,
         borderBottomWidth: 0.5,
-        borderBottomColor: colors.icon + '15',
+        borderBottomColor: colors.icon + "15"
       }}
     >
       {/* Post Header */}
       <View
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
           paddingHorizontal: 12,
-          paddingVertical: 10,
+          paddingVertical: 10
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <TouchableOpacity
+          style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+          onPress={() => router.push(`/profile/${item.user.username}`)}
+        >
           <Image
             source={{ uri: item.user.avatar }}
             style={{
@@ -96,37 +91,19 @@ export function FeedItem({
               height: 32,
               borderRadius: 16,
               borderWidth: 2,
-              borderColor: '#c13584',
+              borderColor: "#c13584"
             }}
           />
           <View>
-            <View
-              style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-            >
-              <Text
-                style={{ fontWeight: '600', fontSize: 14, color: colors.text }}
-              >
-                {item.user.username}
-              </Text>
-              {item.user.isVerified && (
-                <IconSymbol
-                  name="checkmark.seal.fill"
-                  size={14}
-                  color="#3897f0"
-                />
-              )}
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{item.user.username}</Text>
+              {item.user.isVerified && <IconSymbol name="checkmark.seal.fill" size={14} color="#3897f0" />}
             </View>
-            <Text style={{ fontSize: 11, color: colors.icon }}>
-              {item.location}
-            </Text>
+            <Text style={{ fontSize: 11, color: colors.icon }}>{item.location}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity>
-          <Text
-            style={{ fontSize: 16, fontWeight: 'bold', color: colors.text }}
-          >
-            •••
-          </Text>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: colors.text }}>•••</Text>
         </TouchableOpacity>
       </View>
 
@@ -138,29 +115,23 @@ export function FeedItem({
       {/* Action Buttons */}
       <View
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
           paddingHorizontal: 12,
-          paddingBottom: 8,
+          paddingBottom: 8
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
           <TouchableOpacity
             onPress={() => {
               setIsLiked(!isLiked);
-              setDisplayLikes(
-                isLiked ? displayLikes - 1 : displayLikes + 1
-              );
+              setDisplayLikes(isLiked ? displayLikes - 1 : displayLikes + 1);
               onLike(item.id);
             }}
             style={{ padding: 2 }}
           >
-            <IconSymbol
-              name={isLiked ? 'heart.fill' : 'heart'}
-              size={26}
-              color={isLiked ? '#ed4956' : colors.text}
-            />
+            <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#ed4956" : colors.text} />
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 2 }} onPress={openComments}>
             <IconSymbol name="bubble.right" size={24} color={colors.text} />
@@ -175,21 +146,17 @@ export function FeedItem({
             onBookmark(item.id);
           }}
         >
-          <IconSymbol
-            name={isBookmarked ? 'bookmark.fill' : 'bookmark'}
-            size={24}
-            color={colors.text}
-          />
+          <IconSymbol name={isBookmarked ? "bookmark.fill" : "bookmark"} size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
 
       {/* Likes */}
       <Text
         style={{
-          fontWeight: '600',
+          fontWeight: "600",
           paddingHorizontal: 12,
           fontSize: 14,
-          color: colors.text,
+          color: colors.text
         }}
       >
         {likesText}
@@ -199,8 +166,7 @@ export function FeedItem({
       {item.caption.length > 0 && (
         <View style={{ paddingHorizontal: 12, paddingTop: 4 }}>
           <Text style={{ fontSize: 14, lineHeight: 20, color: colors.text }}>
-            <Text style={{ fontWeight: '600' }}>{item.user.username}</Text>{' '}
-            {item.caption}
+            <Text style={{ fontWeight: "600" }}>{item.user.username}</Text> {item.caption}
           </Text>
         </View>
       )}
@@ -209,18 +175,15 @@ export function FeedItem({
       {formattedTags.length > 0 && (
         <View
           style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
+            flexDirection: "row",
+            flexWrap: "wrap",
             paddingHorizontal: 12,
             paddingTop: 4,
-            gap: 4,
+            gap: 4
           }}
         >
           {formattedTags.map((tag, i) => (
-            <Text
-              key={`${tag}-${i}`}
-              style={{ fontSize: 13, color: colors.tint }}
-            >
+            <Text key={`${tag}-${i}`} style={{ fontSize: 13, color: colors.tint }}>
               {tag}
             </Text>
           ))}
@@ -235,12 +198,10 @@ export function FeedItem({
               paddingHorizontal: 12,
               paddingTop: 6,
               fontSize: 14,
-              color: colors.icon,
+              color: colors.icon
             }}
           >
-            {item.totalComments === 1 
-              ? 'View 1 comment' 
-              : `View all ${item.totalComments} comments`}
+            {item.totalComments === 1 ? "View 1 comment" : `View all ${item.totalComments} comments`}
           </Text>
         </TouchableOpacity>
       )}
@@ -248,7 +209,7 @@ export function FeedItem({
       {/* Comment Previews - variable count */}
       {item.comments.length > 0 && (
         <View style={{ paddingTop: 4 }}>
-          {item.comments.map((comment) => (
+          {item.comments.map(comment => (
             <CommentPreview key={comment.id} comment={comment} postId={item.id} />
           ))}
         </View>
@@ -262,16 +223,14 @@ export function FeedItem({
           paddingBottom: 10,
           fontSize: 11,
           color: colors.icon,
-          textTransform: 'uppercase',
+          textTransform: "uppercase"
         }}
       >
         {formattedTime}
       </Text>
 
       {/* Suggested Posts - only on flagged posts */}
-      {item.showSuggestions && item.suggestedPosts.length > 0 && (
-        <SuggestedPostsSection posts={item.suggestedPosts} />
-      )}
+      {item.showSuggestions && item.suggestedPosts.length > 0 && <SuggestedPostsSection posts={item.suggestedPosts} />}
     </View>
   );
 }

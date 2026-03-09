@@ -1,12 +1,18 @@
 import { useState, useContext } from 'react';
 import { ScrollView, View, Text, Image, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { ColorsContext } from '@/context/colors-context';
 import { SuggestedPost } from '@/data/mock-feed';
 
 function SuggestedPostCard({ post }: { post: SuggestedPost }) {
   const colors = useContext(ColorsContext);
+  const router = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
+
+  const openProfile = () => {
+    router.push(`/profile/${post.username}`);
+  };
 
   return (
     <View
@@ -26,7 +32,10 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
         resizeMode="cover"
       />
       <View style={{ padding: 8 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <TouchableOpacity
+          onPress={openProfile}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}
+        >
           <Image
             source={{ uri: post.avatar }}
             style={{ width: 20, height: 20, borderRadius: 10 }}
@@ -42,7 +51,7 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
           >
             {post.username}
           </Text>
-        </View>
+        </TouchableOpacity>
         <Text
           numberOfLines={2}
           style={{
