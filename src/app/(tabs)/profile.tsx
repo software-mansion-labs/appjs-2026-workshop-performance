@@ -17,7 +17,7 @@ export default function ProfileScreen() {
           styles.header,
           {
             paddingTop: insets.top,
-            backgroundColor: colors.cardBackground,
+            backgroundColor: colors.background,
             borderBottomColor: colors.icon + "30"
           }
         ]}

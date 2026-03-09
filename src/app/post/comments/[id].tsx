@@ -270,7 +270,7 @@ export default function CommentsScreen() {
             paddingHorizontal: 16,
             paddingBottom: 10,
             paddingTop: insets.top,
-            backgroundColor: colors.cardBackground,
+            backgroundColor: colors.background,
             borderBottomWidth: 0.5,
             borderBottomColor: colors.border
           }}
@@ -356,7 +356,7 @@ export default function CommentsScreen() {
             paddingVertical: 10,
             borderTopWidth: replyInfo ? 0 : 0.5,
             borderTopColor: colors.border,
-            backgroundColor: colors.cardBackground,
+            backgroundColor: colors.background,
             paddingBottom: insets.bottom + 10
           }}
         >

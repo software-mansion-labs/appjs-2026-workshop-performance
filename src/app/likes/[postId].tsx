@@ -184,7 +184,7 @@ export default function LikesScreen() {
           paddingHorizontal: 16,
           paddingBottom: 10,
           paddingTop: insets.top,
-          backgroundColor: colors.cardBackground,
+          backgroundColor: colors.background,
           borderBottomWidth: 0.5,
           borderBottomColor: colors.border
         }}
