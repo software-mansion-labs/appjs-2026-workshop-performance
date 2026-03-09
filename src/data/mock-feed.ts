@@ -44,110 +44,110 @@ export interface FeedPost {
 }
 
 const usernames = [
-  "travel_adventures",
-  "foodie_delights",
-  "urban_explorer",
-  "fitness_guru",
-  "nature_photography",
-  "coffee_lover",
-  "pet_paradise",
-  "art_studio",
-  "beach_vibes",
-  "bookworm_reads",
-  "tech_geek",
-  "fashion_forward",
-  "music_maniac",
-  "garden_goals",
-  "skateboard_life",
-  "yoga_daily",
-  "street_food",
-  "vintage_finds",
-  "drone_shots",
-  "surf_culture"
+  "appjs_conf",
+  "code_craftsman",
+  "expo_explorer",
+  "react_ninja",
+  "dev_pioneer",
+  "mobile_maestro",
+  "async_adventurer",
+  "stack_surfer",
+  "pixel_pusher",
+  "bug_buster",
+  "type_wizard",
+  "speaker_circle",
+  "mobile_dev_pro",
+  "rn_community",
+  "krakow_tech",
+  "workshop_lead",
+  "animations_guru",
+  "perf_optimizer",
+  "native_builder",
+  "attendee_dev"
 ];
 
 const locations = [
-  "New York, NY",
-  "San Francisco, CA",
-  "London, UK",
-  "Tokyo, Japan",
-  "Paris, France",
-  "Barcelona, Spain",
-  "Bali, Indonesia",
-  "Sydney, Australia",
-  "Dubai, UAE",
-  "Rome, Italy",
-  "Amsterdam, Netherlands",
-  "Berlin, Germany",
-  "Bangkok, Thailand",
-  "Cape Town, South Africa",
-  "Toronto, Canada",
-  "Seoul, South Korea",
-  "Lisbon, Portugal",
-  "Prague, Czech Republic",
-  "Vienna, Austria",
-  "Copenhagen, Denmark"
+  "Kraków, Poland",
+  "Stara Zajezdnia, Kraków",
+  "App.js Conf 2026",
+  "Workshop Hall A",
+  "Workshop Hall B",
+  "Main Stage",
+  "Networking Area",
+  "Expo Booth",
+  "Software Mansion HQ",
+  "Conference Center",
+  "Afterparty Venue",
+  "Speaker Lounge",
+  "Registration Desk",
+  "Demo Area",
+  "Community Hub",
+  "Sponsor Pavilion",
+  "Coffee Break Area",
+  "Lunch Hall",
+  "Outdoor Terrace",
+  "VIP Lounge"
 ];
 
 const captions = [
-  "Exploring the beautiful mountains today! The view is absolutely breathtaking. Such an incredible experience being up here above the clouds, feeling the crisp mountain air. #travel #adventure #nature #mountains #hiking #outdoors #wanderlust #explore",
-  "Homemade pasta with fresh tomato sauce. Recipe coming soon! Spent the whole afternoon in the kitchen perfecting this dish. The secret ingredient is fresh basil from my garden. #foodie #pasta #homecooking #italianfood #delicious #recipe",
-  "City lights at night. There is something magical about the urban landscape after dark. The way the buildings reflect off the river creates this surreal atmosphere. #citylife #nightphotography #urban #architecture",
-  "Morning workout complete! Remember: consistency is key to reaching your goals. Started with a 5K run, then moved to strength training. Feeling stronger every day. #fitness #motivation #workout #gym #health",
-  "Captured this stunning sunset yesterday. Nature never fails to amaze me with its incredible color palette. Waited two hours for this perfect moment. #sunset #photography #nature #beautiful #golden",
-  "Perfect latte art to start the day. Found this incredible hidden gem of a coffee shop tucked away in a quiet alley downtown. #coffeeaddict #morningvibes #latteart #barista #coffeeshop",
-  "Someone is enjoying their weekend! Nothing better than spending quality time with your furry best friend at the park. #dogsofinstagram #puppylove #weekendvibes #cute #pets",
-  "New painting finished! This one took me about 3 weeks to complete. Inspired by the changing seasons and the way light filters through autumn leaves. #art #painting #creative #artwork #artist",
-  "Paradise found. Crystal clear waters and white sand beaches. This is what dreams are made of. Grateful for every moment in this incredible place. #beachlife #vacation #summervibes #tropical #ocean",
-  "Cozy reading corner setup. Currently reading: The Midnight Library. There is nothing quite like losing yourself in a good book on a rainy afternoon. #bookstagram #reading #cozy #books",
-  "Just tried the new restaurant downtown - absolutely incredible! The ambiance was perfect and the food was out of this world. The chef came out personally to explain each course. Highly recommend!",
-  "Throwback to last summer adventures. Can not wait for warmer days again. These memories keep me going through the winter months. #throwback #summer #memories #goodtimes",
-  "Learning something new every day. Today it is watercolor techniques. The way the colors blend and flow on wet paper is mesmerizing. Art is truly the best therapy. #art #learning #watercolor",
-  "Best coffee shop in the city, hands down. The pour-over here is perfection. They source their beans from a small farm in Colombia and roast them in-house. #coffee #specialty #pourover",
-  "Rainy day vibes. Sometimes the best thing to do is stay in and enjoy the sound of rain hitting the window while wrapped in a warm blanket. #rainyDay #cozy #mood #peaceful",
-  "Fresh flowers from the farmers market this morning. Spring is finally here and the colors are absolutely gorgeous! Got tulips, daisies, and sunflowers. #flowers #spring #farmersmarket",
-  "This view from the rooftop was worth every step. 47 floors up and you can see the entire skyline stretching to the horizon. The city looks so different from up here. #rooftop #cityview #skyline",
-  "Homegrown tomatoes are just different. Nothing beats garden-fresh produce picked at the peak of ripeness. Started this garden three years ago and it keeps getting better. #gardening #organic",
-  "Golden hour at the beach. The light was absolutely perfect today, casting long shadows across the sand. These are the moments I live for. #goldenhour #beach #photography #magic",
-  "Weekend project: building a bookshelf from reclaimed wood. Turned out better than expected! Spent 12 hours sanding, staining, and assembling. Now I need more books to fill it. #diy #woodworking"
+  "Excited to announce App.js Conf 2026 in Kraków! Join the biggest React Native & Expo-focused conference. 27-29 May, see you there! 🚀 #AppJSConf #ReactNative #Expo #MobileDev #Kraków",
+  "Just finished setting up the workshop materials for the Expo Modules API session. Can't wait to share this with everyone tomorrow! The native code integration has never been easier. #AppJS2026 #ExpoModules #Workshop",
+  "The Stara Zajezdnia venue looks absolutely stunning! Perfect atmosphere for three days of React Native talks and networking. Kraków never disappoints! #AppJSConf #Kraków #Conference",
+  "Day 1 workshop: Animations and Interactions updated for 2026! Learned so much about Reanimated, Gesture Handler, and WebGPU integration. Mind = blown 🤯 #AppJS #Animations #Reanimated",
+  "Performance workshop was incredible! Profiling tools, optimization techniques, and native-level debugging. My apps are about to get so much faster! #ReactNative #Performance #AppJS2026",
+  "Great discussions at the networking event! Met developers from Meta, Microsoft, Shopify, and Amazon. The React Native community is amazing! ☕️ #AppJSConf #Networking #Community",
+  "Universal apps with React Native - covering mobile and web platforms! Repository structure, routing, styling, animations, DOM components... this workshop had it all! #AppJS #UniversalApps",
+  "The Expo team just demoed some incredible new features. The future of React Native development is looking bright! ✨ #Expo #AppJS2026 #Innovation",
+  "Coffee break conversations hitting different at App.js. Just brainstormed a solution to a problem I've been stuck on for weeks! #DevLife #AppJSConf #Community",
+  "The afterparty was legendary! Great music, amazing people, and unforgettable memories. Thanks @software_mansion for organizing! 🎉 #AppJS2026 #Afterparty",
+  "Shipped a new feature using techniques learned at the workshop today. This is why conferences matter! Real knowledge, real impact. #ReactNative #AppJS #Learning",
+  "Kraków is beautiful! Took a morning walk through the old town before the conference started. Perfect way to start Day 2! 🏰 #Kraków #Poland #AppJSConf",
+  "Main stage talks are next level this year. Every speaker bringing their A-game with cutting-edge React Native insights! #AppJS2026 #Talks #ReactNative",
+  "Workshop on writing native code with Expo Modules API was exactly what I needed. Finally understand the bridging between JS and native! 🌉 #ExpoModules #NativeCode",
+  "98% of attendees would recommend App.js to a colleague - I can absolutely see why! This conference delivers every single year. 💯 #AppJSConf #Recommended",
+  "The sponsor booths are showing some amazing tools! CodeRabbit, CodeMagic, Infinite Red... so many great products for React Native developers. #AppJS #Sponsors",
+  "Just asked the Reanimated team a question I've had for months. Getting answers directly from the creators is priceless! 🙌 #AppJSConf #Reanimated #Community",
+  "Three days of pure React Native immersion. My notes are overflowing and my mind is buzzing with new ideas! 📝 #AppJS2026 #Learning #ReactNative",
+  "The venue acoustics are perfect for the talks. Great job by the organizers making sure everyone can hear clearly! 🎤 #AppJSConf #Production",
+  "Met my open source hero today! The person who maintains a library I use daily. This is what makes conferences special. 🌟 #OpenSource #AppJS #Community"
 ];
 
-const shortCaptions = ["🔥", "❤️", "No caption needed.", "📸", "Mood.", "✨", "Sunday.", "Vibes.", "👀", ""];
+const shortCaptions = ["🚀", "💜", "App.js 2026!", "✨", "Kraków vibes.", "⚛️", "Day 2!", "Networking.", "🎉", ""];
 
 const commentTexts = [
-  "This is absolutely stunning! Love it!",
-  "Where is this? I need to visit!",
-  "Great shot! What camera did you use?",
-  "So jealous right now 😍",
-  "This made my day, thanks for sharing!",
-  "Incredible work, keep it up!",
-  "The lighting in this is perfect",
-  "Adding this to my bucket list ASAP",
-  "You have such a great eye for composition",
-  "This is goals right here",
-  "Wow, just wow. Speechless!",
-  "Can you share more details about this?",
-  "Been following you for years, never disappointed",
-  "This deserves way more likes",
-  "Absolutely breathtaking view!",
-  "How do you always find the best spots?",
-  "Living vicariously through your posts",
-  "The colors in this are unreal",
-  "Need to try this next weekend",
-  "This is what social media should be about"
+  "Amazing talk! Learned so much! 🚀",
+  "Can't wait for the workshop tomorrow!",
+  "Great insights on React Native performance!",
+  "This conference is incredible! 💜",
+  "Thanks for sharing this, super helpful!",
+  "Kraków is beautiful, loving the venue!",
+  "The Expo team killed it today!",
+  "Adding these techniques to my project ASAP",
+  "Best conference I've been to this year!",
+  "The community here is so welcoming!",
+  "Mind blown by the animations workshop 🤯",
+  "Can you share the slides from this talk?",
+  "Been using React Native for years, still learning new things!",
+  "The networking opportunities are amazing!",
+  "Software Mansion really knows how to organize events!",
+  "See you at the afterparty! 🎉",
+  "This is exactly what I needed for my project",
+  "The speakers this year are next level!",
+  "Can't believe I finally met the Reanimated team!",
+  "App.js never disappoints! See you next year!"
 ];
 
 const tagSets = [
-  ["travel", "adventure", "nature", "outdoors", "wanderlust", "explore", "mountains", "hiking"],
-  ["food", "cooking", "recipe", "homemade", "delicious", "yummy", "foodporn", "chef"],
-  ["city", "urban", "architecture", "night", "lights", "photography", "street", "downtown"],
-  ["fitness", "gym", "workout", "health", "motivation", "training", "muscle", "strong"],
-  ["nature", "sunset", "landscape", "beautiful", "sky", "earth", "wilderness", "scenic"],
-  ["coffee", "morning", "cafe", "latte", "espresso", "barista", "coffeetime", "brew"],
-  ["pets", "dogs", "cats", "animals", "cute", "love", "furry", "adorable"],
-  ["art", "painting", "creative", "artist", "drawing", "gallery", "artwork", "design"],
-  ["beach", "ocean", "tropical", "vacation", "summer", "waves", "sand", "paradise"],
-  ["books", "reading", "literature", "library", "bookworm", "novel", "story", "author"]
+  ["AppJS", "AppJSConf", "AppJS2026", "ReactNative", "Expo", "Conference", "Kraków", "MobileDev"],
+  ["ReactNative", "Expo", "JavaScript", "TypeScript", "MobileApp", "CrossPlatform", "Dev", "Code"],
+  ["Workshop", "Learning", "Coding", "Animations", "Reanimated", "Performance", "Tutorial", "HandsOn"],
+  ["Networking", "Community", "DevLife", "TechConf", "Speakers", "Talks", "Inspiration", "Connect"],
+  ["Poland", "Kraków", "Europe", "TechHub", "Travel", "Conference", "Venue", "StaraZajezdnia"],
+  ["Expo", "ExpoModules", "NativeCode", "iOS", "Android", "Build", "Deploy", "EAS"],
+  ["Performance", "Optimization", "Profiling", "Speed", "Efficiency", "BestPractices", "Debug", "Tools"],
+  ["Animations", "GestureHandler", "Reanimated", "UX", "UI", "Interactions", "WebGPU", "ThreeJS"],
+  ["OpenSource", "GitHub", "Contribute", "Community", "Library", "Package", "npm", "Maintainers"],
+  ["SoftwareMansion", "Organizers", "Sponsors", "Partners", "Meta", "Microsoft", "Shopify", "Amazon"]
 ];
 
 const timestamps = [
@@ -220,13 +220,15 @@ function generateComments(postIndex: number, count: number): FeedComment[] {
 function generateSuggestedPosts(postIndex: number): SuggestedPost[] {
   const suggestions: SuggestedPost[] = [];
   const count = 6 + (postIndex % 4); // 6-9 suggestions per post
+  const techTopics = ["laptop", "computer", "coding", "keyboard", "office"];
   for (let i = 0; i < count; i++) {
     const userIdx = (postIndex * 5 + i * 3) % usernames.length;
+    const topic = techTopics[(postIndex + i) % techTopics.length];
     suggestions.push({
       id: `suggested-${postIndex}-${i}`,
       username: usernames[userIdx],
       avatar: `https://i.pravatar.cc/150?img=${(userIdx % 70) + 1}`,
-      image: `https://picsum.photos/seed/suggested${postIndex}-${i}/1080/1080`,
+      image: `https://loremflickr.com/1080/1080/${topic}?lock=${postIndex * 10 + i}`,
       caption: captions[(postIndex + i * 2) % captions.length].slice(0, 60) + "..."
     });
   }
@@ -250,9 +252,12 @@ function generateMockFeed(count: number): FeedPost[] {
     const imgHeight = Math.round(imgWidth / postAspectRatio);
 
     const images: FeedImage[] = [];
+    // Use coding/tech related images
+    const techTopics = ["laptop", "computer", "coding", "keyboard", "office"];
     for (let j = 0; j < imageCount; j++) {
+      const topic = techTopics[(i + j) % techTopics.length];
       images.push({
-        uri: `https://picsum.photos/seed/post${i + 1}-img${j}/${imgWidth}/${imgHeight}`,
+        uri: `https://loremflickr.com/${imgWidth}/${imgHeight}/${topic}?lock=${i * 10 + j}`,
         aspectRatio: postAspectRatio
       });
     }

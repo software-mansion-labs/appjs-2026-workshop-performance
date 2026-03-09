@@ -53,7 +53,7 @@ export function CommentPreview({ comment, postId }: { comment: FeedComment; post
         }}
         style={{ paddingTop: 4 }}
       >
-        <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={12} color={isLiked ? "#ed4956" : colors.icon} />
+        <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={12} color={isLiked ? "#FF6B6B" : colors.icon} />
       </TouchableOpacity>
     </View>
   );

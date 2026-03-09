@@ -56,7 +56,7 @@ function CommentItem({
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, color: colors.text, lineHeight: 20 }}>
             <Text style={{ fontWeight: "600" }}>{comment.username}</Text>{" "}
-            {comment.replyingTo && <Text style={{ color: "#3897f0" }}>@{comment.replyingTo} </Text>}
+            {comment.replyingTo && <Text style={{ color: "#3d2847" }}>@{comment.replyingTo} </Text>}
             {comment.text}
           </Text>
           <View style={{ flexDirection: "row", gap: 16, marginTop: 6 }}>
@@ -74,7 +74,7 @@ function CommentItem({
           }}
           style={{ paddingTop: 4 }}
         >
-          <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={14} color={isLiked ? "#ed4956" : colors.icon} />
+          <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={14} color={isLiked ? "#FF6B6B" : colors.icon} />
         </TouchableOpacity>
       </View>
 
@@ -191,7 +191,7 @@ export default function CommentsScreen() {
         <View
           style={{
             flex: 1,
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardBackground,
             justifyContent: "center",
             alignItems: "center"
           }}
@@ -236,7 +236,7 @@ export default function CommentsScreen() {
   return (
     <ColorsContext.Provider value={colors}>
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: colors.background }}
+        style={{ flex: 1, backgroundColor: colors.cardBackground }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={90}
       >
@@ -248,9 +248,9 @@ export default function CommentsScreen() {
             paddingHorizontal: 16,
             paddingBottom: 10,
             paddingTop: insets.top,
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardBackground,
             borderBottomWidth: 0.5,
-            borderBottomColor: colors.icon + "30"
+            borderBottomColor: colors.border
           }}
         >
           <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 16 }}>
@@ -326,8 +326,8 @@ export default function CommentsScreen() {
             paddingHorizontal: 12,
             paddingVertical: 10,
             borderTopWidth: replyInfo ? 0 : 0.5,
-            borderTopColor: colors.icon + "30",
-            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+            backgroundColor: colors.cardBackground,
             paddingBottom: insets.bottom + 10
           }}
         >
@@ -357,7 +357,7 @@ export default function CommentsScreen() {
           <TouchableOpacity onPress={handleAddComment} disabled={!newComment.trim()}>
             <Text
               style={{
-                color: newComment.trim() ? "#3897f0" : colors.icon,
+                color: newComment.trim() ? "#271c2d" : colors.icon,
                 fontWeight: "600",
                 fontSize: 14
               }}

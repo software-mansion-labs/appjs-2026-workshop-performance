@@ -1,6 +1,16 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { View, Text, Image, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform, GestureResponderEvent } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  GestureResponderEvent
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -59,7 +69,7 @@ function CommentItem({
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 14, color: colors.text, lineHeight: 20 }}>
             <Text style={{ fontWeight: "600" }}>{comment.username}</Text>{" "}
-            {comment.replyingTo && <Text style={{ color: "#3897f0" }}>@{comment.replyingTo} </Text>}
+            {comment.replyingTo && <Text style={{ color: "#3d2847" }}>@{comment.replyingTo} </Text>}
             {comment.text}
           </Text>
           <View style={{ flexDirection: "row", gap: 16, marginTop: 6 }}>
@@ -77,7 +87,7 @@ function CommentItem({
           }}
           style={{ paddingTop: 4 }}
         >
-          <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={14} color={isLiked ? "#ed4956" : colors.icon} />
+          <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={14} color={isLiked ? "#FF6B6B" : colors.icon} />
         </TouchableOpacity>
       </View>
 
@@ -211,7 +221,7 @@ export default function PostDetailScreen() {
         <View
           style={{
             flex: 1,
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardBackground,
             justifyContent: "center",
             alignItems: "center"
           }}
@@ -245,13 +255,13 @@ export default function PostDetailScreen() {
               height: 36,
               borderRadius: 18,
               borderWidth: 2,
-              borderColor: "#c13584"
+              borderColor: "#271c2d"
             }}
           />
           <View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{post.user.username}</Text>
-              {post.user.isVerified && <IconSymbol name="checkmark.seal.fill" size={14} color="#3897f0" />}
+              {post.user.isVerified && <IconSymbol name="checkmark.seal.fill" size={14} color="#3d2847" />}
             </View>
             <Text style={{ fontSize: 11, color: colors.icon }}>{post.location}</Text>
           </View>
@@ -290,7 +300,7 @@ export default function PostDetailScreen() {
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
           <TouchableOpacity onPress={handleLike} style={{ padding: 2 }}>
-            <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#ed4956" : colors.text} />
+            <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#FF6B6B" : colors.text} />
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 2 }}>
             <IconSymbol name="paperplane" size={24} color={colors.text} />
@@ -355,7 +365,7 @@ export default function PostDetailScreen() {
   return (
     <ColorsContext.Provider value={colors}>
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: colors.background }}
+        style={{ flex: 1, backgroundColor: colors.cardBackground }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={90}
       >
@@ -367,9 +377,9 @@ export default function PostDetailScreen() {
             paddingHorizontal: 16,
             paddingBottom: 10,
             paddingTop: insets.top,
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardBackground,
             borderBottomWidth: 0.5,
-            borderBottomColor: colors.icon + "30"
+            borderBottomColor: colors.border
           }}
         >
           <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 16 }}>
@@ -432,8 +442,8 @@ export default function PostDetailScreen() {
             paddingHorizontal: 12,
             paddingVertical: 10,
             borderTopWidth: replyInfo ? 0 : 0.5,
-            borderTopColor: colors.icon + "30",
-            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+            backgroundColor: colors.cardBackground,
             paddingBottom: insets.bottom + 10
           }}
         >
@@ -463,7 +473,7 @@ export default function PostDetailScreen() {
           <TouchableOpacity onPress={handleAddComment} disabled={!newComment.trim()}>
             <Text
               style={{
-                color: newComment.trim() ? "#3897f0" : colors.icon,
+                color: newComment.trim() ? "#271c2d" : colors.icon,
                 fontWeight: "600",
                 fontSize: 14
               }}

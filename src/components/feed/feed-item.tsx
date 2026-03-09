@@ -72,10 +72,10 @@ export function FeedItem({
   return (
     <View
       style={{
-        backgroundColor: colors.background,
+        backgroundColor: colors.cardBackground,
         marginBottom: 4,
         borderBottomWidth: 0.5,
-        borderBottomColor: colors.icon + "15"
+        borderBottomColor: colors.border
       }}
     >
       {/* Post Header */}
@@ -99,13 +99,13 @@ export function FeedItem({
               height: 32,
               borderRadius: 16,
               borderWidth: 2,
-              borderColor: "#c13584"
+              borderColor: "#271c2d"
             }}
           />
           <View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{item.user.username}</Text>
-              {item.user.isVerified && <IconSymbol name="checkmark.seal.fill" size={14} color="#3897f0" />}
+              {item.user.isVerified && <IconSymbol name="checkmark.seal.fill" size={14} color="#3d2847" />}
             </View>
             <Text style={{ fontSize: 11, color: colors.icon }}>{item.location}</Text>
           </View>
@@ -154,7 +154,7 @@ export function FeedItem({
             }}
             style={{ padding: 2 }}
           >
-            <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#ed4956" : colors.text} />
+            <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#FF6B6B" : colors.text} />
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 2 }} onPress={openComments}>
             <IconSymbol name="bubble.right" size={24} color={colors.text} />

@@ -1,13 +1,5 @@
 import { useContext, useState } from "react";
-import {
-  Text,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-  Alert,
-  Share,
-  Dimensions,
-} from "react-native";
+import { Text, TouchableOpacity, Modal, Pressable, Alert, Share, Dimensions } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
@@ -40,7 +32,7 @@ export function PostOptionsMenu({
   postId,
   username,
   onHidePost,
-  anchorPosition,
+  anchorPosition
 }: PostOptionsMenuProps) {
   const colors = useContext(ColorsContext);
   const router = useRouter();
@@ -57,7 +49,7 @@ export function PostOptionsMenu({
     try {
       await Share.share({
         message: `Check out this post by @${username}: https://example.com/post/${postId}`,
-        url: `https://example.com/post/${postId}`,
+        url: `https://example.com/post/${postId}`
       });
     } catch {
       // User cancelled
@@ -68,11 +60,9 @@ export function PostOptionsMenu({
   const handleReport = () => {
     setIsReported(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    Alert.alert(
-      "Post Reported",
-      "Thank you for your feedback. We will review this post.",
-      [{ text: "OK", onPress: onClose }]
-    );
+    Alert.alert("Post Reported", "Thank you for your feedback. We will review this post.", [
+      { text: "OK", onPress: onClose }
+    ]);
   };
 
   const handleNotInterested = () => {
@@ -80,11 +70,7 @@ export function PostOptionsMenu({
     if (onHidePost) {
       onHidePost();
     }
-    Alert.alert(
-      "Got it",
-      "We will show you fewer posts like this.",
-      [{ text: "OK", onPress: onClose }]
-    );
+    Alert.alert("Got it", "We will show you fewer posts like this.", [{ text: "OK", onPress: onClose }]);
   };
 
   const handleAboutAccount = () => {
@@ -94,45 +80,43 @@ export function PostOptionsMenu({
 
   const handleTurnOnNotifications = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert(
-      "Notifications On",
-      `You will now receive notifications when @${username} posts.`,
-      [{ text: "OK", onPress: onClose }]
-    );
+    Alert.alert("Notifications On", `You will now receive notifications when @${username} posts.`, [
+      { text: "OK", onPress: onClose }
+    ]);
   };
 
   const menuOptions: MenuOption[] = [
     {
       icon: "bell",
       label: "Notifications",
-      onPress: handleTurnOnNotifications,
+      onPress: handleTurnOnNotifications
     },
     {
       icon: "link",
       label: "Copy link",
-      onPress: handleCopyLink,
+      onPress: handleCopyLink
     },
     {
       icon: "square.and.arrow.up",
       label: "Share",
-      onPress: handleShare,
+      onPress: handleShare
     },
     {
       icon: "person.circle",
       label: "About account",
-      onPress: handleAboutAccount,
+      onPress: handleAboutAccount
     },
     {
       icon: "eye.slash",
       label: "Not interested",
-      onPress: handleNotInterested,
+      onPress: handleNotInterested
     },
     {
       icon: "exclamationmark.triangle",
       label: isReported ? "Reported" : "Report",
       onPress: handleReport,
-      destructive: true,
-    },
+      destructive: true
+    }
   ];
 
   // Calculate popover position
@@ -142,16 +126,11 @@ export function PostOptionsMenu({
   const popoverTop = anchorPosition ? anchorPosition.y + 10 : 100;
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable
         style={{
           flex: 1,
-          backgroundColor: "rgba(0,0,0,0.3)",
+          backgroundColor: "rgba(0,0,0,0.3)"
         }}
         onPress={onClose}
       >
@@ -161,16 +140,16 @@ export function PostOptionsMenu({
             top: popoverTop,
             left: popoverLeft,
             width: POPOVER_WIDTH,
-            backgroundColor: colors.background,
+            backgroundColor: colors.cardBackground,
             borderRadius: 12,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.25,
             shadowRadius: 12,
             elevation: 8,
-            overflow: "hidden",
+            overflow: "hidden"
           }}
-          onPress={(e) => e.stopPropagation()}
+          onPress={e => e.stopPropagation()}
         >
           {/* Menu Options */}
           {menuOptions.map((option, index) => (
@@ -184,19 +163,15 @@ export function PostOptionsMenu({
                 paddingHorizontal: 16,
                 gap: 12,
                 borderBottomWidth: index < menuOptions.length - 1 ? 0.5 : 0,
-                borderBottomColor: colors.icon + "20",
+                borderBottomColor: colors.icon + "20"
               }}
             >
-              <IconSymbol
-                name={option.icon as any}
-                size={18}
-                color={option.destructive ? "#ed4956" : colors.text}
-              />
+              <IconSymbol name={option.icon as any} size={18} color={option.destructive ? "#FF6B6B" : colors.text} />
               <Text
                 style={{
                   fontSize: 15,
-                  color: option.destructive ? "#ed4956" : colors.text,
-                  flex: 1,
+                  color: option.destructive ? "#FF6B6B" : colors.text,
+                  flex: 1
                 }}
               >
                 {option.label}

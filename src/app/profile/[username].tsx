@@ -1,21 +1,14 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState, useEffect } from "react";
+import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { MOCK_FEED, FeedPost } from '@/data/mock-feed';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Colors } from "@/constants/theme";
+import { MOCK_FEED, FeedPost } from "@/data/mock-feed";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 const imageSize = (width - 4) / 3;
 
 interface UserProfile {
@@ -34,27 +27,36 @@ interface UserProfile {
 
 function generateUserProfile(username: string): UserProfile {
   // Find all posts by this user
-  const userPosts = MOCK_FEED.filter((post) => post.user.username === username);
+  const userPosts = MOCK_FEED.filter(post => post.user.username === username);
   const firstPost = userPosts[0];
 
   // Generate consistent profile data based on username
-  const hash = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  
+  const hash = username.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
   const bios = [
-    '✨ Living my best life | 📍 Traveler | 📸 Photography enthusiast',
-    '🎨 Creative soul | 💫 Dreamer | 🌍 Explorer',
-    '☕ Coffee addict | 📚 Book lover | 🌱 Growing every day',
-    '🏋️ Fitness journey | 💪 Stay strong | 🥗 Healthy living',
-    '🎵 Music is life | 🎸 Guitar player | 🎤 Singer',
-    '🍕 Food lover | 🍳 Home chef | 🌮 Foodie adventures',
-    '🐕 Dog parent | 🐱 Cat lover | 🦋 Animal enthusiast',
-    '💻 Tech geek | 🚀 Startups | 💡 Innovation',
+    "🚀 React Native Developer | 📱 Mobile First | ⚛️ Expo Enthusiast",
+    "💻 Full Stack Dev | 🔧 Open Source Contributor | 🌍 Remote Worker",
+    "🎨 UI/UX Designer | 📱 Mobile Apps | 🎯 Performance Focused",
+    "🏢 Software Mansion | 💜 React Native Core | 🎤 Conference Speaker",
+    "🎵 Animations Expert | 🎸 Reanimated | 🎤 Workshop Instructor",
+    "🍕 Food & Code | 🍳 Side Projects | 🌮 App.js Attendee",
+    "⚛️ Expo Team | 🐱 Cat Parent | 🦋 Building the Future",
+    "💻 Tech Lead | 🚀 Startups | 💡 Innovation & Mobile"
   ];
 
   const fullNames = [
-    'Alex Johnson', 'Sam Williams', 'Jordan Lee', 'Taylor Smith',
-    'Casey Brown', 'Morgan Davis', 'Riley Wilson', 'Avery Miller',
-    'Quinn Anderson', 'Drew Thompson', 'Blake Garcia', 'Reese Martin',
+    "Alex Johnson",
+    "Maya Chen",
+    "Jordan Smith",
+    "Sam Rodriguez",
+    "Riley Taylor",
+    "Morgan Davis",
+    "Casey Kim",
+    "Drew Wilson",
+    "Avery Martinez",
+    "Quinn Brown",
+    "Jamie Lee",
+    "Parker Anderson"
   ];
 
   return {
@@ -63,21 +65,21 @@ function generateUserProfile(username: string): UserProfile {
     isVerified: firstPost?.user.isVerified || hash % 3 === 0,
     fullName: fullNames[hash % fullNames.length],
     bio: bios[hash % bios.length],
-    website: `www.${username.replace('_', '')}.com`,
+    website: `www.${username.replace("_", "")}.com`,
     postsCount: userPosts.length || Math.floor(hash % 500) + 10,
-    followersCount: Math.floor(hash * 137 % 100000) + 1000,
-    followingCount: Math.floor(hash * 43 % 1000) + 100,
+    followersCount: Math.floor((hash * 137) % 100000) + 1000,
+    followingCount: Math.floor((hash * 43) % 1000) + 100,
     posts: userPosts,
-    isFollowing: hash % 2 === 0,
+    isFollowing: hash % 2 === 0
   };
 }
 
 function formatNumber(num: number): string {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
   }
   return num.toString();
 }
@@ -85,12 +87,9 @@ function formatNumber(num: number): string {
 function PostGridItem({ post, onPress }: { post: FeedPost; onPress: () => void }) {
   return (
     <TouchableOpacity onPress={onPress} style={{ margin: 1 }}>
-      <Image
-        source={{ uri: post.images[0].uri }}
-        style={{ width: imageSize, height: imageSize }}
-      />
+      <Image source={{ uri: post.images[0].uri }} style={{ width: imageSize, height: imageSize }} />
       {post.images.length > 1 && (
-        <View style={{ position: 'absolute', top: 8, right: 8 }}>
+        <View style={{ position: "absolute", top: 8, right: 8 }}>
           <IconSymbol name="square.on.square" size={16} color="white" />
         </View>
       )}
@@ -102,12 +101,12 @@ export default function UserProfileScreen() {
   const { username } = useLocalSearchParams<{ username: string }>();
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const colors = Colors[colorScheme ?? "light"];
   const insets = useSafeAreaInsets();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'grid' | 'tagged'>('grid');
+  const [activeTab, setActiveTab] = useState<"grid" | "tagged">("grid");
 
   useEffect(() => {
     if (username) {
@@ -122,9 +121,9 @@ export default function UserProfileScreen() {
       <View
         style={{
           flex: 1,
-          backgroundColor: colors.background,
-          justifyContent: 'center',
-          alignItems: 'center',
+          backgroundColor: colors.cardBackground,
+          justifyContent: "center",
+          alignItems: "center"
         }}
       >
         <Text style={{ color: colors.text }}>Loading...</Text>
@@ -133,39 +132,34 @@ export default function UserProfileScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: colors.cardBackground }}>
       {/* Header */}
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: "row",
+          alignItems: "center",
           paddingHorizontal: 16,
           paddingBottom: 10,
           paddingTop: insets.top,
-          backgroundColor: colors.background,
+          backgroundColor: colors.cardBackground,
           borderBottomWidth: 0.5,
-          borderBottomColor: colors.icon + '30',
+          borderBottomColor: colors.border
         }}
       >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={{ padding: 4, marginRight: 16 }}
-        >
+        <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 16 }}>
           <IconSymbol name="chevron.left" size={24} color={colors.text} />
         </TouchableOpacity>
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 4 }}>
           <Text
             style={{
               fontSize: 18,
-              fontWeight: '600',
-              color: colors.text,
+              fontWeight: "600",
+              color: colors.text
             }}
           >
             {profile.username}
           </Text>
-          {profile.isVerified && (
-            <IconSymbol name="checkmark.seal.fill" size={16} color="#3897f0" />
-          )}
+          {profile.isVerified && <IconSymbol name="checkmark.seal.fill" size={16} color="#3d2847" />}
         </View>
         <TouchableOpacity style={{ padding: 4 }}>
           <IconSymbol name="ellipsis" size={22} color={colors.text} />
@@ -178,9 +172,9 @@ export default function UserProfileScreen() {
           {/* Avatar and Stats */}
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 16
             }}
           >
             <Image
@@ -190,37 +184,29 @@ export default function UserProfileScreen() {
                 height: 86,
                 borderRadius: 43,
                 borderWidth: 3,
-                borderColor: '#c13584',
+                borderColor: "#271c2d"
               }}
             />
             <View
               style={{
                 flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                marginLeft: 20,
+                flexDirection: "row",
+                justifyContent: "space-around",
+                marginLeft: 20
               }}
             >
-              <View style={{ alignItems: 'center' }}>
-                <Text
-                  style={{ fontSize: 18, fontWeight: '700', color: colors.text }}
-                >
-                  {profile.postsCount}
-                </Text>
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 18, fontWeight: "700", color: colors.text }}>{profile.postsCount}</Text>
                 <Text style={{ fontSize: 13, color: colors.icon }}>Posts</Text>
               </View>
-              <TouchableOpacity style={{ alignItems: 'center' }}>
-                <Text
-                  style={{ fontSize: 18, fontWeight: '700', color: colors.text }}
-                >
+              <TouchableOpacity style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 18, fontWeight: "700", color: colors.text }}>
                   {formatNumber(profile.followersCount)}
                 </Text>
                 <Text style={{ fontSize: 13, color: colors.icon }}>Followers</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ alignItems: 'center' }}>
-                <Text
-                  style={{ fontSize: 18, fontWeight: '700', color: colors.text }}
-                >
+              <TouchableOpacity style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 18, fontWeight: "700", color: colors.text }}>
                   {formatNumber(profile.followingCount)}
                 </Text>
                 <Text style={{ fontSize: 13, color: colors.icon }}>Following</Text>
@@ -232,9 +218,9 @@ export default function UserProfileScreen() {
           <Text
             style={{
               fontSize: 14,
-              fontWeight: '600',
+              fontWeight: "600",
               color: colors.text,
-              marginBottom: 2,
+              marginBottom: 2
             }}
           >
             {profile.fullName}
@@ -244,52 +230,50 @@ export default function UserProfileScreen() {
               fontSize: 14,
               color: colors.text,
               lineHeight: 20,
-              marginBottom: 4,
+              marginBottom: 4
             }}
           >
             {profile.bio}
           </Text>
-          <Text style={{ fontSize: 14, color: '#3897f0' }}>{profile.website}</Text>
+          <Text style={{ fontSize: 14, color: "#3d2847" }}>{profile.website}</Text>
 
           {/* Action Buttons */}
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               marginTop: 16,
-              gap: 8,
+              gap: 8
             }}
           >
             <TouchableOpacity
               onPress={() => setIsFollowing(!isFollowing)}
               style={{
                 flex: 1,
-                backgroundColor: isFollowing ? colors.icon + '20' : '#3897f0',
+                backgroundColor: isFollowing ? colors.icon + "20" : "#271c2d",
                 paddingVertical: 8,
                 borderRadius: 8,
-                alignItems: 'center',
+                alignItems: "center"
               }}
             >
               <Text
                 style={{
-                  fontWeight: '600',
-                  color: isFollowing ? colors.text : 'white',
+                  fontWeight: "600",
+                  color: isFollowing ? colors.text : "#FFFFFF"
                 }}
               >
-                {isFollowing ? 'Following' : 'Follow'}
+                {isFollowing ? "Following" : "Follow"}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
                 flex: 1,
-                backgroundColor: colors.icon + '20',
+                backgroundColor: colors.icon + "20",
                 paddingVertical: 8,
                 borderRadius: 8,
-                alignItems: 'center',
+                alignItems: "center"
               }}
             >
-              <Text style={{ fontWeight: '600', color: colors.text }}>
-                Message
-              </Text>
+              <Text style={{ fontWeight: "600", color: colors.text }}>Message</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -297,62 +281,54 @@ export default function UserProfileScreen() {
         {/* Tab Bar */}
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             borderTopWidth: 0.5,
-            borderTopColor: colors.icon + '30',
+            borderTopColor: colors.icon + "30"
           }}
         >
           <TouchableOpacity
-            onPress={() => setActiveTab('grid')}
+            onPress={() => setActiveTab("grid")}
             style={{
               flex: 1,
-              alignItems: 'center',
+              alignItems: "center",
               paddingVertical: 12,
-              borderBottomWidth: activeTab === 'grid' ? 1 : 0,
-              borderBottomColor: colors.text,
+              borderBottomWidth: activeTab === "grid" ? 1 : 0,
+              borderBottomColor: colors.text
             }}
           >
-            <IconSymbol
-              name="square.grid.3x3"
-              size={24}
-              color={activeTab === 'grid' ? colors.text : colors.icon}
-            />
+            <IconSymbol name="square.grid.3x3" size={24} color={activeTab === "grid" ? colors.text : colors.icon} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setActiveTab('tagged')}
+            onPress={() => setActiveTab("tagged")}
             style={{
               flex: 1,
-              alignItems: 'center',
+              alignItems: "center",
               paddingVertical: 12,
-              borderBottomWidth: activeTab === 'tagged' ? 1 : 0,
-              borderBottomColor: colors.text,
+              borderBottomWidth: activeTab === "tagged" ? 1 : 0,
+              borderBottomColor: colors.text
             }}
           >
             <IconSymbol
               name="person.crop.square"
               size={24}
-              color={activeTab === 'tagged' ? colors.text : colors.icon}
+              color={activeTab === "tagged" ? colors.text : colors.icon}
             />
           </TouchableOpacity>
         </View>
 
         {/* Posts Grid */}
-        {activeTab === 'grid' && (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+        {activeTab === "grid" && (
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
             {profile.posts.length > 0 ? (
-              profile.posts.map((post) => (
-                <PostGridItem
-                  key={post.id}
-                  post={post}
-                  onPress={() => router.push(`/post/${post.id}`)}
-                />
+              profile.posts.map(post => (
+                <PostGridItem key={post.id} post={post} onPress={() => router.push(`/post/${post.id}`)} />
               ))
             ) : (
               <View
                 style={{
-                  width: '100%',
+                  width: "100%",
                   paddingVertical: 60,
-                  alignItems: 'center',
+                  alignItems: "center"
                 }}
               >
                 <IconSymbol name="camera" size={48} color={colors.icon} />
@@ -360,8 +336,8 @@ export default function UserProfileScreen() {
                   style={{
                     marginTop: 16,
                     fontSize: 22,
-                    fontWeight: '700',
-                    color: colors.text,
+                    fontWeight: "700",
+                    color: colors.text
                   }}
                 >
                   No Posts Yet
@@ -371,11 +347,11 @@ export default function UserProfileScreen() {
           </View>
         )}
 
-        {activeTab === 'tagged' && (
+        {activeTab === "tagged" && (
           <View
             style={{
               paddingVertical: 60,
-              alignItems: 'center',
+              alignItems: "center"
             }}
           >
             <IconSymbol name="person.crop.square" size={48} color={colors.icon} />
@@ -383,8 +359,8 @@ export default function UserProfileScreen() {
               style={{
                 marginTop: 16,
                 fontSize: 22,
-                fontWeight: '700',
-                color: colors.text,
+                fontWeight: "700",
+                color: colors.text
               }}
             >
               Photos of {profile.username}
@@ -394,8 +370,8 @@ export default function UserProfileScreen() {
                 marginTop: 8,
                 fontSize: 14,
                 color: colors.icon,
-                textAlign: 'center',
-                paddingHorizontal: 40,
+                textAlign: "center",
+                paddingHorizontal: 40
               }}
             >
               When people tag {profile.username} in photos, they will appear here.

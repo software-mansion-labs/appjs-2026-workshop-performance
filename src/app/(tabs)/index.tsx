@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { FlatList, View, Text, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useState, useEffect } from "react";
+import { FlatList, View, Text, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FeedItem } from '@/components/feed/feed-item';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { ColorsContext } from '@/context/colors-context';
-import { MOCK_FEED, FeedPost } from '@/data/mock-feed';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { FeedItem } from "@/components/feed/feed-item";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { Colors } from "@/constants/theme";
+import { ColorsContext } from "@/context/colors-context";
+import { MOCK_FEED, FeedPost } from "@/data/mock-feed";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const colors = Colors[colorScheme ?? "light"];
   const insets = useSafeAreaInsets();
 
   const [feedData, setFeedData] = useState<FeedPost[]>([]);
@@ -22,38 +22,76 @@ export default function HomeScreen() {
 
   return (
     <ColorsContext.Provider value={colors}>
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ flex: 1, backgroundColor: colors.cardBackground }}>
         {/* Header */}
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
             paddingHorizontal: 16,
-            paddingBottom: 10,
-            paddingTop: insets.top,
+            paddingBottom: 12,
+            paddingTop: insets.top + 8,
             backgroundColor: colors.background,
             borderBottomWidth: 0.5,
-            borderBottomColor: colors.icon + '30',
+            borderBottomColor: colors.border
           }}
         >
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: '700',
-              fontStyle: 'italic',
-              color: colors.text,
-            }}
-          >
-            Instagram
-          </Text>
-          <View style={{ flexDirection: 'row', gap: 16 }}>
-            <TouchableOpacity style={{ padding: 4 }}>
-              <IconSymbol name="heart" size={26} color={colors.text} />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ padding: 4 }}>
-              <IconSymbol name="paperplane" size={26} color={colors.text} />
-            </TouchableOpacity>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "700",
+                color: colors.text,
+                letterSpacing: -0.5
+              }}
+            >
+              App.js
+            </Text>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "400",
+                color: colors.text
+              }}
+            >
+              ✱
+            </Text>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "700",
+                color: colors.text,
+                letterSpacing: -0.5
+              }}
+            >
+              Conf
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <View
+              style={{
+                borderWidth: 1.5,
+                borderColor: colors.text,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 20,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6
+              }}
+            >
+              <IconSymbol name="calendar" size={14} color={colors.text} />
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "500",
+                  color: colors.text
+                }}
+              >
+                27-29 May '26
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -63,33 +101,27 @@ export default function HomeScreen() {
           renderItem={({ item }) => (
             <FeedItem
               item={item}
-              onLike={(id) => {
-                setFeedData((prev) =>
-                  prev.map((post) =>
+              onLike={id => {
+                setFeedData(prev =>
+                  prev.map(post =>
                     post.id === id
                       ? {
                           ...post,
                           isLiked: !post.isLiked,
-                          likes: post.isLiked
-                            ? post.likes - 1
-                            : post.likes + 1,
+                          likes: post.isLiked ? post.likes - 1 : post.likes + 1
                         }
                       : post
                   )
                 );
               }}
-              onBookmark={(id) => {
-                setFeedData((prev) =>
-                  prev.map((post) =>
-                    post.id === id
-                      ? { ...post, isBookmarked: !post.isBookmarked }
-                      : post
-                  )
+              onBookmark={id => {
+                setFeedData(prev =>
+                  prev.map(post => (post.id === id ? { ...post, isBookmarked: !post.isBookmarked } : post))
                 );
               }}
             />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
           windowSize={21}
