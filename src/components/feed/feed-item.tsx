@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { ColorsContext } from '@/context/colors-context';
@@ -24,6 +25,15 @@ export function FeedItem({
   onBookmark: (id: string) => void;
 }) {
   const colors = useContext(ColorsContext);
+  const router = useRouter();
+
+  const openPost = () => {
+    router.push(`/post/${item.id}`);
+  };
+
+  const openComments = () => {
+    router.push(`/post/comments/${item.id}`);
+  };
 
   // Redundant state synced from props
   const [isLiked, setIsLiked] = useState(false);
@@ -121,7 +131,9 @@ export function FeedItem({
       </View>
 
       {/* Image Carousel */}
-      <ImageCarousel images={item.images} />
+      <Pressable onPress={openPost}>
+        <ImageCarousel images={item.images} />
+      </Pressable>
 
       {/* Action Buttons */}
       <View
@@ -150,7 +162,7 @@ export function FeedItem({
               color={isLiked ? '#ed4956' : colors.text}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 2 }}>
+          <TouchableOpacity style={{ padding: 2 }} onPress={openComments}>
             <IconSymbol name="bubble.right" size={24} color={colors.text} />
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 2 }}>
@@ -217,7 +229,7 @@ export function FeedItem({
 
       {/* View all comments link - only if there are comments */}
       {item.totalComments > 0 && (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={openComments}>
           <Text
             style={{
               paddingHorizontal: 12,
@@ -226,7 +238,9 @@ export function FeedItem({
               color: colors.icon,
             }}
           >
-            View all {item.totalComments} comments
+            {item.totalComments === 1 
+              ? 'View 1 comment' 
+              : `View all ${item.totalComments} comments`}
           </Text>
         </TouchableOpacity>
       )}
@@ -235,7 +249,7 @@ export function FeedItem({
       {item.comments.length > 0 && (
         <View style={{ paddingTop: 4 }}>
           {item.comments.map((comment) => (
-            <CommentPreview key={comment.id} comment={comment} />
+            <CommentPreview key={comment.id} comment={comment} postId={item.id} />
           ))}
         </View>
       )}

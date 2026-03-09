@@ -5,6 +5,8 @@ export interface FeedComment {
   text: string;
   likes: number;
   timestamp: string;
+  replies?: FeedComment[];
+  replyingTo?: string;
 }
 
 export interface SuggestedPost {
@@ -138,17 +140,40 @@ const timestamps = [
   '3 days ago', '4 days ago', '5 days ago', '1 week ago',
 ];
 
+function generateReplies(postIndex: number, commentIndex: number, count: number, parentUsername: string): FeedComment[] {
+  const replies: FeedComment[] = [];
+  for (let i = 0; i < count; i++) {
+    const userIdx = (postIndex * 5 + commentIndex * 3 + i * 11) % usernames.length;
+    replies.push({
+      id: `reply-${postIndex}-${commentIndex}-${i}`,
+      username: usernames[userIdx],
+      avatar: `https://i.pravatar.cc/150?img=${(userIdx % 70) + 1}`,
+      text: commentTexts[(postIndex + commentIndex + i * 2) % commentTexts.length],
+      likes: Math.floor(Math.random() * 50),
+      timestamp: timestamps[(postIndex + commentIndex + i) % timestamps.length],
+      replyingTo: parentUsername,
+    });
+  }
+  return replies;
+}
+
 function generateComments(postIndex: number, count: number): FeedComment[] {
   const comments: FeedComment[] = [];
   for (let i = 0; i < count; i++) {
     const userIdx = (postIndex * 3 + i * 7) % usernames.length;
+    const username = usernames[userIdx];
+    // ~30% of comments have 1-3 replies
+    const hasReplies = (postIndex + i) % 3 === 0 && count > 1;
+    const replyCount = hasReplies ? 1 + ((postIndex + i) % 3) : 0;
+    
     comments.push({
       id: `comment-${postIndex}-${i}`,
-      username: usernames[userIdx],
+      username,
       avatar: `https://i.pravatar.cc/150?img=${(userIdx % 70) + 1}`,
       text: commentTexts[(postIndex + i * 3) % commentTexts.length],
       likes: Math.floor(Math.random() * 200),
       timestamp: timestamps[(postIndex + i) % timestamps.length],
+      replies: hasReplies ? generateReplies(postIndex, i, replyCount, username) : [],
     });
   }
   return comments;
