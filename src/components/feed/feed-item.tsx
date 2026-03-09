@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, Image, TouchableOpacity, Pressable, GestureResponderEvent } from "react-native";
 import { useRouter } from "expo-router";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -9,6 +9,7 @@ import { computeEngagementRate, formatTags, formatRelativeTime } from "@/utils/f
 
 import { CommentPreview } from "./comment-preview";
 import { ImageCarousel } from "./image-carousel";
+import { PostOptionsMenu } from "./post-options-menu";
 import { SuggestedPostsSection } from "./suggested-posts";
 
 export function FeedItem({
@@ -35,6 +36,9 @@ export function FeedItem({
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [displayLikes, setDisplayLikes] = useState(0);
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | undefined>();
 
   useEffect(() => {
     setIsLiked(item.isLiked);
@@ -60,6 +64,10 @@ export function FeedItem({
     }
     return text + " likes";
   })();
+
+  if (isHidden) {
+    return null;
+  }
 
   return (
     <View
@@ -102,10 +110,25 @@ export function FeedItem({
             <Text style={{ fontSize: 11, color: colors.icon }}>{item.location}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={(e: GestureResponderEvent) => {
+            const { pageX, pageY } = e.nativeEvent;
+            setMenuAnchor({ x: pageX, y: pageY });
+            setShowOptionsMenu(true);
+          }}
+        >
           <Text style={{ fontSize: 16, fontWeight: "bold", color: colors.text }}>•••</Text>
         </TouchableOpacity>
       </View>
+
+      <PostOptionsMenu
+        visible={showOptionsMenu}
+        onClose={() => setShowOptionsMenu(false)}
+        postId={item.id}
+        username={item.user.username}
+        onHidePost={() => setIsHidden(true)}
+        anchorPosition={menuAnchor}
+      />
 
       {/* Image Carousel */}
       <Pressable onPress={openPost}>

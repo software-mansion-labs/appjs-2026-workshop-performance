@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { View, Text, Image, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, Image, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform, GestureResponderEvent } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -11,6 +11,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatRelativeTime } from "@/utils/feed-utils";
 
 import { ImageCarousel } from "@/components/feed/image-carousel";
+import { PostOptionsMenu } from "@/components/feed/post-options-menu";
 
 interface ReplyInfo {
   commentId: string;
@@ -132,6 +133,8 @@ export default function PostDetailScreen() {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | undefined>();
 
   useEffect(() => {
     const foundPost = MOCK_FEED.find(p => p.id === id);
@@ -253,10 +256,24 @@ export default function PostDetailScreen() {
             <Text style={{ fontSize: 11, color: colors.icon }}>{post.location}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={(e: GestureResponderEvent) => {
+            const { pageX, pageY } = e.nativeEvent;
+            setMenuAnchor({ x: pageX, y: pageY });
+            setShowOptionsMenu(true);
+          }}
+        >
           <Text style={{ fontSize: 16, fontWeight: "bold", color: colors.text }}>•••</Text>
         </TouchableOpacity>
       </View>
+
+      <PostOptionsMenu
+        visible={showOptionsMenu}
+        onClose={() => setShowOptionsMenu(false)}
+        postId={post.id}
+        username={post.user.username}
+        anchorPosition={menuAnchor}
+      />
 
       {/* Image Carousel */}
       <ImageCarousel images={post.images} />
