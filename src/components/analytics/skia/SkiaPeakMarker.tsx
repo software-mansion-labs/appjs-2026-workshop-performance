@@ -1,7 +1,7 @@
 import { Path as SkiaPath, Circle as SkiaCircle, Text as SkiaText, DashPathEffect } from "@shopify/react-native-skia";
 import { useDerivedValue, type SharedValue } from "react-native-reanimated";
 
-import { PADDING, PLOT_H, formatLabel, peakLabelFont, measureText, sampleDataAtX } from "../chart-utils";
+import { PADDING, PLOT_H, formatLabel, findPeakValue, peakLabelFont, measureText, sampleDataAtX } from "../chart-utils";
 import type { AnimatedSeriesData } from "../use-chart-animation";
 
 interface SkiaPeakMarkerProps {
@@ -37,12 +37,7 @@ export function SkiaPeakMarker({ series, color, prevPeakX, targetPeakX, progress
 
   const peakLabel = useDerivedValue(() => {
     "worklet";
-    const d = series.data.value;
-    let best = 0;
-    for (let i = 0; i < d.length; i++) {
-      if (d[i] > best) best = d[i];
-    }
-    return formatLabel(Math.round(best));
+    return formatLabel(Math.round(findPeakValue(series.data.value)));
   });
 
   const peakLabelX = useDerivedValue(() => {

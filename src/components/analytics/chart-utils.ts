@@ -77,41 +77,35 @@ export function buildAreaPath(data: number[], maxVal: number): string {
 export function starPath(cx: number, cy: number, outerR: number, innerR: number, pts = 5): string {
   "worklet";
   const step = Math.PI / pts;
-  const parts: string[] = [];
-  for (let i = 0; i < 2 * pts; i++) {
+  return Array.from({ length: 2 * pts }, (_, i) => {
     const r = i % 2 === 0 ? outerR : innerR;
     const angle = i * step - Math.PI / 2;
     const x = cx + r * Math.cos(angle);
     const y = cy + r * Math.sin(angle);
-    parts.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
-  }
-  return parts.join(" ") + " Z";
+    return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(" ") + " Z";
 }
 
 export function buildStarsPath(data: number[], maxVal: number, outerR: number, innerR: number): string {
   "worklet";
-  let s = "";
   const stepX = PLOT_W / (data.length - 1);
-  for (let i = 0; i < data.length; i++) {
+  return data.map((val, i) => {
     const cx = PADDING.left + i * stepX;
-    const cy = PADDING.top + PLOT_H - (data[i] / maxVal) * PLOT_H;
-    s += starPath(cx, cy, outerR, innerR) + " ";
-  }
-  return s;
+    const cy = PADDING.top + PLOT_H - (val / maxVal) * PLOT_H;
+    return starPath(cx, cy, outerR, innerR);
+  }).join(" ");
 }
 
 // --- Math helpers (worklet-safe) ---
 
 export function lerpArrays(a: number[], b: number[], t: number): number[] {
   "worklet";
-  const len = Math.max(a.length, b.length);
-  const result: number[] = [];
-  for (let i = 0; i < len; i++) {
+  const longer = a.length >= b.length ? a : b;
+  return longer.map((_, i) => {
     const va = i < a.length ? a[i] : 0;
     const vb = i < b.length ? b[i] : 0;
-    result.push(va + (vb - va) * t);
-  }
-  return result;
+    return va + (vb - va) * t;
+  });
 }
 
 export function getPointX(index: number, total: number): number {
@@ -135,12 +129,12 @@ export function sampleDataAtX(data: number[], maxVal: number, x: number): number
 
 export function findPeakIndex(data: number[]): number {
   "worklet";
-  let idx = 0;
-  let best = 0;
-  for (let i = 0; i < data.length; i++) {
-    if (data[i] > best) { best = data[i]; idx = i; }
-  }
-  return idx;
+  return data.reduce((bestIdx, val, i) => (val > data[bestIdx] ? i : bestIdx), 0);
+}
+
+export function findPeakValue(data: number[]): number {
+  "worklet";
+  return data.reduce((best, val) => (val > best ? val : best), 0);
 }
 
 export function formatLabel(val: number): string {

@@ -1,7 +1,7 @@
 import { Circle, Path, Text as SvgText, TSpan } from "react-native-svg";
 import Animated, { useAnimatedProps, type SharedValue } from "react-native-reanimated";
 
-import { PADDING, PLOT_H, formatLabel, peakLabelFont, measureText, sampleDataAtX } from "../chart-utils";
+import { PADDING, PLOT_H, formatLabel, findPeakValue, peakLabelFont, measureText, sampleDataAtX } from "../chart-utils";
 import type { AnimatedSeriesData } from "../use-chart-animation";
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -38,10 +38,7 @@ export function SvgPeakMarker({ series, color, prevPeakX, targetPeakX, progress 
     "worklet";
     const x = prevPeakX.value + (targetPeakX.value - prevPeakX.value) * progress.value;
     const y = sampleDataAtX(series.data.value, series.max.value, x);
-    const d = series.data.value;
-    let best = 0;
-    for (let i = 0; i < d.length; i++) if (d[i] > best) best = d[i];
-    const label = formatLabel(Math.round(best));
+    const label = formatLabel(Math.round(findPeakValue(series.data.value)));
     const textWidth = measureText(label, peakLabelFont);
     return { x: x - textWidth / 2, y: y - 8 };
   });
@@ -54,10 +51,7 @@ export function SvgPeakMarker({ series, color, prevPeakX, targetPeakX, progress 
   // exposes `content` as a string prop that we can target directly.
   const tspanProps = useAnimatedProps(() => {
     "worklet";
-    const d = series.data.value;
-    let best = 0;
-    for (let i = 0; i < d.length; i++) if (d[i] > best) best = d[i];
-    return { content: formatLabel(Math.round(best)) };
+    return { content: formatLabel(Math.round(findPeakValue(series.data.value))) };
   });
 
   return (
