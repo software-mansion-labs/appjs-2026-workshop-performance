@@ -35,6 +35,7 @@ export function AnimatedNumber({ value, style, suffix = "", duration = 500, form
   return (
     <AnimatedTextInput
       editable={false}
+      scrollEnabled={false}
       underlineColorAndroid="transparent"
       style={[styles.text, style]}
       animatedProps={animatedProps}
@@ -47,5 +48,7 @@ const styles = StyleSheet.create({
   text: {
     padding: 0,
     margin: 0,
+    minWidth: 100,
+    textAlign: "center",
   },
 });
