@@ -1,6 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
-import { Text, type TextStyle } from "react-native";
-import { useSharedValue, withTiming, useAnimatedReaction, runOnJS } from "react-native-reanimated";
+import { useEffect } from "react";
+import { TextInput, type TextStyle, StyleSheet } from "react-native";
+import Animated, { useSharedValue, withTiming, useAnimatedProps } from "react-native-reanimated";
+
+// Hack: RN Text doesn't expose a native "text" prop (content goes through React children),
+// so useAnimatedProps can't animate it on the UI thread. TextInput has a native "text" prop
+// with Reanimated's built-in TextInputAdapter, so we use it as a read-only text display.
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 interface AnimatedNumberProps {
   value: number;
@@ -10,26 +15,37 @@ interface AnimatedNumberProps {
   formatFn?: (n: number) => string;
 }
 
-const defaultFormat = (n: number) => Math.round(n).toLocaleString();
+const defaultFormat = (n: number) => {
+  "worklet";
+  return Math.round(n).toLocaleString();
+};
 
 export function AnimatedNumber({ value, style, suffix = "", duration = 500, formatFn = defaultFormat }: AnimatedNumberProps) {
   const animated = useSharedValue(value);
-  const [display, setDisplay] = useState(formatFn(value));
-
-  const updateDisplay = useCallback((n: number) => {
-    setDisplay(formatFn(n));
-  }, [formatFn]);
 
   useEffect(() => {
     animated.value = withTiming(value, { duration });
-  }, [value]);
+  }, [value, duration]);
 
-  useAnimatedReaction(
-    () => animated.value,
-    (current) => {
-      runOnJS(updateDisplay)(current);
-    }
+  const animatedProps = useAnimatedProps(() => {
+    const formatted = formatFn(animated.value);
+    return { text: `${formatted}${suffix}` } as any;
+  });
+
+  return (
+    <AnimatedTextInput
+      editable={false}
+      underlineColorAndroid="transparent"
+      style={[styles.text, style]}
+      animatedProps={animatedProps}
+      defaultValue={`${formatFn(value)}${suffix}`}
+    />
   );
-
-  return <Text style={style}>{display}{suffix}</Text>;
 }
+
+const styles = StyleSheet.create({
+  text: {
+    padding: 0,
+    margin: 0,
+  },
+});

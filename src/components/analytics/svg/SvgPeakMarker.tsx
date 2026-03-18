@@ -1,6 +1,5 @@
-import { useState, useCallback } from "react";
-import { Circle, Path, Text as SvgText } from "react-native-svg";
-import Animated, { useAnimatedProps, useAnimatedReaction, runOnJS, type SharedValue } from "react-native-reanimated";
+import { Circle, Path, Text as SvgText, TSpan } from "react-native-svg";
+import Animated, { useAnimatedProps, type SharedValue } from "react-native-reanimated";
 
 import { PADDING, PLOT_H, formatLabel, peakLabelFont, measureText, sampleDataAtX } from "../chart-utils";
 import type { AnimatedSeriesData } from "../use-chart-animation";
@@ -8,6 +7,7 @@ import type { AnimatedSeriesData } from "../use-chart-animation";
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedSvgText = Animated.createAnimatedComponent(SvgText);
+const AnimatedTSpan = Animated.createAnimatedComponent(TSpan);
 
 interface SvgPeakMarkerProps {
   series: AnimatedSeriesData;
@@ -17,16 +17,9 @@ interface SvgPeakMarkerProps {
   progress: SharedValue<number>;
 }
 
-/**
- * SVG peak marker: slides along X from old peak to new peak,
- * Y follows the likes curve at the current X position.
- */
 export function SvgPeakMarker({ series, color, prevPeakX, targetPeakX, progress }: SvgPeakMarkerProps) {
-  const [labelText, setLabelText] = useState("");
-
-  const updateLabel = useCallback((text: string) => {
-    setLabelText(text);
-  }, []);
+  // Initial label for first render (before worklet kicks in)
+  const initialLabel = formatLabel(Math.round(Math.max(...(series.data.value ?? [0]))));
 
   const lineProps = useAnimatedProps(() => {
     "worklet";
@@ -53,25 +46,26 @@ export function SvgPeakMarker({ series, color, prevPeakX, targetPeakX, progress 
     return { x: x - textWidth / 2, y: y - 8 };
   });
 
-  useAnimatedReaction(
-    () => {
-      "worklet";
-      const d = series.data.value;
-      let best = 0;
-      for (let i = 0; i < d.length; i++) if (d[i] > best) best = d[i];
-      return formatLabel(Math.round(best));
-    },
-    (current) => {
-      runOnJS(updateLabel)(current);
-    }
-  );
+  // TSpan has an internal native `content` prop (not in public TS types, hence `as any`).
+  // This lets us animate text on the UI thread via useAnimatedProps — avoiding
+  // runOnJS + setState which would cause JS thread work every frame.
+  // SVG <Text> only accepts text as React children (not animatable),
+  // but TSpan's native layer (iOS: RNSVGTSpanManager, Android: TSpanView)
+  // exposes `content` as a string prop that we can target directly.
+  const tspanProps = useAnimatedProps(() => {
+    "worklet";
+    const d = series.data.value;
+    let best = 0;
+    for (let i = 0; i < d.length; i++) if (d[i] > best) best = d[i];
+    return { content: formatLabel(Math.round(best)) };
+  });
 
   return (
     <>
       <AnimatedPath animatedProps={lineProps} stroke={color} strokeWidth={0.5} strokeDasharray="3,3" fill="none" />
       <AnimatedCircle animatedProps={circleProps} fill={color} />
       <AnimatedSvgText animatedProps={textPositionProps} fontSize={8} fontWeight="bold" fontFamily="Helvetica" fill={color}>
-        {labelText}
+        <AnimatedTSpan animatedProps={tspanProps as any}>{initialLabel}</AnimatedTSpan>
       </AnimatedSvgText>
     </>
   );

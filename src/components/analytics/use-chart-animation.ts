@@ -33,6 +33,7 @@ export function useChartAnimation(post: FeedPost, days: number): ChartAnimationR
   const maxLikes = Math.max(...likesData, 1);
   const maxComments = Math.max(...commentsData, 1);
   const maxShares = Math.max(...sharesData, 1);
+  const currentPeakX = getPointX(findPeakIndex(likesData), likesData.length);
 
   const progress = useSharedValue(1);
 
@@ -42,7 +43,7 @@ export function useChartAnimation(post: FeedPost, days: number): ChartAnimationR
   const prevMaxLikesRef = useRef(maxLikes);
   const prevMaxCommentsRef = useRef(maxComments);
   const prevMaxSharesRef = useRef(maxShares);
-  const prevPeakXRef = useRef(getPointX(findPeakIndex(likesData), likesData.length));
+  const prevPeakXRef = useRef(currentPeakX);
 
   const targetLikes = useSharedValue(likesData);
   const targetComments = useSharedValue(commentsData);
@@ -57,9 +58,8 @@ export function useChartAnimation(post: FeedPost, days: number): ChartAnimationR
   const prevMaxComments = useSharedValue(maxComments);
   const prevMaxShares = useSharedValue(maxShares);
 
-  const initPeakX = getPointX(findPeakIndex(likesData), likesData.length);
-  const prevPeakX = useSharedValue(initPeakX);
-  const targetPeakX = useSharedValue(initPeakX);
+  const prevPeakX = useSharedValue(currentPeakX);
+  const targetPeakX = useSharedValue(currentPeakX);
 
   useEffect(() => {
     prevLikes.value = prevLikesRef.current;
@@ -76,7 +76,7 @@ export function useChartAnimation(post: FeedPost, days: number): ChartAnimationR
     targetMaxLikes.value = maxLikes;
     targetMaxComments.value = maxComments;
     targetMaxShares.value = maxShares;
-    targetPeakX.value = getPointX(findPeakIndex(likesData), likesData.length);
+    targetPeakX.value = currentPeakX;
 
     progress.value = 0;
     progress.value = withTiming(1, { duration: ANIM_DURATION });
@@ -87,7 +87,7 @@ export function useChartAnimation(post: FeedPost, days: number): ChartAnimationR
     prevMaxLikesRef.current = maxLikes;
     prevMaxCommentsRef.current = maxComments;
     prevMaxSharesRef.current = maxShares;
-    prevPeakXRef.current = getPointX(findPeakIndex(likesData), likesData.length);
+    prevPeakXRef.current = currentPeakX;
   }, [post.id, days]);
 
   function useInterpolatedSeries(

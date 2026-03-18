@@ -31,7 +31,6 @@ export function SkiaGrid({ maxVal, dataLength, borderColor, labelColor }: SkiaGr
 
       {/* X labels */}
       {xIndices.map(idx => {
-        if (idx >= dataLength) return null;
         const text = `D${idx + 1}`;
         const textWidth = measureText(text);
         return <SkiaText key={`xlabel-${idx}`} x={PADDING.left + idx * stepX - textWidth / 2} y={CHART_HEIGHT - 6} text={text} font={labelFont} color={labelColor} />;

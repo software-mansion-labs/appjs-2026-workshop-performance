@@ -38,18 +38,11 @@ export function SkiaPeakMarker({ series, color, prevPeakX, targetPeakX, progress
   const peakLabel = useDerivedValue(() => {
     "worklet";
     const d = series.data.value;
-    const x = markerX.value;
-    // Sample value at current X
-    const stepX = d.length > 1 ? (PADDING.left + ((d.length - 1) * (x - PADDING.left)) / (x - PADDING.left + 0.001)) : 0;
-    // Simpler: just read from sampleDataAtX inverted
     let best = 0;
     for (let i = 0; i < d.length; i++) {
       if (d[i] > best) best = d[i];
     }
-    // During animation show interpolated peak value
-    const frac = progress.value;
-    const oldPeak = (() => { let b = 0; for (let i = 0; i < d.length; i++) if (d[i] > b) b = d[i]; return b; })();
-    return formatLabel(Math.round(oldPeak));
+    return formatLabel(Math.round(best));
   });
 
   const peakLabelX = useDerivedValue(() => {

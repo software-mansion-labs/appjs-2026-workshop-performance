@@ -4,8 +4,12 @@ import { FeedPost } from "@/data/mock-feed";
 import { type ChartColors } from "./chart-utils";
 import { AnimatedNumber } from "./AnimatedNumber";
 
+const formatPercent = (n: number) => {
+  "worklet";
+  return n.toFixed(1);
+};
+
 export function ChartStats({ post, colors }: { post: FeedPost; colors: ChartColors }) {
-  const formatPercent = (n: number) => n.toFixed(1);
 
   return (
     <View style={{ flexDirection: "row", marginTop: 10, paddingTop: 10, borderTopWidth: 0.5, borderTopColor: colors.border }}>
