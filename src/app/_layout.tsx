@@ -51,6 +51,7 @@ export default function RootLayout() {
         <Stack.Screen name="followers/[username]" options={{ headerShown: false }} />
         <Stack.Screen name="likes/[postId]" options={{ headerShown: false }} />
         <Stack.Screen name="suggestions" options={{ headerShown: false }} />
+        <Stack.Screen name="analytics" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
       </Stack>
       <StatusBar style="auto" />
