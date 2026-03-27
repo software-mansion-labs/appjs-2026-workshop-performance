@@ -233,6 +233,11 @@ export interface FeedPost {
     duration: number;
     coverArt: string;
   };
+  chartData: {
+    likes: Record<number, number[]>;
+    comments: Record<number, number[]>;
+    shares: Record<number, number[]>;
+  };
 }
 
 const usernames = [
@@ -994,6 +999,80 @@ function generateRelatedPosts(postIndex: number): RelatedPost[] {
   return related;
 }
 
+const CHART_DAYS = [30, 90, 180, 365];
+
+// Deterministic pseudo-random from seed
+function seededRandom(s: number): () => number {
+  let state = s;
+  return () => {
+    state = (state * 1664525 + 1013904223) & 0xffffffff;
+    return (state >>> 0) / 0xffffffff;
+  };
+}
+
+// Different trend shapes based on seed — not everything decays
+function trendShape(seed: number, t: number): number {
+  const shape = seed % 6;
+  switch (shape) {
+    case 0: return 1 - t * 0.3;                              // slight decline
+    case 1: return 0.3 + t * 0.7;                            // growth
+    case 2: return 0.5 + 0.5 * Math.sin(t * Math.PI);       // peak in middle
+    case 3: return 0.8 + 0.2 * Math.cos(t * Math.PI * 2);   // wave
+    case 4: return t < 0.3 ? 0.4 + t * 2 : 1.0;             // early spike then plateau
+    case 5: return 1.0 - 0.5 * Math.abs(t - 0.5) * 2;       // V shape inverted
+    default: return 1;
+  }
+}
+
+function generateChartSeries(seed: number, likes: number, shares: number): FeedPost["chartData"] {
+  const result: FeedPost["chartData"] = { likes: {}, comments: {}, shares: {} };
+
+  for (const days of CHART_DAYS) {
+    const rand = seededRandom(seed * 1000 + days);
+    const baseLikes = likes * (0.2 + rand() * 0.3);
+    const baseComments = Math.max(5, likes * (0.02 + rand() * 0.05));
+    const baseShares = shares * (0.1 + rand() * 0.2);
+
+    const likesPoints: number[] = [];
+    const commentsPoints: number[] = [];
+    const sharesPoints: number[] = [];
+
+    for (let i = 0; i < days; i++) {
+      const t = i / (days - 1); // 0..1
+
+      // Likes
+      const likesTrend = trendShape(seed, t) * baseLikes;
+      const likesNoise = (rand() - 0.5) * baseLikes * 0.4;
+      likesPoints.push(Math.max(0, Math.round(likesTrend + likesNoise)));
+
+      // Comments
+      const commentsTrend = trendShape(seed + 2, t) * baseComments;
+      const commentsNoise = (rand() - 0.5) * baseComments * 0.4;
+      commentsPoints.push(Math.max(0, Math.round(commentsTrend + commentsNoise)));
+
+      // Shares
+      const sharesTrend = trendShape(seed + 4, t) * baseShares;
+      const sharesNoise = (rand() - 0.5) * baseShares * 0.5;
+      sharesPoints.push(Math.max(0, Math.round(sharesTrend + sharesNoise)));
+    }
+
+    result.likes[days] = likesPoints;
+    result.comments[days] = commentsPoints;
+    result.shares[days] = sharesPoints;
+  }
+
+  return result;
+}
+
+const PHOTO_SIZE = 2048;
+const THUMBNAIL_SIZE = 400;
+
+function picsumUrl(id: number, aspectRatio: number, thumbnail = false): string {
+  const w = thumbnail ? THUMBNAIL_SIZE : PHOTO_SIZE;
+  const h = Math.round(w / aspectRatio);
+  return `https://picsum.photos/id/${id}/${w}/${h}`;
+}
+
 function generateMockFeed(count: number): FeedPost[] {
   const posts: FeedPost[] = [];
   const languages = ["en", "pl", "de", "fr", "es"];
@@ -1020,20 +1099,16 @@ function generateMockFeed(count: number): FeedPost[] {
     // Vary aspect ratios
     const aspectRatios = [1, 0.8, 16 / 9, 2, 4 / 5, 1.2, 3 / 4, 9 / 16];
     const postAspectRatio = aspectRatios[i % aspectRatios.length];
-    // Use larger image dimensions for Unsplash (heavy images)
-    const imgWidth = 2048;
-    const imgHeight = Math.round(imgWidth / postAspectRatio);
 
     const images: FeedImage[] = [];
 
     for (let j = 0; j < imageCount; j++) {
-      // Use picsum.photos with unique IDs for reliable high-res images
       const picsumId = (i * 10 + j) % 1000;
       images.push({
-        uri: `https://picsum.photos/id/${picsumId}/${imgWidth}/${imgHeight}`,
+        uri: picsumUrl(picsumId, postAspectRatio),
         aspectRatio: postAspectRatio,
-        thumbnailUri: `https://picsum.photos/id/${picsumId}/400/${Math.round(400 / postAspectRatio)}`,
-        metadata: generateImageMetadata(imgWidth, imgHeight, i, j)
+        thumbnailUri: picsumUrl(picsumId, postAspectRatio, true),
+        metadata: generateImageMetadata(1080, Math.round(1080 / postAspectRatio), i, j)
       });
     }
 
@@ -1201,7 +1276,8 @@ function generateMockFeed(count: number): FeedPost[] {
               duration: 180 + (i % 120),
               coverArt: `https://picsum.photos/id/${(i * 7) % 1000}/300/300`
             }
-          : undefined
+          : undefined,
+      chartData: generateChartSeries(i + 1, likes, Math.floor(likes * 0.05))
     });
   }
   return posts;

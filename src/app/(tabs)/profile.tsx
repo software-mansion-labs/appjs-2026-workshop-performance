@@ -1,5 +1,6 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
@@ -9,6 +10,7 @@ export default function ProfileScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.cardBackground }]}>
@@ -38,6 +40,13 @@ export default function ProfileScreen() {
             <Text style={[styles.badgeText, { color: "#FFFFFF" }]}>Conference</Text>
           </View>
         </View>
+        <TouchableOpacity
+          style={[styles.analyticsButton, { borderColor: colors.text }]}
+          onPress={() => router.push("/analytics")}
+        >
+          <IconSymbol name="chart.line.uptrend.xyaxis" size={18} color={colors.text} />
+          <Text style={[styles.analyticsButtonText, { color: colors.text }]}>Analytics</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -94,5 +103,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: "#FFFFFF"
+  },
+  analyticsButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1.5
+  },
+  analyticsButtonText: {
+    fontSize: 14,
+    fontWeight: "600"
   }
 });

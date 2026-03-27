@@ -3,7 +3,6 @@ import {
   ScrollView,
   View,
   Image,
-  Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
@@ -11,17 +10,15 @@ import {
 import { ColorsContext } from '@/context/colors-context';
 import { FeedImage } from '@/data/mock-feed';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const IMAGE_WIDTH = 400;
 
 export function ImageCarousel({ images }: { images: FeedImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const colors = useContext(ColorsContext);
 
-  const imageHeight = Math.round(SCREEN_WIDTH / images[0].aspectRatio);
-
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = e.nativeEvent.contentOffset.x;
-    const index = Math.round(offset / SCREEN_WIDTH);
+    const index = Math.round(offset / IMAGE_WIDTH);
     if (index !== activeIndex) {
       setActiveIndex(index);
     }
@@ -40,8 +37,7 @@ export function ImageCarousel({ images }: { images: FeedImage[] }) {
           <Image
             key={`${image.uri}-${i}`}
             source={{ uri: image.uri }}
-            style={{ width: SCREEN_WIDTH, height: imageHeight }}
-            resizeMode="cover"
+            style={{ width: IMAGE_WIDTH, aspectRatio: image.aspectRatio }}
           />
         ))}
       </ScrollView>
