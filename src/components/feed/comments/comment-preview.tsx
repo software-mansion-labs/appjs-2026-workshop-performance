@@ -7,7 +7,7 @@ import { ColorsContext } from "@/context/colors-context";
 import { FeedComment } from "@/data/mock-feed";
 import { formatRelativeTime } from "@/utils/feed-utils";
 
-export function CommentPreview({ comment, postId }: { comment: FeedComment; postId: string }) {
+export const CommentPreview = ({ comment, postId }: { comment: FeedComment; postId: string }) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
@@ -34,7 +34,7 @@ export function CommentPreview({ comment, postId }: { comment: FeedComment; post
         paddingHorizontal: 12,
         paddingVertical: 8,
         alignItems: "flex-start",
-        gap: 10
+        gap: 10,
       }}
     >
       <TouchableOpacity onPress={openProfile}>
@@ -66,4 +66,4 @@ export function CommentPreview({ comment, postId }: { comment: FeedComment; post
       </TouchableOpacity>
     </View>
   );
-}
+};

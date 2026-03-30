@@ -1,11 +1,11 @@
 import { useState, useContext } from "react";
-import { ScrollView, View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
 import { SuggestedPost } from "@/data/mock-feed";
 
-function SuggestedPostCard({ post }: { post: SuggestedPost }) {
+export const SuggestedPostCard = ({ post }: { post: SuggestedPost }) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
   const [isFollowing, setIsFollowing] = useState(false);
@@ -27,7 +27,7 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
         borderWidth: 0.5,
         borderColor: colors.border,
         overflow: "hidden",
-        backgroundColor: colors.cardBackground
+        backgroundColor: colors.cardBackground,
       }}
     >
       <TouchableOpacity onPress={openPost}>
@@ -42,7 +42,7 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
               fontSize: 12,
               fontWeight: "600",
               color: colors.text,
-              flex: 1
+              flex: 1,
             }}
           >
             {post.username}
@@ -54,7 +54,7 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
             fontSize: 11,
             color: colors.icon,
             marginTop: 4,
-            lineHeight: 15
+            lineHeight: 15,
           }}
         >
           {post.caption}
@@ -68,14 +68,14 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
             paddingVertical: 4,
             alignItems: "center",
             borderWidth: isFollowing ? 1 : 0,
-            borderColor: colors.icon + "40"
+            borderColor: colors.icon + "40",
           }}
         >
           <Text
             style={{
               fontSize: 12,
               fontWeight: "600",
-              color: isFollowing ? colors.text : "#fff"
+              color: isFollowing ? colors.text : "#fff",
             }}
           >
             {isFollowing ? "Following" : "Follow"}
@@ -84,36 +84,4 @@ function SuggestedPostCard({ post }: { post: SuggestedPost }) {
       </View>
     </View>
   );
-}
-
-export function SuggestedPostsSection({ posts }: { posts: SuggestedPost[] }) {
-  const colors = useContext(ColorsContext);
-  const router = useRouter();
-
-  const openSuggestions = () => {
-    router.push("/suggestions");
-  };
-
-  return (
-    <View style={{ paddingVertical: 12 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          paddingHorizontal: 12,
-          marginBottom: 8
-        }}
-      >
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>Suggested for you</Text>
-        <TouchableOpacity onPress={openSuggestions}>
-          <Text style={{ fontSize: 14, fontWeight: "600", color: colors.tint }}>See All</Text>
-        </TouchableOpacity>
-      </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12 }}>
-        {posts.map(post => (
-          <SuggestedPostCard key={post.id} post={post} />
-        ))}
-      </ScrollView>
-    </View>
-  );
-}
+};

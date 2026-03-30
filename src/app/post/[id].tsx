@@ -21,8 +21,8 @@ import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatRelativeTime } from "@/utils/feed-utils";
 
-import { ImageCarousel } from "@/components/feed/image-carousel";
-import { PostOptionsMenu } from "@/components/feed/post-options-menu";
+import { ImageCarousel } from "@/components/feed/content/image-carousel";
+import { PostOptionsMenu } from "@/components/feed/header/post-options-menu";
 
 interface ReplyInfo {
   commentId: string;

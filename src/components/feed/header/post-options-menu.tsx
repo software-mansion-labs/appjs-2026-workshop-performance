@@ -26,14 +26,14 @@ interface MenuOption {
   destructive?: boolean;
 }
 
-export function PostOptionsMenu({
+export const PostOptionsMenu = ({
   visible,
   onClose,
   postId,
   username,
   onHidePost,
-  anchorPosition
-}: PostOptionsMenuProps) {
+  anchorPosition,
+}: PostOptionsMenuProps) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
   const [isReported, setIsReported] = useState(false);
@@ -49,7 +49,7 @@ export function PostOptionsMenu({
     try {
       await Share.share({
         message: `Check out this post by @${username}: https://example.com/post/${postId}`,
-        url: `https://example.com/post/${postId}`
+        url: `https://example.com/post/${postId}`,
       });
     } catch {
       // User cancelled
@@ -61,7 +61,7 @@ export function PostOptionsMenu({
     setIsReported(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     Alert.alert("Post Reported", "Thank you for your feedback. We will review this post.", [
-      { text: "OK", onPress: onClose }
+      { text: "OK", onPress: onClose },
     ]);
   };
 
@@ -81,45 +81,19 @@ export function PostOptionsMenu({
   const handleTurnOnNotifications = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert("Notifications On", `You will now receive notifications when @${username} posts.`, [
-      { text: "OK", onPress: onClose }
+      { text: "OK", onPress: onClose },
     ]);
   };
 
   const menuOptions: MenuOption[] = [
-    {
-      icon: "bell",
-      label: "Notifications",
-      onPress: handleTurnOnNotifications
-    },
-    {
-      icon: "link",
-      label: "Copy link",
-      onPress: handleCopyLink
-    },
-    {
-      icon: "square.and.arrow.up",
-      label: "Share",
-      onPress: handleShare
-    },
-    {
-      icon: "person.circle",
-      label: "About account",
-      onPress: handleAboutAccount
-    },
-    {
-      icon: "eye.slash",
-      label: "Not interested",
-      onPress: handleNotInterested
-    },
-    {
-      icon: "exclamationmark.triangle",
-      label: isReported ? "Reported" : "Report",
-      onPress: handleReport,
-      destructive: true
-    }
+    { icon: "bell", label: "Notifications", onPress: handleTurnOnNotifications },
+    { icon: "link", label: "Copy link", onPress: handleCopyLink },
+    { icon: "square.and.arrow.up", label: "Share", onPress: handleShare },
+    { icon: "person.circle", label: "About account", onPress: handleAboutAccount },
+    { icon: "eye.slash", label: "Not interested", onPress: handleNotInterested },
+    { icon: "exclamationmark.triangle", label: isReported ? "Reported" : "Report", onPress: handleReport, destructive: true },
   ];
 
-  // Calculate popover position
   const popoverLeft = anchorPosition
     ? Math.min(Math.max(anchorPosition.x - POPOVER_WIDTH + 20, 16), SCREEN_WIDTH - POPOVER_WIDTH - 16)
     : SCREEN_WIDTH - POPOVER_WIDTH - 16;
@@ -130,7 +104,7 @@ export function PostOptionsMenu({
       <Pressable
         style={{
           flex: 1,
-          backgroundColor: "rgba(0,0,0,0.3)"
+          backgroundColor: "rgba(0,0,0,0.3)",
         }}
         onPress={onClose}
       >
@@ -147,11 +121,10 @@ export function PostOptionsMenu({
             shadowOpacity: 0.25,
             shadowRadius: 12,
             elevation: 8,
-            overflow: "hidden"
+            overflow: "hidden",
           }}
-          onPress={e => e.stopPropagation()}
+          onPress={(e) => e.stopPropagation()}
         >
-          {/* Menu Options */}
           {menuOptions.map((option, index) => (
             <TouchableOpacity
               key={option.label}
@@ -163,7 +136,7 @@ export function PostOptionsMenu({
                 paddingHorizontal: 16,
                 gap: 12,
                 borderBottomWidth: index < menuOptions.length - 1 ? 0.5 : 0,
-                borderBottomColor: colors.icon + "20"
+                borderBottomColor: colors.icon + "20",
               }}
             >
               <IconSymbol name={option.icon as any} size={18} color={option.destructive ? "#FF6B6B" : colors.text} />
@@ -171,7 +144,7 @@ export function PostOptionsMenu({
                 style={{
                   fontSize: 15,
                   color: option.destructive ? "#FF6B6B" : colors.text,
-                  flex: 1
+                  flex: 1,
                 }}
               >
                 {option.label}
@@ -182,4 +155,4 @@ export function PostOptionsMenu({
       </Pressable>
     </Modal>
   );
-}
+};

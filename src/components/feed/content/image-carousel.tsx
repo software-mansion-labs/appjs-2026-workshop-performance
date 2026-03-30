@@ -1,18 +1,12 @@
-import { useState, useContext } from 'react';
-import {
-  ScrollView,
-  View,
-  Image,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
+import { useState, useContext } from "react";
+import { ScrollView, View, Image, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 
-import { ColorsContext } from '@/context/colors-context';
-import { FeedImage } from '@/data/mock-feed';
+import { ColorsContext } from "@/context/colors-context";
+import { FeedImage } from "@/data/mock-feed";
 
 const IMAGE_WIDTH = 400;
 
-export function ImageCarousel({ images }: { images: FeedImage[] }) {
+export const ImageCarousel = ({ images }: { images: FeedImage[] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const colors = useContext(ColorsContext);
 
@@ -44,9 +38,9 @@ export function ImageCarousel({ images }: { images: FeedImage[] }) {
       {images.length > 1 && (
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
             paddingVertical: 8,
             gap: 4,
           }}
@@ -58,8 +52,7 @@ export function ImageCarousel({ images }: { images: FeedImage[] }) {
                 width: i === activeIndex ? 8 : 6,
                 height: i === activeIndex ? 8 : 6,
                 borderRadius: i === activeIndex ? 4 : 3,
-                backgroundColor:
-                  i === activeIndex ? colors.tint : colors.icon + '40',
+                backgroundColor: i === activeIndex ? colors.tint : colors.icon + "40",
               }}
             />
           ))}
@@ -67,4 +60,4 @@ export function ImageCarousel({ images }: { images: FeedImage[] }) {
       )}
     </View>
   );
-}
+};
