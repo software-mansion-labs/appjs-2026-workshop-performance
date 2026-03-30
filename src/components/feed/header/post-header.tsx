@@ -2,8 +2,8 @@ import { useContext } from "react";
 import { View, Text, Image, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ColorsContext } from "@/context/colors-context";
+import { VerifiedIcon } from "@/components/feed/icons/verified-icon";
 
 export const PostHeader = ({
   username,
@@ -43,7 +43,7 @@ export const PostHeader = ({
             </View>
             {isVerified && (
               <View style={shadowStyles.badgeShadow}>
-                <IconSymbol name="checkmark.seal.fill" size={14} color="#3d2847" />
+                <VerifiedIcon size={14} color="#3d2847" />
               </View>
             )}
           </View>

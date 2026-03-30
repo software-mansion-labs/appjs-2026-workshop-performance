@@ -1,8 +1,11 @@
 import { useContext } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ColorsContext } from "@/context/colors-context";
+import { HeartIcon } from "@/components/feed/icons/heart-icon";
+import { CommentIcon } from "@/components/feed/icons/comment-icon";
+import { ShareIcon } from "@/components/feed/icons/share-icon";
+import { BookmarkIcon } from "@/components/feed/icons/bookmark-icon";
 
 export const ActionButtons = ({
   isLiked,
@@ -26,23 +29,23 @@ export const ActionButtons = ({
       <View style={styles.leftButtons}>
         <TouchableOpacity onPress={onLike} style={styles.iconButton}>
           <View style={isLiked ? shadowStyles.likeActiveShadow : shadowStyles.iconShadow}>
-            <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#FF6B6B" : colors.text} />
+            <HeartIcon size={26} color={isLiked ? "#FF6B6B" : colors.text} filled={isLiked} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={onComment}>
           <View style={shadowStyles.iconShadow}>
-            <IconSymbol name="bubble.right" size={24} color={colors.text} />
+            <CommentIcon size={24} color={colors.text} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={onShare}>
           <View style={shadowStyles.iconShadow}>
-            <IconSymbol name="paperplane" size={24} color={colors.text} />
+            <ShareIcon size={24} color={colors.text} />
           </View>
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={onBookmark}>
         <View style={shadowStyles.iconShadow}>
-          <IconSymbol name={isBookmarked ? "bookmark.fill" : "bookmark"} size={24} color={colors.text} />
+          <BookmarkIcon size={24} color={colors.text} filled={isBookmarked} />
         </View>
       </TouchableOpacity>
     </View>

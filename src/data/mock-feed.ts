@@ -1116,19 +1116,12 @@ function generateMockFeed(count: number): FeedPost[] {
     const useShortCaption = i % 4 === 0;
     const caption = useShortCaption ? shortCaptions[i % shortCaptions.length] : captions[i % captions.length];
 
-    // Vary comments: ~10% no comments, ~30% 1-5 comments, ~30% 6-20 comments, ~20% 21-50 comments, ~10% 51-100 comments (viral)
     const commentVariant = i % 100;
     let commentCount: number;
     if (commentVariant < 10) {
       commentCount = 0;
-    } else if (commentVariant < 40) {
-      commentCount = 1 + (i % 5);
-    } else if (commentVariant < 70) {
-      commentCount = 6 + (i % 15);
-    } else if (commentVariant < 90) {
-      commentCount = 21 + (i % 30);
     } else {
-      commentCount = 51 + (i % 50); // Viral posts with 51-100 comments
+      commentCount = 1 + (i % 5);
     }
 
     const likes = Math.floor(Math.random() * 10000) + (commentCount > 50 ? 5000 : 0);
