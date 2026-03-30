@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { FlatList, View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import Reanimated, { FadeIn, LinearTransition } from "react-native-reanimated";
 import { FeedItem } from "@/components/feed/feed-item";
 import { ShimmerList } from "@/components/feed/shimmer/shimmer-list";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -102,30 +102,33 @@ export default function HomeScreen() {
         </View>
 
         {/* Feed */}
-        <FlatList
+        <Reanimated.FlatList
           data={feedData}
+          itemLayoutAnimation={LinearTransition}
           renderItem={({ item }) => (
-            <FeedItem
-              item={item}
-              onLike={id => {
-                setFeedData(prev =>
-                  prev.map(post =>
-                    post.id === id
-                      ? {
-                        ...post,
-                        isLiked: !post.isLiked,
-                        likes: post.isLiked ? post.likes - 1 : post.likes + 1
-                      }
-                      : post
-                  )
-                );
-              }}
-              onBookmark={id => {
-                setFeedData(prev =>
-                  prev.map(post => (post.id === id ? { ...post, isBookmarked: !post.isBookmarked } : post))
-                );
-              }}
-            />
+            <Reanimated.View entering={FadeIn.duration(400)}>
+              <FeedItem
+                item={item}
+                onLike={id => {
+                  setFeedData(prev =>
+                    prev.map(post =>
+                      post.id === id
+                        ? {
+                          ...post,
+                          isLiked: !post.isLiked,
+                          likes: post.isLiked ? post.likes - 1 : post.likes + 1
+                        }
+                        : post
+                    )
+                  );
+                }}
+                onBookmark={id => {
+                  setFeedData(prev =>
+                    prev.map(post => (post.id === id ? { ...post, isBookmarked: !post.isBookmarked } : post))
+                  );
+                }}
+              />
+            </Reanimated.View>
           )}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}

@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import Reanimated, { FadeIn } from "react-native-reanimated";
 
 import { ColorsContext } from "@/context/colors-context";
 import { SuggestedPost } from "@/data/mock-feed";
@@ -35,7 +36,11 @@ export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {isLoading
           ? Array.from({ length: SHIMMER_COUNT }).map((_, i) => <SuggestedShimmerCard key={i} />)
-          : posts.map((post) => <SuggestedPostCard key={post.id} post={post} />)}
+          : posts.map((post) => (
+              <Reanimated.View key={post.id} entering={FadeIn.duration(400)}>
+                <SuggestedPostCard post={post} />
+              </Reanimated.View>
+            ))}
       </ScrollView>
     </View>
   );
