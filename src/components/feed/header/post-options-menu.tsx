@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Text, TouchableOpacity, Modal, Pressable, Alert, Share, Dimensions } from "react-native";
+import { Text, TouchableOpacity, Modal, Pressable, Alert, Share, Dimensions, StyleSheet } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
@@ -101,52 +101,29 @@ export const PostOptionsMenu = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable
-        style={{
-          flex: 1,
-          backgroundColor: "rgba(0,0,0,0.3)",
-        }}
-        onPress={onClose}
-      >
+      <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable
-          style={{
-            position: "absolute",
-            top: popoverTop,
-            left: popoverLeft,
-            width: POPOVER_WIDTH,
-            backgroundColor: colors.cardBackground,
-            borderRadius: 12,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.25,
-            shadowRadius: 12,
-            elevation: 8,
-            overflow: "hidden",
-          }}
+          style={[
+            styles.popover,
+            shadowStyles.popoverShadow,
+            { top: popoverTop, left: popoverLeft, backgroundColor: colors.cardBackground },
+          ]}
           onPress={(e) => e.stopPropagation()}
         >
           {menuOptions.map((option, index) => (
             <TouchableOpacity
               key={option.label}
               onPress={option.onPress}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingVertical: 14,
-                paddingHorizontal: 16,
-                gap: 12,
-                borderBottomWidth: index < menuOptions.length - 1 ? 0.5 : 0,
-                borderBottomColor: colors.icon + "20",
-              }}
+              style={[
+                styles.menuItem,
+                {
+                  borderBottomWidth: index < menuOptions.length - 1 ? 0.5 : 0,
+                  borderBottomColor: colors.icon + "20",
+                },
+              ]}
             >
               <IconSymbol name={option.icon as any} size={18} color={option.destructive ? "#FF6B6B" : colors.text} />
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: option.destructive ? "#FF6B6B" : colors.text,
-                  flex: 1,
-                }}
-              >
+              <Text style={[styles.menuLabel, { color: option.destructive ? "#FF6B6B" : colors.text }]}>
                 {option.label}
               </Text>
             </TouchableOpacity>
@@ -156,3 +133,37 @@ export const PostOptionsMenu = ({
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+  },
+  popover: {
+    position: "absolute",
+    width: POPOVER_WIDTH,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  menuLabel: {
+    fontSize: 15,
+    flex: 1,
+  },
+});
+
+const shadowStyles = StyleSheet.create({
+  popoverShadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+});

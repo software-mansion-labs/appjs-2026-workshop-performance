@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
@@ -16,21 +16,14 @@ export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => 
   };
 
   return (
-    <View style={{ paddingVertical: 12 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          paddingHorizontal: 12,
-          marginBottom: 8,
-        }}
-      >
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>Suggested for you</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.text }]}>Suggested for you</Text>
         <TouchableOpacity onPress={openSuggestions}>
-          <Text style={{ fontSize: 14, fontWeight: "600", color: colors.tint }}>See All</Text>
+          <Text style={[styles.seeAll, { color: colors.tint }]}>See All</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12 }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {posts.map((post) => (
           <SuggestedPostCard key={post.id} post={post} />
         ))}
@@ -38,3 +31,26 @@ export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => 
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 12,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  seeAll: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  scrollContent: {
+    paddingHorizontal: 12,
+  },
+});

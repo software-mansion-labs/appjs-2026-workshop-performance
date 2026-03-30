@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 import { FeedComment } from "@/data/mock-feed";
 
@@ -14,10 +14,16 @@ export const CommentList = ({
   if (comments.length === 0) return null;
 
   return (
-    <View style={{ paddingTop: 4 }}>
+    <View style={styles.container}>
       {comments.map((comment) => (
         <CommentPreview key={comment.id} comment={comment} postId={postId} />
       ))}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 4,
+  },
+});

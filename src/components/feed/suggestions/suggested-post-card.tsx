@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
@@ -19,65 +19,32 @@ export const SuggestedPostCard = ({ post }: { post: SuggestedPost }) => {
   };
 
   return (
-    <View
-      style={{
-        width: 160,
-        marginRight: 8,
-        borderRadius: 8,
-        borderWidth: 0.5,
-        borderColor: colors.border,
-        overflow: "hidden",
-        backgroundColor: colors.cardBackground,
-      }}
-    >
+    <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.cardBackground }]}>
       <TouchableOpacity onPress={openPost}>
-        <Image source={{ uri: post.image }} style={{ width: 160, height: 160 }} resizeMode="cover" />
+        <Image source={{ uri: post.image }} style={styles.image} resizeMode="cover" />
       </TouchableOpacity>
-      <View style={{ padding: 8 }}>
-        <TouchableOpacity onPress={openProfile} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <Image source={{ uri: post.avatar }} style={{ width: 20, height: 20, borderRadius: 10 }} />
-          <Text
-            numberOfLines={1}
-            style={{
-              fontSize: 12,
-              fontWeight: "600",
-              color: colors.text,
-              flex: 1,
-            }}
-          >
+      <View style={styles.info}>
+        <TouchableOpacity onPress={openProfile} style={styles.userRow}>
+          <Image source={{ uri: post.avatar }} style={styles.avatar} />
+          <Text numberOfLines={1} style={[styles.username, { color: colors.text }]}>
             {post.username}
           </Text>
         </TouchableOpacity>
-        <Text
-          numberOfLines={2}
-          style={{
-            fontSize: 11,
-            color: colors.icon,
-            marginTop: 4,
-            lineHeight: 15,
-          }}
-        >
+        <Text numberOfLines={2} style={[styles.caption, { color: colors.icon }]}>
           {post.caption}
         </Text>
         <TouchableOpacity
           onPress={() => setIsFollowing(!isFollowing)}
-          style={{
-            marginTop: 6,
-            backgroundColor: isFollowing ? colors.background : colors.tint,
-            borderRadius: 6,
-            paddingVertical: 4,
-            alignItems: "center",
-            borderWidth: isFollowing ? 1 : 0,
-            borderColor: colors.icon + "40",
-          }}
+          style={[
+            styles.followButton,
+            {
+              backgroundColor: isFollowing ? colors.background : colors.tint,
+              borderWidth: isFollowing ? 1 : 0,
+              borderColor: colors.icon + "40",
+            },
+          ]}
         >
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: "600",
-              color: isFollowing ? colors.text : "#fff",
-            }}
-          >
+          <Text style={[styles.followText, { color: isFollowing ? colors.text : "#fff" }]}>
             {isFollowing ? "Following" : "Follow"}
           </Text>
         </TouchableOpacity>
@@ -85,3 +52,50 @@ export const SuggestedPostCard = ({ post }: { post: SuggestedPost }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  card: {
+    width: 160,
+    marginRight: 8,
+    borderRadius: 8,
+    borderWidth: 0.5,
+    overflow: "hidden",
+  },
+  image: {
+    width: 160,
+    height: 160,
+  },
+  info: {
+    padding: 8,
+  },
+  userRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  avatar: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  },
+  username: {
+    fontSize: 12,
+    fontWeight: "600",
+    flex: 1,
+  },
+  caption: {
+    fontSize: 11,
+    marginTop: 4,
+    lineHeight: 15,
+  },
+  followButton: {
+    marginTop: 6,
+    borderRadius: 6,
+    paddingVertical: 4,
+    alignItems: "center",
+  },
+  followText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+});

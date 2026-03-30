@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Pressable, Share, GestureResponderEvent } from "react-native";
+import { View, Pressable, Share, GestureResponderEvent, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
@@ -100,12 +100,11 @@ export const FeedItem = ({
 
   return (
     <View
-      style={{
-        backgroundColor: colors.cardBackground,
-        marginBottom: 4,
-        borderBottomWidth: 0.5,
-        borderBottomColor: colors.border,
-      }}
+      style={[
+        styles.container,
+        shadowStyles.card,
+        { backgroundColor: colors.cardBackground, borderBottomColor: colors.border },
+      ]}
     >
       <PostHeader
         username={item.user.username}
@@ -165,3 +164,20 @@ export const FeedItem = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 4,
+    borderBottomWidth: 0.5,
+  },
+});
+
+const shadowStyles = StyleSheet.create({
+  card: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+});

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 import { ColorsContext } from "@/context/colors-context";
 
@@ -15,15 +15,7 @@ export const TagList = ({
   if (tags.length === 0) return null;
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        flexWrap: "wrap",
-        paddingHorizontal: 12,
-        paddingTop: 4,
-        gap: 4,
-      }}
-    >
+    <View style={styles.container}>
       {tags.map((tag, i) => (
         <TouchableOpacity key={`${tag}-${i}`} onPress={() => onTagPress(tag)}>
           <Text style={{ fontSize: 13, color: colors.tint }}>{tag}</Text>
@@ -32,3 +24,13 @@ export const TagList = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingHorizontal: 12,
+    paddingTop: 4,
+    gap: 4,
+  },
+});
