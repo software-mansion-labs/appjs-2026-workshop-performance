@@ -3,6 +3,7 @@ import { FlatList, View, Text, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FeedItem } from "@/components/feed/feed-item";
+import { ShimmerList } from "@/components/feed/shimmer/shimmer-list";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { ColorsContext } from "@/context/colors-context";
@@ -15,9 +16,14 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
 
   const [feedData, setFeedData] = useState<FeedPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setFeedData(MOCK_FEED);
+    const timer = setTimeout(() => {
+      setFeedData(MOCK_FEED);
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -106,10 +112,10 @@ export default function HomeScreen() {
                   prev.map(post =>
                     post.id === id
                       ? {
-                          ...post,
-                          isLiked: !post.isLiked,
-                          likes: post.isLiked ? post.likes - 1 : post.likes + 1
-                        }
+                        ...post,
+                        isLiked: !post.isLiked,
+                        likes: post.isLiked ? post.likes - 1 : post.likes + 1
+                      }
                       : post
                   )
                 );
@@ -128,6 +134,8 @@ export default function HomeScreen() {
           maxToRenderPerBatch={10}
           initialNumToRender={5}
           removeClippedSubviews={false}
+          ListEmptyComponent={isLoading ? <ShimmerList /> : null}
+
         />
       </View>
     </ColorsContext.Provider>

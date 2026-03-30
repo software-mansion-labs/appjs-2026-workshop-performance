@@ -1,8 +1,9 @@
 import { useState, useContext } from "react";
-import { ScrollView, View, Image, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
+import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
 
 import { ColorsContext } from "@/context/colors-context";
 import { FeedImage } from "@/data/mock-feed";
+import { CarouselImage } from "./carousel-image";
 
 const IMAGE_WIDTH = 400;
 
@@ -28,15 +29,7 @@ export const ImageCarousel = ({ images }: { images: FeedImage[] }) => {
         scrollEventThrottle={16}
       >
         {images.map((image, i) => (
-          <View key={`${image.uri}-${i}`} style={styles.imageClip}>
-            <Image
-              source={{ uri: image.uri }}
-              style={{ width: IMAGE_WIDTH, aspectRatio: image.aspectRatio }}
-            />
-            <View style={[styles.vignetteTop, shadowStyles.vignetteOverlay]} />
-            <View style={[styles.vignetteBottom, shadowStyles.vignetteOverlay]} />
-            <View style={[styles.cornerDecoration, shadowStyles.cornerDecorationShadow]} />
-          </View>
+          <CarouselImage key={`${image.uri}-${i}`} image={image} />
         ))}
       </ScrollView>
 
@@ -64,41 +57,6 @@ export const ImageCarousel = ({ images }: { images: FeedImage[] }) => {
 };
 
 const styles = StyleSheet.create({
-  imageClip: {
-    overflow: "hidden",
-  },
-  vignetteTop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 50,
-    backgroundColor: "rgba(0,0,0,0.06)",
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    overflow: "hidden",
-  },
-  vignetteBottom: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 50,
-    backgroundColor: "rgba(0,0,0,0.06)",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    overflow: "hidden",
-  },
-  cornerDecoration: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "rgba(255,255,255,0.12)",
-    overflow: "hidden",
-  },
   dotsContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -126,15 +84,6 @@ const shadowStyles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 6,
-  },
-  vignetteOverlay: {
-    // intentionally empty — the overlay effect is in base styles; shadow group kept for easy removal
-  },
-  cornerDecorationShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
   },
   activeDotShadow: {
     shadowColor: "#000",
