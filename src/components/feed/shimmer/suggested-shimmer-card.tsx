@@ -1,34 +1,23 @@
-import { useEffect, useRef, useContext } from "react";
-import { Animated, View, StyleSheet } from "react-native";
+import { useContext } from "react";
+import { View, StyleSheet } from "react-native";
 
 import { ColorsContext } from "@/context/colors-context";
+import { ShimmerView } from "./shimmer-view";
 
 export const SuggestedShimmerCard = () => {
   const colors = useContext(ColorsContext);
-  const opacity = useRef(new Animated.Value(0.25)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: false }),
-        Animated.timing(opacity, { toValue: 0.25, duration: 700, useNativeDriver: false }),
-      ])
-    ).start();
-  }, [opacity]);
-
-  const bg = colors.border;
 
   return (
     <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.cardBackground }]}>
-      <Animated.View style={[styles.image, shadowStyles.block, { backgroundColor: bg, opacity }]} />
+      <ShimmerView style={[styles.image, shadowStyles.block]} />
       <View style={styles.info}>
         <View style={styles.userRow}>
-          <Animated.View style={[styles.avatar, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-          <Animated.View style={[styles.usernameLine, shadowStyles.block, { backgroundColor: bg, opacity }]} />
+          <ShimmerView style={[styles.avatar, shadowStyles.block]} />
+          <ShimmerView style={[styles.usernameLine, shadowStyles.block]} />
         </View>
-        <Animated.View style={[styles.captionLine1, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-        <Animated.View style={[styles.captionLine2, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-        <Animated.View style={[styles.followButton, shadowStyles.block, { backgroundColor: bg, opacity }]} />
+        <ShimmerView style={[styles.captionLine1, shadowStyles.block]} />
+        <ShimmerView style={[styles.captionLine2, shadowStyles.block]} />
+        <ShimmerView style={[styles.followButton, shadowStyles.block]} />
       </View>
     </View>
   );
@@ -45,7 +34,6 @@ const styles = StyleSheet.create({
   image: {
     width: 160,
     height: 160,
-    overflow: "hidden",
   },
   info: {
     padding: 8,
@@ -60,31 +48,26 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    overflow: "hidden",
   },
   usernameLine: {
     height: 10,
     borderRadius: 5,
     flex: 1,
-    overflow: "hidden",
   },
   captionLine1: {
     height: 9,
     borderRadius: 4,
     width: "90%",
-    overflow: "hidden",
   },
   captionLine2: {
     height: 9,
     borderRadius: 4,
     width: "60%",
-    overflow: "hidden",
   },
   followButton: {
     height: 24,
     borderRadius: 6,
     marginTop: 2,
-    overflow: "hidden",
   },
 });
 

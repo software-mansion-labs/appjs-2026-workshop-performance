@@ -1,53 +1,34 @@
-import { useEffect, useRef, useContext } from "react";
-import { Animated, View, StyleSheet } from "react-native";
+import { useContext } from "react";
+import { View, StyleSheet } from "react-native";
 
 import { ColorsContext } from "@/context/colors-context";
+import { ShimmerView } from "./shimmer-view";
 
 export const ShimmerItem = () => {
   const colors = useContext(ColorsContext);
-  const opacity = useRef(new Animated.Value(0.25)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 750,
-          useNativeDriver: false,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0.25,
-          duration: 750,
-          useNativeDriver: false,
-        }),
-      ])
-    ).start();
-  }, [opacity]);
-
-  const bg = colors.border;
 
   return (
     <View style={[styles.container, shadowStyles.card, { backgroundColor: colors.cardBackground, borderBottomColor: colors.border }]}>
       <View style={styles.header}>
-        <Animated.View style={[styles.avatar, shadowStyles.block, { backgroundColor: bg, opacity }]} />
+        <ShimmerView style={[styles.avatar, shadowStyles.block]} />
         <View style={styles.headerLines}>
-          <Animated.View style={[styles.lineWide, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-          <Animated.View style={[styles.lineNarrow, shadowStyles.block, { backgroundColor: bg, opacity }]} />
+          <ShimmerView style={[styles.lineWide, shadowStyles.block]} />
+          <ShimmerView style={[styles.lineNarrow, shadowStyles.block]} />
         </View>
       </View>
 
-      <Animated.View style={[styles.image, shadowStyles.imageShadow, { backgroundColor: bg, opacity }]} />
+      <ShimmerView style={[styles.image, shadowStyles.imageShadow]} />
 
       <View style={styles.actions}>
-        <Animated.View style={[styles.actionCircle, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-        <Animated.View style={[styles.actionCircle, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-        <Animated.View style={[styles.actionCircle, shadowStyles.block, { backgroundColor: bg, opacity }]} />
+        <ShimmerView style={[styles.actionCircle, shadowStyles.block]} />
+        <ShimmerView style={[styles.actionCircle, shadowStyles.block]} />
+        <ShimmerView style={[styles.actionCircle, shadowStyles.block]} />
       </View>
 
       <View style={styles.caption}>
-        <Animated.View style={[styles.lineFull, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-        <Animated.View style={[styles.lineMid, shadowStyles.block, { backgroundColor: bg, opacity }]} />
-        <Animated.View style={[styles.lineShort, shadowStyles.block, { backgroundColor: bg, opacity }]} />
+        <ShimmerView style={[styles.lineFull, shadowStyles.block]} />
+        <ShimmerView style={[styles.lineMid, shadowStyles.block]} />
+        <ShimmerView style={[styles.lineShort, shadowStyles.block]} />
       </View>
     </View>
   );
@@ -70,7 +51,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    overflow: "hidden",
   },
   headerLines: {
     flex: 1,
@@ -80,18 +60,15 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     width: "50%",
-    overflow: "hidden",
   },
   lineNarrow: {
     height: 10,
     borderRadius: 5,
     width: "30%",
-    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: 300,
-    overflow: "hidden",
   },
   actions: {
     flexDirection: "row",
@@ -103,7 +80,6 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    overflow: "hidden",
   },
   caption: {
     paddingHorizontal: 12,
@@ -114,19 +90,16 @@ const styles = StyleSheet.create({
     height: 11,
     borderRadius: 5,
     width: "90%",
-    overflow: "hidden",
   },
   lineMid: {
     height: 11,
     borderRadius: 5,
     width: "65%",
-    overflow: "hidden",
   },
   lineShort: {
     height: 11,
     borderRadius: 5,
     width: "40%",
-    overflow: "hidden",
   },
 });
 

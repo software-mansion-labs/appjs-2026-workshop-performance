@@ -1,32 +1,18 @@
-import { useEffect, useRef, useContext } from "react";
-import { Animated, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { ColorsContext } from "@/context/colors-context";
+import { ShimmerView } from "./shimmer-view";
 
-export const ImageShimmer = () => {
-  const colors = useContext(ColorsContext);
-  const opacity = useRef(new Animated.Value(0.4)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 1, duration: 600, useNativeDriver: false }),
-        Animated.timing(opacity, { toValue: 0.4, duration: 600, useNativeDriver: false }),
-      ])
-    ).start();
-  }, [opacity]);
-
-  return (
-    <Animated.View
-      style={[styles.shimmer, shadowStyles.shimmerShadow, { backgroundColor: colors.border, opacity }]}
-    />
-  );
-};
+export const ImageShimmer = () => (
+  <ShimmerView style={[styles.shimmer, shadowStyles.shimmerShadow]} />
+);
 
 const styles = StyleSheet.create({
   shimmer: {
-    ...StyleSheet.absoluteFillObject,
-    overflow: "hidden",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
 
