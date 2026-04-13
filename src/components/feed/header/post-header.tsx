@@ -1,65 +1,89 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { View, Text, Image, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
 import { VerifiedIcon } from "@/components/feed/icons/verified-icon";
+import { PostOptionsMenu } from "./post-options-menu";
 
 export const PostHeader = ({
+  postId,
   username,
   avatar,
   isVerified,
   locationName,
-  onLocationPress,
-  onMenuPress,
+  onHidePost,
 }: {
+  postId: string;
   username: string;
   avatar: string;
   isVerified: boolean;
   locationName: string;
-  onLocationPress: () => void;
-  onMenuPress: (e: GestureResponderEvent) => void;
+  onHidePost: () => void;
 }) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | undefined>();
+
+  const openLocation = () => {
+    router.push(`/location/${encodeURIComponent(locationName)}`);
+  };
+
+  const handleMenuPress = (e: GestureResponderEvent) => {
+    const { pageX, pageY } = e.nativeEvent;
+    setMenuAnchor({ x: pageX, y: pageY });
+    setShowOptionsMenu(true);
+  };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.userRow}
-        onPress={() => router.push(`/profile/${username}`)}
-      >
-        <View style={shadowStyles.avatarShadow}>
-          <View style={styles.avatarClip}>
-            <Image source={{ uri: avatar }} style={styles.avatar} />
-            <View style={styles.avatarOverlay} />
-          </View>
-        </View>
-
-        <View>
-          <View style={styles.nameRow}>
-            <View style={shadowStyles.usernameShadow}>
-              <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{username}</Text>
+    <>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.userRow}
+          onPress={() => router.push(`/profile/${username}`)}
+        >
+          <View style={shadowStyles.avatarShadow}>
+            <View style={styles.avatarClip}>
+              <Image source={{ uri: avatar }} style={styles.avatar} />
+              <View style={styles.avatarOverlay} />
             </View>
-            {isVerified && (
-              <View style={shadowStyles.badgeShadow}>
-                <VerifiedIcon size={14} color="#3d2847" />
+          </View>
+
+          <View>
+            <View style={styles.nameRow}>
+              <View style={shadowStyles.usernameShadow}>
+                <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{username}</Text>
               </View>
-            )}
-          </View>
-          <TouchableOpacity onPress={onLocationPress}>
-            <View style={styles.locationRow}>
-              <View style={[styles.locationDot, shadowStyles.locationDotShadow, { backgroundColor: colors.tint + "50" }]} />
-              <Text style={{ fontSize: 11, color: colors.icon }}>{locationName}</Text>
+              {isVerified && (
+                <View style={shadowStyles.badgeShadow}>
+                  <VerifiedIcon size={14} color="#3d2847" />
+                </View>
+              )}
             </View>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
+            <TouchableOpacity onPress={openLocation}>
+              <View style={styles.locationRow}>
+                <View style={[styles.locationDot, shadowStyles.locationDotShadow, { backgroundColor: colors.tint + "50" }]} />
+                <Text style={{ fontSize: 11, color: colors.icon }}>{locationName}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={onMenuPress}>
-        <Text style={{ fontSize: 16, fontWeight: "bold", color: colors.text }}>•••</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity onPress={handleMenuPress}>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: colors.text }}>•••</Text>
+        </TouchableOpacity>
+      </View>
+
+      <PostOptionsMenu
+        visible={showOptionsMenu}
+        onClose={() => setShowOptionsMenu(false)}
+        postId={postId}
+        username={username}
+        onHidePost={onHidePost}
+        anchorPosition={menuAnchor}
+      />
+    </>
   );
 };
 

@@ -1,54 +1,98 @@
-import { useContext } from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { useContext, useState, useEffect } from "react";
+import { View, TouchableOpacity, Share, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
 import { HeartIcon } from "@/components/feed/icons/heart-icon";
 import { CommentIcon } from "@/components/feed/icons/comment-icon";
 import { ShareIcon } from "@/components/feed/icons/share-icon";
-import { BookmarkIcon } from "@/components/feed/icons/bookmark-icon";
+import { LikesCount } from "@/components/feed/content/likes-count";
 
 export const ActionButtons = ({
-  isLiked,
-  isBookmarked,
+  postId,
+  username,
+  initialLikes,
+  initialIsLiked,
   onLike,
-  onComment,
-  onShare,
-  onBookmark,
 }: {
-  isLiked: boolean;
-  isBookmarked: boolean;
-  onLike: () => void;
-  onComment: () => void;
-  onShare: () => void;
-  onBookmark: () => void;
+  postId: string;
+  username: string;
+  initialLikes: number;
+  initialIsLiked: boolean;
+  onLike: (id: string) => void;
 }) => {
   const colors = useContext(ColorsContext);
+  const router = useRouter();
+
+  // Redundant state synced from props
+  const [isLiked, setIsLiked] = useState(false);
+  const [displayLikes, setDisplayLikes] = useState(0);
+
+  useEffect(() => {
+    setIsLiked(initialIsLiked);
+  }, [initialIsLiked]);
+
+  useEffect(() => {
+    setDisplayLikes(initialLikes);
+  }, [initialLikes]);
+
+  const likesText = (() => {
+    let text = "";
+    for (let i = 0; i < 100; i++) {
+      text = displayLikes.toLocaleString();
+    }
+    return text + " likes";
+  })();
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setDisplayLikes(isLiked ? displayLikes - 1 : displayLikes + 1);
+    onLike(postId);
+  };
+
+  const handleComment = () => {
+    router.push(`/post/comments/${postId}`);
+  };
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Check out this post by @${username}: https://example.com/post/${postId}`,
+        url: `https://example.com/post/${postId}`,
+      });
+    } catch {
+      // User cancelled
+    }
+  };
+
+  const openLikes = () => {
+    router.push(`/likes/${postId}`);
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.leftButtons}>
-        <TouchableOpacity onPress={onLike} style={styles.iconButton}>
-          <View style={isLiked ? shadowStyles.likeActiveShadow : shadowStyles.iconShadow}>
-            <HeartIcon size={26} color={isLiked ? "#FF6B6B" : colors.text} filled={isLiked} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={onComment}>
-          <View style={shadowStyles.iconShadow}>
-            <CommentIcon size={24} color={colors.text} />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={onShare}>
-          <View style={shadowStyles.iconShadow}>
-            <ShareIcon size={24} color={colors.text} />
-          </View>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity onPress={onBookmark}>
-        <View style={shadowStyles.iconShadow}>
-          <BookmarkIcon size={24} color={colors.text} filled={isBookmarked} />
+    <>
+      <View style={styles.container}>
+        <View style={styles.leftButtons}>
+          <TouchableOpacity onPress={handleLike} style={styles.iconButton}>
+            <View style={isLiked ? shadowStyles.likeActiveShadow : shadowStyles.iconShadow}>
+              <HeartIcon size={26} color={isLiked ? "#FF6B6B" : colors.text} filled={isLiked} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={handleComment}>
+            <View style={shadowStyles.iconShadow}>
+              <CommentIcon size={24} color={colors.text} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
+            <View style={shadowStyles.iconShadow}>
+              <ShareIcon size={24} color={colors.text} />
+            </View>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-    </View>
+      </View>
+
+      <LikesCount likesText={likesText} onPress={openLikes} />
+    </>
   );
 };
 

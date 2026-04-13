@@ -2,13 +2,16 @@ import { useContext } from "react";
 import { Text, StyleSheet } from "react-native";
 
 import { ColorsContext } from "@/context/colors-context";
+import { formatRelativeTime } from "@/utils/feed-utils";
 
-export const PostTimestamp = ({ time }: { time: string }) => {
+export const PostTimestamp = ({ timestamp }: { timestamp: string }) => {
   const colors = useContext(ColorsContext);
+
+  const formattedTime = formatRelativeTime(timestamp);
 
   return (
     <Text style={[styles.text, { color: colors.icon }]}>
-      {time}
+      {formattedTime}
     </Text>
   );
 };

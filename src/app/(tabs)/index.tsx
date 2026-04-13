@@ -12,16 +12,9 @@ const HomeScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
-  const [feedData, setFeedData] = useState<FeedPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [feedData, setFeedData] = useState<FeedPost[]>(MOCK_FEED);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setFeedData(MOCK_FEED);
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+
 
   const handleLike = (id: string) => {
     setFeedData(prev =>
@@ -33,17 +26,12 @@ const HomeScreen = () => {
     );
   };
 
-  const handleBookmark = (id: string) => {
-    setFeedData(prev =>
-      prev.map(post => (post.id === id ? { ...post, isBookmarked: !post.isBookmarked } : post))
-    );
-  };
 
   return (
     <ColorsContext.Provider value={colors}>
       <View style={[styles.container, { backgroundColor: colors.cardBackground }]}>
         <FeedHeader />
-        <FeedList data={feedData} isLoading={isLoading} onLike={handleLike} onBookmark={handleBookmark} />
+        <FeedList data={feedData} onLike={handleLike} />
       </View>
     </ColorsContext.Provider>
   );
