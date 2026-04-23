@@ -26,15 +26,17 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Feed",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="rectangle.stack.fill" color={color} />
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />
         }}
       />
+
+
 
       <Tabs.Screen
         name="profile"
         options={{
           title: "Attendee",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.crop.circle.fill" color={color} />
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />
         }}
       />
     </Tabs>
