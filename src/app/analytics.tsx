@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, StyleSheet } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -360,38 +360,18 @@ export default function AnalyticsScreen() {
         </View>
 
         {/* Top engaged posts */}
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "700",
-            color: colors.text,
-            marginHorizontal: 16,
-            marginTop: 24,
-            marginBottom: 10,
-          }}
-        >
-          Top engaged posts
-        </Text>
+        <Text style={[topPostsStyles.heading, { color: colors.text }]}>Top engaged posts</Text>
 
         {topLoading ? (
-          <View style={{ paddingVertical: 24, alignItems: "center" }}>
+          <View style={topPostsStyles.loadingWrapper}>
             <ActivityIndicator color={colors.tint} />
           </View>
         ) : topPosts.length === 0 ? (
-          <Text
-            style={{
-              fontSize: 13,
-              color: colors.icon,
-              marginHorizontal: 16,
-              marginTop: 4,
-              marginBottom: 16,
-              lineHeight: 18,
-            }}
-          >
+          <Text style={[topPostsStyles.emptyState, { color: colors.icon }]}>
             No engagement data yet — scroll the feed to start collecting.
           </Text>
         ) : (
-          <View style={{ marginHorizontal: 16, gap: 8 }}>
+          <View style={topPostsStyles.list}>
             {topPosts.map(item => {
               const post = POSTS_BY_ID.get(item.postId);
               const username = post?.user.username ?? "unknown";
@@ -405,65 +385,38 @@ export default function AnalyticsScreen() {
                 <TouchableOpacity
                   key={item.postId}
                   onPress={() => router.push(`/post/${item.postId}`)}
-                  style={{
-                    flexDirection: "row",
-                    backgroundColor: colors.background,
-                    borderRadius: 10,
-                    padding: 10,
-                    gap: 12,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                  }}
+                  style={[
+                    topPostsStyles.row,
+                    { backgroundColor: colors.background, borderColor: colors.border },
+                  ]}
                 >
                   {thumbnail ? (
                     <Image
                       source={{ uri: thumbnail }}
-                      style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: 8,
-                        backgroundColor: colors.cardBackgroundAlt,
-                      }}
+                      style={[
+                        topPostsStyles.thumbnail,
+                        { backgroundColor: colors.cardBackgroundAlt },
+                      ]}
                     />
                   ) : (
                     <View
-                      style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: 8,
-                        backgroundColor: colors.cardBackgroundAlt,
-                      }}
+                      style={[
+                        topPostsStyles.thumbnail,
+                        { backgroundColor: colors.cardBackgroundAlt },
+                      ]}
                     />
                   )}
-                  <View style={{ flex: 1, justifyContent: "center" }}>
+                  <View style={topPostsStyles.body}>
                     <Text
-                      style={{
-                        fontSize: 14,
-                        fontWeight: "700",
-                        color: colors.text,
-                      }}
+                      style={[topPostsStyles.username, { color: colors.text }]}
                       numberOfLines={1}
                     >
                       @{username}
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        color: colors.icon,
-                        marginTop: 2,
-                      }}
-                      numberOfLines={1}
-                    >
+                    <Text style={[topPostsStyles.metaPrimary, { color: colors.icon }]} numberOfLines={1}>
                       {totalLabel} · {activityLabel}
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 11,
-                        color: colors.icon,
-                        marginTop: 2,
-                      }}
-                      numberOfLines={1}
-                    >
+                    <Text style={[topPostsStyles.metaSecondary, { color: colors.icon }]} numberOfLines={1}>
                       avg {avg} px/s · peak {peak} px/s
                     </Text>
                   </View>
@@ -476,3 +429,56 @@ export default function AnalyticsScreen() {
     </View>
   );
 }
+
+const topPostsStyles = StyleSheet.create({
+  heading: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 10,
+  },
+  loadingWrapper: {
+    paddingVertical: 24,
+    alignItems: "center",
+  },
+  emptyState: {
+    fontSize: 13,
+    marginHorizontal: 16,
+    marginTop: 4,
+    marginBottom: 16,
+    lineHeight: 18,
+  },
+  list: {
+    marginHorizontal: 16,
+    gap: 8,
+  },
+  row: {
+    flexDirection: "row",
+    borderRadius: 10,
+    padding: 10,
+    gap: 12,
+    borderWidth: 1,
+  },
+  thumbnail: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+  },
+  body: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  username: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  metaPrimary: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  metaSecondary: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+});

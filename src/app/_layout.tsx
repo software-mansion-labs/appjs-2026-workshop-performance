@@ -43,17 +43,17 @@ export default function RootLayout() {
     <ImmersiveProvider>
       <ThemeProvider value={colorScheme === "dark" ? AppJSDarkTheme : AppJSLightTheme}>
         <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="post/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="post/comments/[id]" options={{ headerShown: false, presentation: "modal" }} />
-        <Stack.Screen name="profile/[username]" options={{ headerShown: false }} />
-        <Stack.Screen name="hashtag/[tag]" options={{ headerShown: false }} />
-        <Stack.Screen name="location/[name]" options={{ headerShown: false }} />
-        <Stack.Screen name="followers/[username]" options={{ headerShown: false }} />
-        <Stack.Screen name="likes/[postId]" options={{ headerShown: false }} />
-        <Stack.Screen name="suggestions" options={{ headerShown: false }} />
-        <Stack.Screen name="analytics" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="post/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="post/comments/[id]" options={{ headerShown: false, presentation: "modal" }} />
+          <Stack.Screen name="profile/[username]" options={{ headerShown: false }} />
+          <Stack.Screen name="hashtag/[tag]" options={{ headerShown: false }} />
+          <Stack.Screen name="location/[name]" options={{ headerShown: false }} />
+          <Stack.Screen name="followers/[username]" options={{ headerShown: false }} />
+          <Stack.Screen name="likes/[postId]" options={{ headerShown: false }} />
+          <Stack.Screen name="suggestions" options={{ headerShown: false }} />
+          <Stack.Screen name="analytics" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

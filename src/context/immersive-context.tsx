@@ -52,7 +52,26 @@ export const useImmersive = () => {
   return ctx;
 };
 
-/** Caller's `reaction` must start with `"worklet";` — babel plugin doesn't auto-workletize callbacks passed through custom hooks. */
+/**
+ * Subscribe to immersive flag changes from a worklet callback.
+ *
+ * Caller's `reaction` MUST start with `"worklet";` — Reanimated's babel plugin
+ * doesn't auto-workletize callbacks passed through custom hooks.
+ *
+ * **Stale-closure caveat**: `useAnimatedReaction` captures `reaction` once when
+ * this hook runs (effectively on the first render of the consumer). If the
+ * caller passes a closure over component state/props, later updates won't be
+ * visible inside the worklet — it'll keep using the snapshot from first call.
+ *
+ * Safe patterns:
+ *   - Module-stable callbacks (don't close over component state)
+ *   - Closures that read from refs / SharedValues (always read current via .value)
+ *
+ * Unsafe pattern:
+ *   - `useReactToImmersive(curr => { "worklet"; doSomething(stateVar); })`
+ *     where `stateVar` is a React state / prop that changes — `stateVar` will
+ *     be frozen at first-call value.
+ */
 export const useReactToImmersive = (
   reaction: (current: boolean, previous: boolean | null) => void,
 ) => {

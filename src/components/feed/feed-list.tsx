@@ -61,10 +61,6 @@ const FeedCell = ({ cellKey, children, style, onLayout, ...rest }: CellProps) =>
   );
 };
 
-// `Animated.FlatList` from Reanimated forbids CellRendererComponent (typed as
-// `never`); we wrap RN's FlatList ourselves to keep it — required for cheap
-// absolute-Y reading in the worklet-driven centered-post detection.
-// Generic function wrapper preserves `ItemT` inference at use site.
 const RawAnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 function AnimatedFlatList<T>(props: AnimatedProps<FlatListProps<T>>) {
   return <RawAnimatedFlatList {...(props as React.ComponentProps<typeof RawAnimatedFlatList>)} />;
@@ -121,9 +117,12 @@ export const FeedList = ({
     scheduleOnRN(recordScrollSample, ids[centeredIdx], velocity);
   });
 
-  const onListLayout = (e: LayoutChangeEvent) => {
-    setViewportHeight(e.nativeEvent.layout.height);
-  };
+  const onListLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      setViewportHeight(e.nativeEvent.layout.height);
+    },
+    [setViewportHeight],
+  );
 
   const viewabilityConfigRef = useRef({
     itemVisiblePercentThreshold: 50,
