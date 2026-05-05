@@ -4,16 +4,16 @@ import {
   FlatList,
   StyleSheet,
   View,
+  type FlatListProps,
   type LayoutChangeEvent,
   type StyleProp,
   type ViewStyle,
   type ViewToken,
 } from "react-native";
 import Animated, {
-  FadeIn,
-  LinearTransition,
   useAnimatedScrollHandler,
   useSharedValue,
+  type AnimatedProps,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 
@@ -61,10 +61,14 @@ const FeedCell = ({ cellKey, children, style, onLayout, ...rest }: CellProps) =>
   );
 };
 
-// Build our own animated wrapper so we get worklet-driven scroll updates
-// (UI thread, smooth) AND CellRendererComponent (Reanimated.FlatList strips it
-// during prop forwarding).
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+// `Animated.FlatList` from Reanimated forbids CellRendererComponent (typed as
+// `never`); we wrap RN's FlatList ourselves to keep it — required for cheap
+// absolute-Y reading in the worklet-driven centered-post detection.
+// Generic function wrapper preserves `ItemT` inference at use site.
+const RawAnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+function AnimatedFlatList<T>(props: AnimatedProps<FlatListProps<T>>) {
+  return <RawAnimatedFlatList {...(props as React.ComponentProps<typeof RawAnimatedFlatList>)} />;
+}
 
 export const FeedList = ({
   data,
@@ -157,20 +161,12 @@ export const FeedList = ({
     }, []),
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const FlatListWithLayoutAnim = AnimatedFlatList as any;
-
   return (
-    <FlatListWithLayoutAnim
+    <AnimatedFlatList
       data={data}
       CellRendererComponent={FeedCell}
-      itemLayoutAnimation={LinearTransition}
-      renderItem={({ item }: { item: FeedPost }) => (
-        <Animated.View entering={FadeIn.duration(400)}>
-          <FeedItem item={item} onLike={onLike} />
-        </Animated.View>
-      )}
-      keyExtractor={(item: FeedPost) => item.id}
+      renderItem={({ item }) => <FeedItem item={item} onLike={onLike} />}
+      keyExtractor={item => item.id}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.content}
       windowSize={21}
