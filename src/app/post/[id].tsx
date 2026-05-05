@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, memo, useMemo } from "react";
 import {
   View,
   Text,
@@ -20,16 +20,18 @@ import { ColorsContext } from "@/context/colors-context";
 import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatRelativeTime } from "@/utils/feed-utils";
+import { buildMentionSuggestions } from "@/utils/mention-utils";
 
 import { ImageCarousel } from "@/components/feed/content/image-carousel";
 import { PostOptionsMenu } from "@/components/feed/header/post-options-menu";
+import { findRelatedPosts } from "@/utils/related-posts";
 
 interface ReplyInfo {
   commentId: string;
   username: string;
 }
 
-function CommentItem({
+const CommentItem = memo(function CommentItem({
   comment,
   colors,
   onReply,
@@ -144,7 +146,7 @@ function CommentItem({
         ))}
     </View>
   );
-}
+});
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -175,6 +177,16 @@ export default function PostDetailScreen() {
     }
   }, [id]);
 
+  const handleProfilePress = useCallback((username: string) => {
+    router.push(`/profile/${username}`);
+  }, [router]);
+
+  // Expensive: scores every post in MOCK_FEED against the current post
+  // using Jaccard tag similarity, cosine TF vectors on captions and
+  // comments, Haversine geo-distance, and engagement metrics.
+  // Only recomputes when the post or comments change — not on every
+  // keystroke in the comment input.
+  const relatedPosts = post ? findRelatedPosts(post) : []
   const handleReply = useCallback((commentId: string, username: string) => {
     setReplyInfo({ commentId, username });
     setNewComment(`@${username} `);
@@ -186,6 +198,9 @@ export default function PostDetailScreen() {
 
     const commentText = replyInfo ? newComment.replace(`@${replyInfo.username} `, "") : newComment;
 
+    // Build mention suggestions for the comment context
+    const mentionSuggestions = buildMentionSuggestions(comments, commentText);
+
     const newCommentObj: FeedComment = {
       id: `new-comment-${Date.now()}`,
       username: "you",
@@ -194,6 +209,11 @@ export default function PostDetailScreen() {
       likes: 0,
       timestamp: "Just now",
       replyingTo: replyInfo?.username,
+      mentions: mentionSuggestions.slice(0, 5).map((s, i) => ({
+        username: s.username,
+        position: { start: i, end: i + s.username.length },
+        userId: s.username,
+      })),
       replies: []
     };
 
@@ -217,7 +237,7 @@ export default function PostDetailScreen() {
 
     setNewComment("");
     setReplyInfo(null);
-  }, [newComment, post, replyInfo]);
+  }, [newComment, post, replyInfo, comments]);
 
   const cancelReply = useCallback(() => {
     setReplyInfo(null);
@@ -439,7 +459,7 @@ export default function PostDetailScreen() {
               comment={item}
               colors={colors}
               onReply={handleReply}
-              onProfilePress={username => router.push(`/profile/${username}`)}
+              onProfilePress={handleProfilePress}
             />
           )}
           keyExtractor={item => item.id}
@@ -448,6 +468,50 @@ export default function PostDetailScreen() {
             <View style={{ padding: 20, alignItems: "center" }}>
               <Text style={{ color: colors.icon, fontSize: 14 }}>No comments yet. Be the first to comment!</Text>
             </View>
+          }
+          ListFooterComponent={
+            relatedPosts.length > 0 ? (
+              <View style={{ paddingTop: 16, borderTopWidth: 0.5, borderTopColor: colors.icon + "30" }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: colors.text,
+                    paddingHorizontal: 12,
+                    paddingBottom: 12
+                  }}
+                >
+                  You might also like
+                </Text>
+                <FlatList
+                  horizontal
+                  data={relatedPosts}
+                  keyExtractor={item => item.post.id}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 12, gap: 10 }}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => router.push(`/post/${item.post.id}`)}
+                      style={{ width: 140 }}
+                    >
+                      <Image
+                        source={{ uri: item.post.images[0]?.thumbnailUri || item.post.images[0]?.uri }}
+                        style={{ width: 140, height: 140, borderRadius: 8 }}
+                      />
+                      <Text
+                        numberOfLines={1}
+                        style={{ fontSize: 12, fontWeight: "600", color: colors.text, marginTop: 6 }}
+                      >
+                        {item.post.user.username}
+                      </Text>
+                      <Text numberOfLines={1} style={{ fontSize: 11, color: colors.icon, marginTop: 2 }}>
+                        {item.reasons.slice(0, 2).join(" · ")}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            ) : null
           }
         />
 

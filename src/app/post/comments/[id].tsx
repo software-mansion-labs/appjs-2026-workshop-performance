@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { View, Text, Image, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,13 +9,14 @@ import { ColorsContext } from "@/context/colors-context";
 import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatRelativeTime } from "@/utils/feed-utils";
+import { buildMentionSuggestions } from "@/utils/mention-utils";
 
 interface ReplyInfo {
   commentId: string;
   username: string;
 }
 
-function CommentItem({
+const CommentItem = memo(function CommentItem({
   comment,
   colors,
   onReply,
@@ -130,7 +131,7 @@ function CommentItem({
         ))}
     </View>
   );
-}
+});
 
 export default function CommentsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -153,6 +154,10 @@ export default function CommentsScreen() {
     }
   }, [id]);
 
+  const handleProfilePress = useCallback((username: string) => {
+    router.push(`/profile/${username}`);
+  }, [router]);
+
   const handleReply = useCallback((commentId: string, username: string) => {
     setReplyInfo({ commentId, username });
     setNewComment(`@${username} `);
@@ -164,6 +169,9 @@ export default function CommentsScreen() {
 
     const commentText = replyInfo ? newComment.replace(`@${replyInfo.username} `, "") : newComment;
 
+    // Build mention suggestions for the comment context
+    const mentionSuggestions = buildMentionSuggestions(comments, commentText);
+
     const newCommentObj: FeedComment = {
       id: `new-comment-${Date.now()}`,
       username: "you",
@@ -172,6 +180,11 @@ export default function CommentsScreen() {
       likes: 0,
       timestamp: "Just now",
       replyingTo: replyInfo?.username,
+      mentions: mentionSuggestions.slice(0, 5).map((s, i) => ({
+        username: s.username,
+        position: { start: i, end: i + s.username.length },
+        userId: s.username,
+      })),
       replies: []
     };
 
@@ -195,7 +208,7 @@ export default function CommentsScreen() {
 
     setNewComment("");
     setReplyInfo(null);
-  }, [newComment, post, replyInfo]);
+  }, [newComment, post, replyInfo, comments]);
 
   const cancelReply = useCallback(() => {
     setReplyInfo(null);
@@ -302,7 +315,7 @@ export default function CommentsScreen() {
               comment={item}
               colors={colors}
               onReply={handleReply}
-              onProfilePress={username => router.push(`/profile/${username}`)}
+              onProfilePress={handleProfilePress}
             />
           )}
           keyExtractor={item => item.id}
