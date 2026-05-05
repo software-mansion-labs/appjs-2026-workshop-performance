@@ -8,7 +8,15 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "ios:palette-main": "cd ios && pod install && cd .. && expo run:ios",
+    "ios:palette-worker": "cd ios && USE_IMAGE_PALETTE_WORKER_THREAD=true pod install && cd .. && USE_IMAGE_PALETTE_WORKER_THREAD=true expo run:ios",
+    "android:palette-main": "expo run:android",
+    "android:palette-worker": "USE_IMAGE_PALETTE_WORKER_THREAD=true expo run:android",
+    "ios:palette-logs": "log stream --level info --predicate 'subsystem == \"com.imagepalette\" OR eventMessage CONTAINS \"[ImagePalette]\"' --style compact",
+    "android:palette-logs": "adb logcat -v color | grep --line-buffered -i 'imagepalette'",
+    "ios:engagement-logs": "log stream --level info --predicate 'subsystem == \"com.engagement\" OR eventMessage CONTAINS \"[Engagement]\"' --style compact",
+    "android:engagement-logs": "adb logcat -v color | grep --line-buffered -i 'engagement'"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -17,6 +25,7 @@
     "@react-navigation/native": "^7.1.8",
     "@shopify/react-native-skia": "2.4.18",
     "expo": "^55.0.2",
+    "expo-blur": "~55.0.14",
     "expo-clipboard": "~55.0.8",
     "expo-constants": "~55.0.7",
     "expo-font": "~55.0.4",

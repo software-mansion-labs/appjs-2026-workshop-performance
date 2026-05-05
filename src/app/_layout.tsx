@@ -3,9 +3,9 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
+import { ImmersiveProvider } from "@/context/immersive-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
-// App.js Conference custom themes
 const AppJSDarkTheme = {
   ...DarkTheme,
   colors: {
@@ -40,8 +40,9 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? AppJSDarkTheme : AppJSLightTheme}>
-      <Stack>
+    <ImmersiveProvider>
+      <ThemeProvider value={colorScheme === "dark" ? AppJSDarkTheme : AppJSLightTheme}>
+        <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="post/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="post/comments/[id]" options={{ headerShown: false, presentation: "modal" }} />
@@ -53,8 +54,9 @@ export default function RootLayout() {
         <Stack.Screen name="suggestions" options={{ headerShown: false }} />
         <Stack.Screen name="analytics" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal", title: "Modal" }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </ImmersiveProvider>
   );
 }

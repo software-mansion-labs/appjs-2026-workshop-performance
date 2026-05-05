@@ -42,6 +42,13 @@ app-example
 /ios
 /android
 
+# Native module build outputs (local Expo modules)
+modules/*/android/build/
+modules/*/android/.gradle/
+modules/*/android/.cxx/
+modules/*/ios/build/
+modules/*/ios/Pods/
+
 .vscode
 .cursor
 .claude

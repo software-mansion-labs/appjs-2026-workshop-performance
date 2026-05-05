@@ -1,0 +1,20 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'expo-module-gradle-plugin'
+
+group = 'expo.modules.imagepalette'
+version = '1.0.0'
+
+android {
+  namespace 'expo.modules.imagepalette'
+  defaultConfig {
+    versionCode 1
+    versionName "1.0.0"
+
+    buildConfigField "boolean", "USE_WORKER_THREAD",
+      (System.getenv("USE_IMAGE_PALETTE_WORKER_THREAD") == "true").toString()
+  }
+  buildFeatures {
+    buildConfig true
+  }
+}

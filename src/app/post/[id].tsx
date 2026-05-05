@@ -19,6 +19,7 @@ import { Colors } from "@/constants/theme";
 import { ColorsContext } from "@/context/colors-context";
 import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useDetailEngagementTracking } from "@/hooks/use-detail-engagement-tracking";
 import { formatRelativeTime } from "@/utils/feed-utils";
 
 import { ImageCarousel } from "@/components/feed/content/image-carousel";
@@ -163,6 +164,8 @@ export default function PostDetailScreen() {
   const [likesCount, setLikesCount] = useState(0);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | undefined>();
+
+  useDetailEngagementTracking(id);
 
   useEffect(() => {
     const foundPost = MOCK_FEED.find(p => p.id === id);

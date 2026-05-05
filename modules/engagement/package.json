@@ -1,0 +1,6 @@
+{
+  "name": "engagement",
+  "version": "1.0.0",
+  "description": "Local Expo module: per-post engagement stats (workshop)",
+  "main": "src/index.ts"
+}

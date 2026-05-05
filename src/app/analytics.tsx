@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
-import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import Engagement, { type PostEngagementAggregate } from "engagement";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { PostAnalyticsChart } from "@/components/analytics/PostAnalyticsChart";
@@ -9,6 +11,44 @@ import { SVGRenderer, SkiaRenderer } from "@/components/analytics/renderers";
 import { Colors } from "@/constants/theme";
 import { MOCK_FEED } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+
+const ACTIVITY_LABELS: Record<keyof PostEngagementAggregate["activityBreakdown"], string> = {
+  stationary: "stationary",
+  walking: "walking",
+  running: "running",
+  automotive: "in transit",
+  cycling: "cycling",
+  unknown: "unknown",
+};
+
+const formatDuration = (totalMs: number): string => {
+  const totalSeconds = Math.max(0, Math.floor(totalMs / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
+};
+
+const dominantActivity = (
+  breakdown: PostEngagementAggregate["activityBreakdown"],
+): string => {
+  const entries = Object.entries(breakdown) as [
+    keyof PostEngagementAggregate["activityBreakdown"],
+    number,
+  ][];
+  let topKey: keyof PostEngagementAggregate["activityBreakdown"] | null = null;
+  let topVal = 0;
+  for (const [key, value] of entries) {
+    if (value > topVal) {
+      topVal = value;
+      topKey = key;
+    }
+  }
+  if (!topKey || topVal === 0) return "no activity data";
+  return `mostly ${ACTIVITY_LABELS[topKey]}`;
+};
 
 // Unique users from the feed
 const USERS = (() => {
@@ -19,6 +59,8 @@ const USERS = (() => {
     return true;
   }).slice(0, 20);
 })();
+
+const POSTS_BY_ID = new Map(MOCK_FEED.map(p => [p.id, p]));
 
 type Renderer = "svg" | "skia";
 type DataSeries = "likes" | "comments" | "shares";
@@ -41,6 +83,32 @@ export default function AnalyticsScreen() {
     new Set<DataSeries>(["likes", "comments", "shares"])
   );
   const [dataPoints, setDataPoints] = useState(365);
+
+  const [topPosts, setTopPosts] = useState<PostEngagementAggregate[]>([]);
+  const [topLoading, setTopLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      setTopLoading(true);
+      Engagement.getTopPosts(5)
+        .then(top => {
+          if (!cancelled) {
+            setTopPosts(top);
+            setTopLoading(false);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setTopPosts([]);
+            setTopLoading(false);
+          }
+        });
+      return () => {
+        cancelled = true;
+      };
+    }, []),
+  );
 
   const selectedPost = USERS[selectedUserIndex];
 
@@ -290,6 +358,120 @@ export default function AnalyticsScreen() {
             days={dataPoints}
           />
         </View>
+
+        {/* Top engaged posts */}
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: "700",
+            color: colors.text,
+            marginHorizontal: 16,
+            marginTop: 24,
+            marginBottom: 10,
+          }}
+        >
+          Top engaged posts
+        </Text>
+
+        {topLoading ? (
+          <View style={{ paddingVertical: 24, alignItems: "center" }}>
+            <ActivityIndicator color={colors.tint} />
+          </View>
+        ) : topPosts.length === 0 ? (
+          <Text
+            style={{
+              fontSize: 13,
+              color: colors.icon,
+              marginHorizontal: 16,
+              marginTop: 4,
+              marginBottom: 16,
+              lineHeight: 18,
+            }}
+          >
+            No engagement data yet — scroll the feed to start collecting.
+          </Text>
+        ) : (
+          <View style={{ marginHorizontal: 16, gap: 8 }}>
+            {topPosts.map(item => {
+              const post = POSTS_BY_ID.get(item.postId);
+              const username = post?.user.username ?? "unknown";
+              const thumbnail = post?.images[0]?.thumbnailUri ?? post?.images[0]?.uri;
+              const totalLabel = formatDuration(item.totalTimeMs);
+              const activityLabel = dominantActivity(item.activityBreakdown);
+              const avg = Math.round(item.avgScrollVelocity);
+              const peak = Math.round(item.peakScrollVelocity);
+
+              return (
+                <TouchableOpacity
+                  key={item.postId}
+                  onPress={() => router.push(`/post/${item.postId}`)}
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: colors.background,
+                    borderRadius: 10,
+                    padding: 10,
+                    gap: 12,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                  }}
+                >
+                  {thumbnail ? (
+                    <Image
+                      source={{ uri: thumbnail }}
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 8,
+                        backgroundColor: colors.cardBackgroundAlt,
+                      }}
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 8,
+                        backgroundColor: colors.cardBackgroundAlt,
+                      }}
+                    />
+                  )}
+                  <View style={{ flex: 1, justifyContent: "center" }}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: colors.text,
+                      }}
+                      numberOfLines={1}
+                    >
+                      @{username}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        color: colors.icon,
+                        marginTop: 2,
+                      }}
+                      numberOfLines={1}
+                    >
+                      {totalLabel} · {activityLabel}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        color: colors.icon,
+                        marginTop: 2,
+                      }}
+                      numberOfLines={1}
+                    >
+                      avg {avg} px/s · peak {peak} px/s
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
