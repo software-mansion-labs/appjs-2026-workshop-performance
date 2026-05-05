@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { View, Text, Image, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { CommentInput } from "@/components/feed/comment-input";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { ColorsContext } from "@/context/colors-context";
@@ -361,53 +362,17 @@ export default function CommentsScreen() {
         )}
 
         {/* Comment Input */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingHorizontal: 12,
-            paddingVertical: 10,
-            borderTopWidth: replyInfo ? 0 : 0.5,
-            borderTopColor: colors.border,
-            backgroundColor: colors.background,
-            paddingBottom: insets.bottom + 10
-          }}
-        >
-          <Image
-            source={{ uri: "https://i.pravatar.cc/150?img=68" }}
-            style={{ width: 36, height: 36, borderRadius: 18 }}
-          />
-          <TextInput
-            ref={inputRef}
-            style={{
-              flex: 1,
-              marginHorizontal: 12,
-              paddingVertical: 10,
-              paddingHorizontal: 14,
-              backgroundColor: colors.icon + "15",
-              borderRadius: 22,
-              color: colors.text,
-              fontSize: 14
-            }}
-            placeholder={replyInfo ? `Reply to @${replyInfo.username}...` : "Add a comment..."}
-            placeholderTextColor={colors.icon}
-            value={newComment}
-            onChangeText={setNewComment}
-            multiline
-            maxLength={500}
-          />
-          <TouchableOpacity onPress={handleAddComment} disabled={!newComment.trim()}>
-            <Text
-              style={{
-                color: newComment.trim() ? "#271c2d" : colors.icon,
-                fontWeight: "600",
-                fontSize: 14
-              }}
-            >
-              Post
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <CommentInput
+          ref={inputRef}
+          value={newComment}
+          onChangeText={setNewComment}
+          onSubmit={handleAddComment}
+          placeholder={replyInfo ? `Reply to @${replyInfo.username}...` : "Add a comment..."}
+          colors={colors}
+          comments={comments}
+          bottomInset={insets.bottom}
+          showTopBorder={!replyInfo}
+        />
       </KeyboardAvoidingView>
     </ColorsContext.Provider>
   );

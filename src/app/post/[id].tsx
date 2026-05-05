@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState, useEffect, useCallback, useRef, memo, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, memo } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatRelativeTime } from "@/utils/feed-utils";
 import { buildMentionSuggestions } from "@/utils/mention-utils";
 
+import { CommentInput } from "@/components/feed/comment-input";
 import { ImageCarousel } from "@/components/feed/content/image-carousel";
 import { PostOptionsMenu } from "@/components/feed/header/post-options-menu";
 import { findRelatedPosts } from "@/utils/related-posts";
@@ -539,53 +540,17 @@ export default function PostDetailScreen() {
         )}
 
         {/* Comment Input */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingHorizontal: 12,
-            paddingVertical: 10,
-            borderTopWidth: replyInfo ? 0 : 0.5,
-            borderTopColor: colors.border,
-            backgroundColor: colors.background,
-            paddingBottom: insets.bottom + 10
-          }}
-        >
-          <Image
-            source={{ uri: "https://i.pravatar.cc/150?img=68" }}
-            style={{ width: 32, height: 32, borderRadius: 16 }}
-          />
-          <TextInput
-            ref={inputRef}
-            style={{
-              flex: 1,
-              marginHorizontal: 12,
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              backgroundColor: colors.icon + "15",
-              borderRadius: 20,
-              color: colors.text,
-              fontSize: 14
-            }}
-            placeholder={replyInfo ? `Reply to @${replyInfo.username}...` : "Add a comment..."}
-            placeholderTextColor={colors.icon}
-            value={newComment}
-            onChangeText={setNewComment}
-            multiline
-            maxLength={500}
-          />
-          <TouchableOpacity onPress={handleAddComment} disabled={!newComment.trim()}>
-            <Text
-              style={{
-                color: newComment.trim() ? "#271c2d" : colors.icon,
-                fontWeight: "600",
-                fontSize: 14
-              }}
-            >
-              Post
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <CommentInput
+          ref={inputRef}
+          value={newComment}
+          onChangeText={setNewComment}
+          onSubmit={handleAddComment}
+          placeholder={replyInfo ? `Reply to @${replyInfo.username}...` : "Add a comment..."}
+          colors={colors}
+          comments={comments}
+          bottomInset={insets.bottom}
+          showTopBorder={!replyInfo}
+        />
       </KeyboardAvoidingView>
     </ColorsContext.Provider>
   );
