@@ -16,21 +16,6 @@ export interface Palette {
   swatches: Swatch[];
 }
 
-export const FALLBACK_GRID_WIDTH = 3;
-export const FALLBACK_GRID_HEIGHT = 3;
-
-const buildFallbackPalette = (): Palette => {
-  const swatches: Swatch[] = [];
-  for (let row = 0; row < FALLBACK_GRID_HEIGHT; row++) {
-    for (let col = 0; col < FALLBACK_GRID_WIDTH; col++) {
-      swatches.push({ row, col, r: 90, g: 95, b: 110, population: 1 });
-    }
-  }
-  return { gridWidth: FALLBACK_GRID_WIDTH, gridHeight: FALLBACK_GRID_HEIGHT, swatches };
-};
-
-export const FALLBACK_PALETTE: Palette = buildFallbackPalette();
-
 interface Layout {
   y: number;
   height: number;

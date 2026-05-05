@@ -21,7 +21,6 @@
     "@react-navigation/native": "^7.1.8",
     "@shopify/react-native-skia": "2.4.18",
     "expo": "^55.0.2",
-    "expo-blur": "~55.0.14",
     "expo-clipboard": "~55.0.8",
     "expo-constants": "~55.0.7",
     "expo-font": "~55.0.4",

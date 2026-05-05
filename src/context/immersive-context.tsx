@@ -1,11 +1,10 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 import {
   useAnimatedReaction,
   useSharedValue,
   withTiming,
   type SharedValue,
 } from "react-native-reanimated";
-import { scheduleOnRN } from "react-native-worklets";
 
 import {
   TRANSITION_EASING,
@@ -77,14 +76,4 @@ export const useReactToImmersive = (
 ) => {
   const { immersive } = useImmersive();
   useAnimatedReaction(() => immersive.value, reaction);
-};
-
-export const useImmersiveJSState = (): boolean => {
-  const { immersive } = useImmersive();
-  const [v, setV] = useState(false);
-  useAnimatedReaction(
-    () => immersive.value,
-    curr => scheduleOnRN(setV, curr),
-  );
-  return v;
 };

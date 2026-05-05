@@ -1,11 +1,9 @@
 import { useContext, useState } from "react";
-import { Pressable, StyleSheet, View, useColorScheme } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
-import Reanimated, { useAnimatedStyle } from "react-native-reanimated";
 
 import { useActivePost } from "@/context/active-post-context";
 import { ColorsContext } from "@/context/colors-context";
-import { useImmersive } from "@/context/immersive-context";
 import { FeedImage, FeedPost } from "@/data/mock-feed";
 import { useImagePalette } from "@/hooks/use-image-palette";
 
@@ -16,50 +14,11 @@ import { ImageCarousel } from "./content/image-carousel";
 import { PostCaption } from "./content/post-caption";
 import { PostTimestamp } from "./content/post-timestamp";
 import { TagList } from "./content/tag-list";
+import { AnimatedFrostedLayer, AnimatedTranslucentCardBg } from "./feed-immersive-layers";
 import { PostHeader } from "./header/post-header";
 import { SuggestedPostsSection } from "./suggestions/suggested-posts-section";
 
 const CARD_BORDER_RADIUS = 20;
-const CARD_OPACITY_IMMERSIVE = 0.2;
-const CARD_OPACITY_PLAIN = 1;
-const FROSTED_OPACITY_IMMERSIVE = 0.4;
-
-const FROSTED_TINT_DARK = "#281E32";
-const FROSTED_TINT_LIGHT = "#FFFFFF";
-
-const AnimatedTranslucentCardBg = ({ color }: { color: string }) => {
-  const { progress } = useImmersive();
-
-  const animStyle = useAnimatedStyle(() => ({
-    opacity: 1 - progress.value * (CARD_OPACITY_PLAIN - CARD_OPACITY_IMMERSIVE),
-  }));
-
-  return (
-    <Reanimated.View
-      style={[StyleSheet.absoluteFill, { backgroundColor: color }, animStyle]}
-      pointerEvents="none"
-    />
-  );
-};
-
-const AnimatedFrostedLayer = ({ tint }: { tint: "light" | "dark" }) => {
-  const { progress } = useImmersive();
-
-  const animStyle = useAnimatedStyle(() => ({
-    opacity: progress.value * FROSTED_OPACITY_IMMERSIVE,
-  }));
-
-  return (
-    <Reanimated.View
-      style={[
-        StyleSheet.absoluteFill,
-        { backgroundColor: tint === "dark" ? FROSTED_TINT_DARK : FROSTED_TINT_LIGHT },
-        animStyle,
-      ]}
-      pointerEvents="none"
-    />
-  );
-};
 
 const FeedItemImage = ({ postId, images }: { postId: string; images: FeedImage[] }) => {
   const { reportImageLayout } = useActivePost();
@@ -89,7 +48,6 @@ export const FeedItem = ({
   item: FeedPost;
   onLike: (id: string) => void;
 }) => {
-  const colorScheme = useColorScheme();
   const colors = useContext(ColorsContext);
   const [isHidden, setIsHidden] = useState(false);
 
@@ -101,7 +59,7 @@ export const FeedItem = ({
     <View style={styles.shadowWrapper}>
       <View style={styles.container}>
         <AnimatedTranslucentCardBg color={colors.cardBackground} />
-        <AnimatedFrostedLayer tint={colorScheme === "dark" ? "dark" : "light"} />
+        <AnimatedFrostedLayer />
 
         <PostHeader
           postId={item.id}

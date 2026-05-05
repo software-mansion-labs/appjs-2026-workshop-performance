@@ -131,7 +131,7 @@ export const FeedList = ({
   const viewableSetRef = useRef<Set<string>>(new Set());
   const focusedRef = useRef(false);
 
-  const onViewableItemsChanged = useCallback(({ changed }: { changed: ViewToken[] }) => {
+  const onViewableItemsChanged = useCallback(({ changed }: { changed: ViewToken<FeedPost>[] }) => {
     changed.forEach(token => {
       const id = token.key;
       if (!id) return;
