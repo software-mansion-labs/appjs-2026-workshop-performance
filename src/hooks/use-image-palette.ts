@@ -6,19 +6,6 @@ import ImagePalette from "image-palette";
 
 import { useActivePost, type Palette } from "@/context/active-post-context";
 import { useReactToImmersive } from "@/context/immersive-context";
-import precomputedPalettes from "@/data/precomputed-palettes.json";
-
-const USE_PRECOMPUTED_PALETTES = false;
-
-const PRECOMPUTED = precomputedPalettes as Record<string, Palette>;
-const PICSUM_RE = /picsum\.photos\/id\/(\d+)\/(\d+)\/(\d+)/;
-
-const paletteFromUri = (uri: string): Palette | null => {
-  const match = uri.match(PICSUM_RE);
-  if (!match) return null;
-  const [, id, w, h] = match;
-  return PRECOMPUTED[`${id}_${w}x${h}`] ?? null;
-};
 
 const fetchPaletteFromNative = async (uri: string): Promise<Palette | null> => {
   await Image.prefetch(uri);
@@ -39,9 +26,7 @@ export const useImagePalette = (postId: string, uri: string | undefined) => {
     if (doneRef.current || !uri) return;
     doneRef.current = true;
     try {
-      const palette = USE_PRECOMPUTED_PALETTES
-        ? paletteFromUri(uri)
-        : await fetchPaletteFromNative(uri);
+      const palette = await fetchPaletteFromNative(uri);
       if (palette) registerPalette(postId, palette);
     } catch (err) {
       doneRef.current = false;
@@ -51,7 +36,7 @@ export const useImagePalette = (postId: string, uri: string | undefined) => {
 
   useReactToImmersive(curr => {
     "worklet";
-    if (USE_PRECOMPUTED_PALETTES || curr) {
+    if (curr) {
       scheduleOnRN(fetchOnce);
     }
   });
