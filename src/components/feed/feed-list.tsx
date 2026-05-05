@@ -20,6 +20,7 @@ import { scheduleOnRN } from "react-native-worklets";
 import { FeedItem } from "@/components/feed/feed-item";
 import { useActivePost } from "@/context/active-post-context";
 import { FeedPost } from "@/data/mock-feed";
+import { findCenteredIndex } from "@/utils/feed-utils";
 
 import Engagement from "engagement";
 
@@ -110,21 +111,10 @@ export const FeedList = ({
     if (ids.length === 0) return;
 
     const viewCenter = event.contentOffset.y + vh / 2;
-    let centeredId: string | null = null;
-    let bestDist = Number.POSITIVE_INFINITY;
-    for (let i = 0; i < ids.length; i++) {
-      const card = cards[ids[i]];
-      if (!card) continue;
-      const mid = card.y + card.height / 2;
-      const dist = Math.abs(mid - viewCenter);
-      if (dist < bestDist) {
-        bestDist = dist;
-        centeredId = ids[i];
-      }
-    }
-    if (centeredId === null) return;
+    const centeredIdx = findCenteredIndex(ids, cards, viewCenter);
+    if (centeredIdx < 0) return;
 
-    scheduleOnRN(recordScrollSample, centeredId, velocity);
+    scheduleOnRN(recordScrollSample, ids[centeredIdx], velocity);
   });
 
   const onListLayout = (e: LayoutChangeEvent) => {

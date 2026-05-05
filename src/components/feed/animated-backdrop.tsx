@@ -12,6 +12,7 @@ import { scheduleOnRN } from "react-native-worklets";
 
 import { useActivePost } from "@/context/active-post-context";
 import { useImmersive } from "@/context/immersive-context";
+import { findCenteredIndex } from "@/utils/feed-utils";
 
 /**
  * Animated immersive backdrop.
@@ -141,25 +142,9 @@ export const AnimatedBackdrop = () => {
   // -1 if no posts are mounted or viewport not measured.
   const centeredIdx = useDerivedValue(() => {
     const ids = mountedIds.value;
-    const cards = cardLayouts.value;
-    const sy = scrollY.value;
     const vh = viewportHeight.value;
     if (vh <= 0 || ids.length === 0) return -1;
-
-    const viewCenter = sy + vh / 2;
-    let best = 0;
-    let bestDist = Number.POSITIVE_INFINITY;
-    for (let i = 0; i < ids.length; i++) {
-      const card = cards[ids[i]];
-      if (!card) continue;
-      const mid = card.y + card.height / 2;
-      const dist = Math.abs(mid - viewCenter);
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = i;
-      }
-    }
-    return best;
+    return findCenteredIndex(ids, cardLayouts.value, scrollY.value + vh / 2);
   });
 
   // Pre-computed static data for the up-to-3 visible posts (centered ± 1).
