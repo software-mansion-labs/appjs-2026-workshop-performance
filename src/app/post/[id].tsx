@@ -21,6 +21,7 @@ import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatRelativeTime } from "@/utils/feed-utils";
 import { buildMentionSuggestions } from "@/utils/mention-utils";
+import { detectSpam } from "@/utils/spam-detection";
 
 import { CommentInput } from "@/components/feed/comment-input";
 import { ImageCarousel } from "@/components/feed/content/image-carousel";
@@ -178,16 +179,12 @@ export default function PostDetailScreen() {
     }
   }, [id]);
 
-  const handleProfilePress = useCallback((username: string) => {
-    router.push(`/profile/${username}`);
-  }, [router]);
-
   // Expensive: scores every post in MOCK_FEED against the current post
   // using Jaccard tag similarity, cosine TF vectors on captions and
   // comments, Haversine geo-distance, and engagement metrics.
   // Only recomputes when the post or comments change — not on every
   // keystroke in the comment input.
-  const relatedPosts = []
+  const relatedPosts = post ? findRelatedPosts(post) : [];
   const handleReply = useCallback((commentId: string, username: string) => {
     setReplyInfo({ commentId, username });
     setNewComment(`@${username} `);
@@ -198,6 +195,13 @@ export default function PostDetailScreen() {
     if (!newComment.trim() || !post) return;
 
     const commentText = replyInfo ? newComment.replace(`@${replyInfo.username} `, "") : newComment;
+
+    // Run spam detection — blocks the JS thread
+    const { isSpam, maxSimilarity } = detectSpam(commentText, comments);
+    if (isSpam) {
+      console.warn(`[Spam] Comment blocked (similarity: ${maxSimilarity.toFixed(2)})`);
+      return;
+    }
 
     // Build mention suggestions for the comment context
     const mentionSuggestions = buildMentionSuggestions(comments, commentText);
@@ -213,7 +217,7 @@ export default function PostDetailScreen() {
       mentions: mentionSuggestions.slice(0, 5).map((s, i) => ({
         username: s.username,
         position: { start: i, end: i + s.username.length },
-        userId: s.username,
+        userId: s.username
       })),
       replies: []
     };
@@ -460,7 +464,9 @@ export default function PostDetailScreen() {
               comment={item}
               colors={colors}
               onReply={handleReply}
-              onProfilePress={handleProfilePress}
+              onProfilePress={(username: string) => {
+                router.push(`/profile/${username}`);
+              }}
             />
           )}
           keyExtractor={item => item.id}
@@ -491,10 +497,7 @@ export default function PostDetailScreen() {
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ paddingHorizontal: 12, gap: 10 }}
                   renderItem={({ item }) => (
-                    <TouchableOpacity
-                      onPress={() => router.push(`/post/${item.post.id}`)}
-                      style={{ width: 140 }}
-                    >
+                    <TouchableOpacity onPress={() => router.push(`/post/${item.post.id}`)} style={{ width: 140 }}>
                       <Image
                         source={{ uri: item.post.images[0]?.thumbnailUri || item.post.images[0]?.uri }}
                         style={{ width: 140, height: 140, borderRadius: 8 }}

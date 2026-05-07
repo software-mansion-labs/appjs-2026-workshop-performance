@@ -1312,7 +1312,10 @@ function generateMockFeed(count: number): FeedPost[] {
 
     const commentVariant = i % 100;
     let commentCount: number;
-    if (commentVariant < 10) {
+    if (i < 5) {
+      // First 5 posts are "viral" — lots of comments for a heavy thread
+      commentCount = 15 + (i * 5);
+    } else if (commentVariant < 10) {
       commentCount = 0;
     } else {
       commentCount = 1 + (i % 5);

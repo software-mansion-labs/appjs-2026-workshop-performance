@@ -5,22 +5,6 @@ import { Colors } from "@/constants/theme";
 import { FeedComment } from "@/data/mock-feed";
 import { buildMentionSuggestions } from "@/utils/mention-utils";
 
-/**
- * Artificially heavy render — burns CPU by computing a bunch of math
- * during render. Each suggestion chip runs this before painting.
- */
-function expensiveRenderWork(username: string): string {
-  let hash = 0;
-  for (let round = 0; round < 50_000; round++) {
-    for (let i = 0; i < username.length; i++) {
-      hash = Math.sin(hash + username.charCodeAt(i)) * 10000;
-      hash = Math.abs(hash - Math.cos(hash) * 5000);
-      hash = Math.sqrt(Math.abs(hash)) * Math.tan(hash / 100 + 1);
-    }
-  }
-  return username;
-}
-
 function MentionSuggestions({
   suggestions,
   colors,
@@ -30,13 +14,10 @@ function MentionSuggestions({
   colors: typeof Colors.light;
   onSelect: (username: string) => void;
 }) {
-  const ref = useRef(null);
-  ref.current = true;
   // Run expensive work synchronously for each chip during this
   // component's render — this blocks the JS thread.
   const chips = suggestions.slice(0, 8).map(item => {
-    console.log('Rendering chip for', item.username); // Debug log to see when each chip renders
-    const displayName = expensiveRenderWork(item.username);
+    const displayName = item.username;
     return { ...item, displayName };
   });
 
