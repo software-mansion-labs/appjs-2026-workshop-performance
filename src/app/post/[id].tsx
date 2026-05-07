@@ -187,7 +187,7 @@ export default function PostDetailScreen() {
   // comments, Haversine geo-distance, and engagement metrics.
   // Only recomputes when the post or comments change — not on every
   // keystroke in the comment input.
-  const relatedPosts = post ? findRelatedPosts(post) : []
+  const relatedPosts = []
   const handleReply = useCallback((commentId: string, username: string) => {
     setReplyInfo({ commentId, username });
     setNewComment(`@${username} `);
