@@ -9,8 +9,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
-  GestureResponderEvent,
-  Share
+  GestureResponderEvent
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,6 +22,9 @@ import { formatRelativeTime } from "@/utils/feed-utils";
 import { buildMentionSuggestions } from "@/utils/mention-utils";
 import { detectSpam } from "@/utils/spam-detection";
 
+import { LikeButton } from "@/components/feed/actions/like-button";
+import { ShareButton } from "@/components/feed/actions/share-button";
+import { BookmarkButton } from "@/components/feed/actions/bookmark-button";
 import { CommentInput } from "@/components/feed/comment-input";
 import { ImageCarousel } from "@/components/feed/content/image-carousel";
 import { PostOptionsMenu } from "@/components/feed/header/post-options-menu";
@@ -157,14 +159,14 @@ export default function PostDetailScreen() {
   const colors = Colors[colorScheme ?? "light"];
   const insets = useSafeAreaInsets();
   const inputRef = useRef<TextInput>(null);
+  const prevCommentsLengthRef = useRef(0);
 
   const [post, setPost] = useState<FeedPost | null>(null);
   const [comments, setComments] = useState<FeedComment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [shareCount, setShareCount] = useState(0);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | undefined>();
 
@@ -173,11 +175,14 @@ export default function PostDetailScreen() {
     if (foundPost) {
       setPost(foundPost);
       setComments(foundPost.comments);
-      setIsLiked(foundPost.isLiked);
-      setIsBookmarked(foundPost.isBookmarked);
       setLikesCount(foundPost.likes);
     }
   }, [id]);
+
+  // Track whether new comments were added since last render so we can
+  // flash a subtle indicator in the comments header.
+  const hasNewComments = comments.length > prevCommentsLengthRef.current;
+  prevCommentsLengthRef.current = comments.length;
 
   // Expensive: scores every post in MOCK_FEED against the current post
   // using Jaccard tag similarity, cosine TF vectors on captions and
@@ -185,6 +190,7 @@ export default function PostDetailScreen() {
   // Only recomputes when the post or comments change — not on every
   // keystroke in the comment input.
   const relatedPosts = post ? findRelatedPosts(post) : [];
+
   const handleReply = useCallback((commentId: string, username: string) => {
     setReplyInfo({ commentId, username });
     setNewComment(`@${username} `);
@@ -248,15 +254,6 @@ export default function PostDetailScreen() {
     setReplyInfo(null);
     setNewComment("");
   }, []);
-
-  const handleLike = useCallback(() => {
-    setIsLiked(!isLiked);
-    setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
-  }, [isLiked, likesCount]);
-
-  const handleBookmark = useCallback(() => {
-    setIsBookmarked(!isBookmarked);
-  }, [isBookmarked]);
 
   if (!post) {
     return (
@@ -344,39 +341,35 @@ export default function PostDetailScreen() {
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-          <TouchableOpacity onPress={handleLike} style={{ padding: 2 }}>
-            <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#FF6B6B" : colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{ padding: 2 }}
-            onPress={() =>
-              Share.share({
-                message: `Check out this post by @${post.user.username}: https://example.com/post/${post.id}`,
-                url: `https://example.com/post/${post.id}`
-              })
-            }
-          >
-            <IconSymbol name="paperplane" size={24} color={colors.text} />
-          </TouchableOpacity>
+          <LikeButton
+            initialIsLiked={post.isLiked}
+            initialLikesCount={post.likes}
+            colors={colors}
+            onLikesCountChange={(count) => setLikesCount(count)}
+          />
+          <ShareButton
+            postId={post.id}
+            username={post.user.username}
+            colors={colors}
+            onShareComplete={() => setShareCount(shareCount + 1)}
+          />
         </View>
-        <TouchableOpacity onPress={handleBookmark}>
-          <IconSymbol name={isBookmarked ? "bookmark.fill" : "bookmark"} size={24} color={colors.text} />
-        </TouchableOpacity>
+        <BookmarkButton initialIsBookmarked={post.isBookmarked} colors={colors} />
       </View>
 
-      {/* Likes */}
-      <TouchableOpacity onPress={() => router.push(`/likes/${post.id}`)}>
-        <Text
-          style={{
-            fontWeight: "600",
-            paddingHorizontal: 12,
-            fontSize: 14,
-            color: colors.text
-          }}
-        >
-          {likesCount.toLocaleString()} likes
-        </Text>
-      </TouchableOpacity>
+      {/* Likes & Shares */}
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 12 }}>
+        <TouchableOpacity onPress={() => router.push(`/likes/${post.id}`)}>
+          <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>
+            {likesCount.toLocaleString()} likes
+          </Text>
+        </TouchableOpacity>
+        {shareCount > 0 && (
+          <Text style={{ fontSize: 14, color: colors.icon }}>
+            · {shareCount} {shareCount === 1 ? "share" : "shares"}
+          </Text>
+        )}
+      </View>
 
       {/* Caption */}
       {post.caption.length > 0 && (
@@ -413,9 +406,23 @@ export default function PostDetailScreen() {
           paddingVertical: 12
         }}
       >
-        <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>
-          {comments.length === 1 ? "1 Comment" : `${comments.length} Comments`}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Text style={{ fontSize: 14, fontWeight: "600", color: colors.text }}>
+            {comments.length === 1 ? "1 Comment" : `${comments.length} Comments`}
+          </Text>
+          {hasNewComments && (
+            <View
+              style={{
+                backgroundColor: "#3d2847",
+                borderRadius: 4,
+                paddingHorizontal: 6,
+                paddingVertical: 2
+              }}
+            >
+              <Text style={{ fontSize: 10, fontWeight: "700", color: "#fff" }}>NEW</Text>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -458,6 +465,7 @@ export default function PostDetailScreen() {
         {/* Comments List */}
         <FlatList
           data={comments}
+          extraData={[likesCount, shareCount]}
           ListHeaderComponent={renderHeader}
           renderItem={({ item }) => (
             <CommentItem
