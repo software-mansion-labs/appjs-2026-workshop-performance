@@ -152,7 +152,7 @@ const CommentItem = memo(function CommentItem({
   );
 });
 
-export default function PostDetailScreen() {
+const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -566,3 +566,5 @@ export default function PostDetailScreen() {
     </ColorsContext.Provider>
   );
 }
+
+export default PostDetailScreen;
