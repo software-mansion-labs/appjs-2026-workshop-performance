@@ -43,10 +43,11 @@ const PostDetailScreen = () => {
   const inputRef = useRef<TextInput>(null);
   const prevCommentsLengthRef = useRef(0);
   const [post, setPost] = useState<FeedPost | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<FeedComment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null);
-  const [likesCount, setLikesCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
@@ -57,8 +58,9 @@ const PostDetailScreen = () => {
     const foundPost = MOCK_FEED.find(p => p.id === id);
     if (foundPost) {
       setPost(foundPost);
-      setComments(foundPost.comments);
+      setIsLiked(foundPost.isLiked);
       setLikesCount(foundPost.likes);
+      setComments(foundPost.comments);
     }
   }, [id]);
 
@@ -136,6 +138,14 @@ const PostDetailScreen = () => {
   const cancelReply = useCallback(() => {
     setReplyInfo(null);
     setNewComment("");
+  }, []);
+
+  const handleLike = useCallback(() => {
+    setIsLiked(prevIsLiked => {
+      const nextIsLiked = !prevIsLiked;
+      setLikesCount(prevLikesCount => prevLikesCount + (nextIsLiked ? 1 : -1));
+      return nextIsLiked;
+    });
   }, []);
 
   if (!post) {
@@ -224,12 +234,7 @@ const PostDetailScreen = () => {
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-          <LikeButton
-            initialIsLiked={post.isLiked}
-            initialLikesCount={post.likes}
-            colors={colors}
-            onLikesCountChange={(count) => setLikesCount(count)}
-          />
+          <LikeButton isLiked={isLiked} colors={colors} onPress={handleLike} />
           <ShareButton
             postId={post.id}
             username={post.user.username}
@@ -243,9 +248,7 @@ const PostDetailScreen = () => {
       {/* Likes & Shares */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 12 }}>
         <TouchableOpacity onPress={() => router.push(`/likes/${post.id}`)}>
-          <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>
-            {likesCount.toLocaleString()} likes
-          </Text>
+          <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{likesCount.toLocaleString()} likes</Text>
         </TouchableOpacity>
         {shareCount > 0 && (
           <Text style={{ fontSize: 14, color: colors.icon }}>
@@ -348,7 +351,7 @@ const PostDetailScreen = () => {
         {/* Comments List */}
         <FlatList
           data={comments}
-          extraData={[likesCount, shareCount]}
+          extraData={[isLiked, likesCount, shareCount]}
           ListHeaderComponent={renderHeader}
           renderItem={({ item }) => (
             <CommentItem
@@ -448,6 +451,6 @@ const PostDetailScreen = () => {
       </KeyboardAvoidingView>
     </ColorsContext.Provider>
   );
-}
+};
 
 export default PostDetailScreen;

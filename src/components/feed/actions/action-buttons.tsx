@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
 import { View, TouchableOpacity, Share, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -11,42 +11,28 @@ import { LikesCount } from "@/components/feed/content/likes-count";
 export const ActionButtons = ({
   postId,
   username,
-  initialLikes,
-  initialIsLiked,
-  onLike,
+  likes,
+  isLiked,
+  onLike
 }: {
   postId: string;
   username: string;
-  initialLikes: number;
-  initialIsLiked: boolean;
+  likes: number;
+  isLiked: boolean;
   onLike: (id: string) => void;
 }) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
 
-  // Redundant state synced from props
-  const [isLiked, setIsLiked] = useState(false);
-  const [displayLikes, setDisplayLikes] = useState(0);
-
-  useEffect(() => {
-    setIsLiked(initialIsLiked);
-  }, [initialIsLiked]);
-
-  useEffect(() => {
-    setDisplayLikes(initialLikes);
-  }, [initialLikes]);
-
   const likesText = (() => {
     let text = "";
     for (let i = 0; i < 100; i++) {
-      text = displayLikes.toLocaleString();
+      text = likes.toLocaleString();
     }
     return text + " likes";
   })();
 
   const handleLike = () => {
-    setIsLiked(!isLiked);
-    setDisplayLikes(isLiked ? displayLikes - 1 : displayLikes + 1);
     onLike(postId);
   };
 
@@ -58,7 +44,7 @@ export const ActionButtons = ({
     try {
       await Share.share({
         message: `Check out this post by @${username}: https://example.com/post/${postId}`,
-        url: `https://example.com/post/${postId}`,
+        url: `https://example.com/post/${postId}`
       });
     } catch {
       // User cancelled
@@ -102,16 +88,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 12,
-    paddingBottom: 8,
+    paddingBottom: 8
   },
   leftButtons: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
+    gap: 14
   },
   iconButton: {
-    padding: 2,
-  },
+    padding: 2
+  }
 });
 
 const shadowStyles = StyleSheet.create({
@@ -121,7 +107,7 @@ const shadowStyles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 3,
     borderRadius: 12,
-    overflow: "hidden",
+    overflow: "hidden"
   },
   likeActiveShadow: {
     shadowColor: "#FF6B6B",
@@ -129,6 +115,6 @@ const shadowStyles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
     borderRadius: 13,
-    overflow: "hidden",
-  },
+    overflow: "hidden"
+  }
 });

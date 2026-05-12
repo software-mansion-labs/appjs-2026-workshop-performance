@@ -15,13 +15,7 @@ import { TagList } from "./content/tag-list";
 import { PostHeader } from "./header/post-header";
 import { SuggestedPostsSection } from "./suggestions/suggested-posts-section";
 
-export const FeedItem = ({
-  item,
-  onLike,
-}: {
-  item: FeedPost;
-  onLike: (id: string) => void;
-}) => {
+export const FeedItem = ({ item, onLike }: { item: FeedPost; onLike: (id: string) => void }) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
   const [isHidden, setIsHidden] = useState(false);
@@ -35,7 +29,7 @@ export const FeedItem = ({
       style={[
         styles.container,
         shadowStyles.card,
-        { backgroundColor: colors.cardBackground, borderBottomColor: colors.border },
+        { backgroundColor: colors.cardBackground, borderBottomColor: colors.border }
       ]}
     >
       <PostHeader
@@ -54,8 +48,8 @@ export const FeedItem = ({
       <ActionButtons
         postId={item.id}
         username={item.user.username}
-        initialLikes={item.likes}
-        initialIsLiked={item.isLiked}
+        likes={item.likes}
+        isLiked={item.isLiked}
         onLike={onLike}
       />
 
@@ -77,8 +71,8 @@ export const FeedItem = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 4,
-    borderBottomWidth: 0.5,
-  },
+    borderBottomWidth: 0.5
+  }
 });
 
 const shadowStyles = StyleSheet.create({
@@ -87,6 +81,6 @@ const shadowStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
-    elevation: 4,
-  },
+    elevation: 4
+  }
 });
