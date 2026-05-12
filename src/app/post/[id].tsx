@@ -155,18 +155,17 @@ const CommentItem = memo(function CommentItem({
 const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
   const insets = useSafeAreaInsets();
   const inputRef = useRef<TextInput>(null);
   const prevCommentsLengthRef = useRef(0);
-
   const [post, setPost] = useState<FeedPost | null>(null);
   const [comments, setComments] = useState<FeedComment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null);
   const [likesCount, setLikesCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? "light"];
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<{ x: number; y: number } | undefined>();
 
