@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";

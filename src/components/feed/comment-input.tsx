@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useMemo, useRef } from "react";
+import { forwardRef, useCallback, useMemo } from "react";
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Image } from "react-native";
 
 import { Colors } from "@/constants/theme";
@@ -79,15 +79,8 @@ const CommentInput = forwardRef<TextInput, CommentInputProps>(function CommentIn
   { value, onChangeText, onSubmit, placeholder, colors, comments, bottomInset, showTopBorder },
   ref
 ) {
-
-  // Use immediate value to decide whether to SHOW suggestions (so
-  // the bar appears/disappears instantly), but the deferred value
-  // to compute WHICH suggestions (so the heavy chips lag behind).
   const isTypingMention = value.match(/@(\w*)$/) !== null;
 
-  // Expensive: scans 200 posts, flattens nested comments, builds user
-  // profiles, runs Levenshtein distance for each word pair. Uses the
-  // deferred value so typing is never blocked by this computation.
   const mentionSuggestions = useMemo(() => buildMentionSuggestions(comments, value), [comments, value]);
 
   const showSuggestions = isTypingMention && mentionSuggestions.length > 0;

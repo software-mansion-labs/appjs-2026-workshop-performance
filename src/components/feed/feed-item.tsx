@@ -41,13 +41,7 @@ const FeedItemImage = ({ postId, images }: { postId: string; images: FeedImage[]
   );
 };
 
-export const FeedItem = ({
-  item,
-  onLike,
-}: {
-  item: FeedPost;
-  onLike: (id: string) => void;
-}) => {
+export const FeedItem = ({ item, onLike }: { item: FeedPost; onLike: (id: string) => void }) => {
   const colors = useContext(ColorsContext);
   const [isHidden, setIsHidden] = useState(false);
 
@@ -75,8 +69,8 @@ export const FeedItem = ({
         <ActionButtons
           postId={item.id}
           username={item.user.username}
-          initialLikes={item.likes}
-          initialIsLiked={item.isLiked}
+          likes={item.likes}
+          isLiked={item.isLiked}
           onLike={onLike}
         />
 
@@ -90,7 +84,9 @@ export const FeedItem = ({
 
         <PostTimestamp timestamp={item.timestamp} />
 
-        {item.showSuggestions && item.suggestedPosts.length > 0 && <SuggestedPostsSection posts={item.suggestedPosts} />}
+        {item.showSuggestions && item.suggestedPosts.length > 0 && (
+          <SuggestedPostsSection posts={item.suggestedPosts} />
+        )}
       </View>
     </View>
   );
@@ -101,14 +97,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginBottom: 36,
     borderRadius: CARD_BORDER_RADIUS,
-    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)"
   },
   container: {
     borderRadius: CARD_BORDER_RADIUS,
     overflow: "hidden",
-    isolation: "isolate",
+    isolation: "isolate"
   },
   imageClip: {
-    overflow: "hidden",
-  },
+    overflow: "hidden"
+  }
 });
