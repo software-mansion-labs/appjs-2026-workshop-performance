@@ -31,7 +31,7 @@ export const PostDetailHeader = ({
   commentsCount,
   hasNewComments,
   onLike,
-  onShareComplete,
+  onShareComplete
 }: PostDetailHeaderProps) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
@@ -105,14 +105,21 @@ export const PostDetailHeader = ({
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
           <LikeButton isLiked={isLiked} colors={colors} onPress={onLike} />
-          <ShareButton postId={post.id} username={post.user.username} colors={colors} onShareComplete={onShareComplete} />
+          <ShareButton
+            postId={post.id}
+            username={post.user.username}
+            colors={colors}
+            onShareComplete={onShareComplete}
+          />
         </View>
         <BookmarkButton initialIsBookmarked={post.isBookmarked} colors={colors} />
       </View>
 
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 12 }}>
         <TouchableOpacity onPress={() => router.push(`/likes/${post.id}`)}>
-          <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{likesCount.toLocaleString()} likes</Text>
+          <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>
+            {likesCount.toLocaleString()} likes
+          </Text>
         </TouchableOpacity>
         {shareCount > 0 && (
           <Text style={{ fontSize: 14, color: colors.icon }}>
