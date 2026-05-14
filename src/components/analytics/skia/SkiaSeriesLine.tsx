@@ -1,5 +1,5 @@
 import { Path as SkiaPath, LinearGradient, vec } from "@shopify/react-native-skia";
-import { useDerivedValue } from "react-native-reanimated";
+import { useDerivedValue, type SharedValue } from "react-native-reanimated";
 
 import { PADDING, PLOT_H, type SeriesConfig, buildLinePath, buildAreaPath, buildStarsPath } from "../chart-utils";
 import type { AnimatedSeriesData } from "../use-chart-animation";

@@ -1,6 +1,6 @@
 import { Line, Text as SvgText, G } from "react-native-svg";
 
-import { CHART_HEIGHT, PADDING, PLOT_W, PLOT_H, getGridYs, getGridLabels, getXLabelIndices, formatLabel, measureText } from "../chart-utils";
+import { CHART_HEIGHT, PADDING, PLOT_W, PLOT_H, getGridYs, getGridLabels, getXLabelIndices, formatLabel, labelFont, measureText } from "../chart-utils";
 
 interface SvgGridProps {
   maxVal: number;

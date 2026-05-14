@@ -1,28 +1,13 @@
 import { useContext } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import Reanimated, {
-  interpolateColor,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import { View, Text, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { EngagementSettingsButton } from "@/components/feed/header/engagement-settings-menu";
 import { ColorsContext } from "@/context/colors-context";
-import { useImmersive } from "@/context/immersive-context";
 
 export const FeedHeader = () => {
   const colors = useContext(ColorsContext);
   const insets = useSafeAreaInsets();
-  const { progress, toggle } = useImmersive();
-
-  const buttonBgStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      progress.value,
-      [0, 1],
-      ["transparent", colors.text],
-    ),
-  }));
 
   return (
     <View
@@ -37,18 +22,10 @@ export const FeedHeader = () => {
     >
       <View style={styles.titleRow}>
         <Text style={[styles.title, { color: colors.text }]}>App.js</Text>
-        <Text style={[styles.star, { color: colors.text }]}>{"✱"}</Text>
+        <Text style={[styles.star, { color: colors.text }]}>{"\u2731"}</Text>
         <Text style={[styles.title, { color: colors.text }]}>Conf</Text>
       </View>
       <View style={styles.actions}>
-        <Pressable onPress={toggle} hitSlop={6}>
-          <Reanimated.View
-            style={[styles.toggleBadge, { borderColor: colors.text }, buttonBgStyle]}
-          >
-            <Text style={styles.toggleEmoji}>✨</Text>
-          </Reanimated.View>
-        </Pressable>
-        <EngagementSettingsButton />
         <View style={[styles.dateBadge, { borderColor: colors.text }]}>
           <IconSymbol name="calendar" size={14} color={colors.text} />
           <Text style={[styles.dateText, { color: colors.text }]}>27-29 May &apos;26</Text>
@@ -83,19 +60,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "row",
-    alignItems: "center",
     gap: 8,
-  },
-  toggleBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  toggleEmoji: {
-    fontSize: 14,
   },
   dateBadge: {
     borderWidth: 1.5,

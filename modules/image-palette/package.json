@@ -1,6 +1,0 @@
-{
-  "name": "image-palette",
-  "version": "1.0.0",
-  "description": "Local Expo module: dominant color palette extraction (workshop)",
-  "main": "src/index.ts"
-}

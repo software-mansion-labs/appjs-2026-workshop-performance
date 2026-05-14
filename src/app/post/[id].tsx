@@ -1,6 +1,15 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { View, Text, Image, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PostDetailHeader } from "@/components/feed/post-detail-header";
@@ -11,7 +20,6 @@ import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { buildMentionSuggestions } from "@/utils/mention-utils";
 import { detectSpam } from "@/utils/spam-detection";
-import { useDetailEngagementTracking } from "@/hooks/use-detail-engagement-tracking";
 
 import { CommentInput } from "@/components/feed/comment-input";
 import { CommentItem } from "@/components/feed/comments/comment-item";
@@ -38,10 +46,8 @@ const PostDetailScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
-  useDetailEngagementTracking(id);
-
   useEffect(() => {
-    const foundPost = MOCK_FEED.find(p => p.id === id);
+    const foundPost = MOCK_FEED.find((p) => p.id === id);
     if (foundPost) {
       setPost(foundPost);
       setIsLiked(foundPost.isLiked);
@@ -64,12 +70,16 @@ const PostDetailScreen = () => {
   const handleAddComment = useCallback(() => {
     if (!newComment.trim() || !post) return;
 
-    const commentText = replyInfo ? newComment.replace(`@${replyInfo.username} `, "") : newComment;
+    const commentText = replyInfo
+      ? newComment.replace(`@${replyInfo.username} `, "")
+      : newComment;
 
     // Run spam detection — blocks the JS thread
     const { isSpam, maxSimilarity } = detectSpam(commentText, comments);
     if (isSpam) {
-      console.warn(`[Spam] Comment blocked (similarity: ${maxSimilarity.toFixed(2)})`);
+      console.warn(
+        `[Spam] Comment blocked (similarity: ${maxSimilarity.toFixed(2)})`,
+      );
       return;
     }
 
@@ -87,26 +97,26 @@ const PostDetailScreen = () => {
       mentions: mentionSuggestions.slice(0, 5).map((s, i) => ({
         username: s.username,
         position: { start: i, end: i + s.username.length },
-        userId: s.username
+        userId: s.username,
       })),
-      replies: []
+      replies: [],
     };
 
     if (replyInfo) {
       // Add as reply to existing comment
-      setComments(prev =>
-        prev.map(comment => {
+      setComments((prev) =>
+        prev.map((comment) => {
           if (comment.id === replyInfo.commentId) {
             return {
               ...comment,
-              replies: [...(comment.replies || []), newCommentObj]
+              replies: [...(comment.replies || []), newCommentObj],
             };
           }
           return comment;
-        })
+        }),
       );
     } else {
-      setComments(prev => [newCommentObj, ...prev]);
+      setComments((prev) => [newCommentObj, ...prev]);
     }
 
     setNewComment("");
@@ -119,9 +129,11 @@ const PostDetailScreen = () => {
   }, []);
 
   const handleLike = useCallback(() => {
-    setIsLiked(prevIsLiked => {
+    setIsLiked((prevIsLiked) => {
       const nextIsLiked = !prevIsLiked;
-      setLikesCount(prevLikesCount => prevLikesCount + (nextIsLiked ? 1 : -1));
+      setLikesCount(
+        (prevLikesCount) => prevLikesCount + (nextIsLiked ? 1 : -1),
+      );
       return nextIsLiked;
     });
   }, []);
@@ -134,7 +146,7 @@ const PostDetailScreen = () => {
             flex: 1,
             backgroundColor: colors.cardBackground,
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <Text style={{ color: colors.text }}>Post not found</Text>
@@ -160,10 +172,13 @@ const PostDetailScreen = () => {
             paddingTop: insets.top,
             backgroundColor: colors.background,
             borderBottomWidth: 0.5,
-            borderBottomColor: colors.border
+            borderBottomColor: colors.border,
           }}
         >
-          <TouchableOpacity onPress={() => router.back()} style={{ padding: 4, marginRight: 16 }}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={{ padding: 4, marginRight: 16 }}
+          >
             <IconSymbol name="chevron.left" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text
@@ -171,7 +186,7 @@ const PostDetailScreen = () => {
               fontSize: 16,
               fontWeight: "600",
               color: colors.text,
-              flex: 1
+              flex: 1,
             }}
           >
             Post
@@ -191,7 +206,9 @@ const PostDetailScreen = () => {
               commentsCount={comments.length}
               hasNewComments={hasNewComments}
               onLike={handleLike}
-              onShareComplete={() => setShareCount(prevShareCount => prevShareCount + 1)}
+              onShareComplete={() =>
+                setShareCount((prevShareCount) => prevShareCount + 1)
+              }
             />
           }
           renderItem={({ item }) => (
@@ -204,23 +221,31 @@ const PostDetailScreen = () => {
               }}
             />
           )}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 20 }}
           ListEmptyComponent={
             <View style={{ padding: 20, alignItems: "center" }}>
-              <Text style={{ color: colors.icon, fontSize: 14 }}>No comments yet. Be the first to comment!</Text>
+              <Text style={{ color: colors.icon, fontSize: 14 }}>
+                No comments yet. Be the first to comment!
+              </Text>
             </View>
           }
           ListFooterComponent={
             relatedPosts.length > 0 ? (
-              <View style={{ paddingTop: 16, borderTopWidth: 0.5, borderTopColor: colors.icon + "30" }}>
+              <View
+                style={{
+                  paddingTop: 16,
+                  borderTopWidth: 0.5,
+                  borderTopColor: colors.icon + "30",
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 14,
                     fontWeight: "600",
                     color: colors.text,
                     paddingHorizontal: 12,
-                    paddingBottom: 12
+                    paddingBottom: 12,
                   }}
                 >
                   You might also like
@@ -228,22 +253,41 @@ const PostDetailScreen = () => {
                 <FlatList
                   horizontal
                   data={relatedPosts}
-                  keyExtractor={item => item.post.id}
+                  keyExtractor={(item) => item.post.id}
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ paddingHorizontal: 12, gap: 10 }}
                   renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.push(`/post/${item.post.id}`)} style={{ width: 140 }}>
+                    <TouchableOpacity
+                      onPress={() => router.push(`/post/${item.post.id}`)}
+                      style={{ width: 140 }}
+                    >
                       <Image
-                        source={{ uri: item.post.images[0]?.thumbnailUri || item.post.images[0]?.uri }}
+                        source={{
+                          uri:
+                            item.post.images[0]?.thumbnailUri ||
+                            item.post.images[0]?.uri,
+                        }}
                         style={{ width: 140, height: 140, borderRadius: 8 }}
                       />
                       <Text
                         numberOfLines={1}
-                        style={{ fontSize: 12, fontWeight: "600", color: colors.text, marginTop: 6 }}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          color: colors.text,
+                          marginTop: 6,
+                        }}
                       >
                         {item.post.user.username}
                       </Text>
-                      <Text numberOfLines={1} style={{ fontSize: 11, color: colors.icon, marginTop: 2 }}>
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 11,
+                          color: colors.icon,
+                          marginTop: 2,
+                        }}
+                      >
                         {item.reasons.slice(0, 2).join(" · ")}
                       </Text>
                     </TouchableOpacity>
@@ -265,11 +309,14 @@ const PostDetailScreen = () => {
               paddingVertical: 8,
               backgroundColor: colors.icon + "15",
               borderTopWidth: 0.5,
-              borderTopColor: colors.icon + "30"
+              borderTopColor: colors.icon + "30",
             }}
           >
             <Text style={{ fontSize: 13, color: colors.icon }}>
-              Replying to <Text style={{ color: colors.text, fontWeight: "600" }}>@{replyInfo.username}</Text>
+              Replying to{" "}
+              <Text style={{ color: colors.text, fontWeight: "600" }}>
+                @{replyInfo.username}
+              </Text>
             </Text>
             <TouchableOpacity onPress={cancelReply}>
               <IconSymbol name="xmark" size={18} color={colors.icon} />
@@ -283,7 +330,11 @@ const PostDetailScreen = () => {
           value={newComment}
           onChangeText={setNewComment}
           onSubmit={handleAddComment}
-          placeholder={replyInfo ? `Reply to @${replyInfo.username}...` : "Add a comment..."}
+          placeholder={
+            replyInfo
+              ? `Reply to @${replyInfo.username}...`
+              : "Add a comment..."
+          }
           colors={colors}
           comments={comments}
           bottomInset={insets.bottom}

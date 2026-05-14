@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import React from "react";
 
-import { AnimatedTabBar } from "@/components/feed/animated-tab-bar";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
@@ -12,7 +11,6 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      tabBar={tabBarProps => <AnimatedTabBar {...tabBarProps} />}
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,

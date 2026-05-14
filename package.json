@@ -8,11 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
-    "ios:palette-logs": "log stream --level info --predicate 'subsystem == \"com.imagepalette\" OR eventMessage CONTAINS \"[ImagePalette]\"' --style compact",
-    "android:palette-logs": "adb logcat -v color | grep --line-buffered -i 'imagepalette'",
-    "ios:engagement-logs": "log stream --level info --predicate 'subsystem == \"com.engagement\" OR eventMessage CONTAINS \"[Engagement]\"' --style compact",
-    "android:engagement-logs": "adb logcat -v color | grep --line-buffered -i 'engagement'"
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
