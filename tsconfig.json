@@ -5,6 +5,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "image-palette": [
+        "./modules/image-palette/src"
+      ],
+      "engagement": [
+        "./modules/engagement/src"
       ]
     }
   },
