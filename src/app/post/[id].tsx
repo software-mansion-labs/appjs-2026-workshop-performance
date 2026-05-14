@@ -11,6 +11,7 @@ import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { buildMentionSuggestions } from "@/utils/mention-utils";
 import { detectSpam } from "@/utils/spam-detection";
+import { useDetailEngagementTracking } from "@/hooks/use-detail-engagement-tracking";
 
 import { CommentInput } from "@/components/feed/comment-input";
 import { CommentItem } from "@/components/feed/comments/comment-item";
@@ -36,6 +37,8 @@ const PostDetailScreen = () => {
   const [shareCount, setShareCount] = useState(0);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
+
+  useDetailEngagementTracking(id);
 
   useEffect(() => {
     const foundPost = MOCK_FEED.find(p => p.id === id);

@@ -17,7 +17,7 @@ interface UserItem {
 }
 
 // Generate mock users based on feed data
-function generateUsers(username: string, type: "followers" | "following", count: number): UserItem[] {
+function generateUsers(type: "followers" | "following", count: number): UserItem[] {
   const uniqueUsers = new Map<string, UserItem>();
 
   // Gather unique users from feed
@@ -165,7 +165,7 @@ export default function FollowersScreen() {
   useEffect(() => {
     if (username) {
       const count = activeTab === "followers" ? 150 : 80;
-      setUsers(generateUsers(username, activeTab, count));
+      setUsers(generateUsers(activeTab, count));
     }
   }, [username, activeTab]);
 
