@@ -3,7 +3,7 @@ import { View, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
-import { FeedPost } from "@/data/mock-feed";
+import { FeedPostSlim } from "@/data/mock-feed";
 
 import { ActionButtons } from "./actions/action-buttons";
 import { CommentList } from "./comments/comment-list";
@@ -13,13 +13,12 @@ import { PostCaption } from "./content/post-caption";
 import { PostTimestamp } from "./content/post-timestamp";
 import { TagList } from "./content/tag-list";
 import { PostHeader } from "./header/post-header";
-import { SuggestedPostsSection } from "./suggestions/suggested-posts-section";
 
 export const FeedItem = ({
   item,
   onLike,
 }: {
-  item: FeedPost;
+  item: FeedPostSlim;
   onLike: (id: string) => void;
 }) => {
   const colors = useContext(ColorsContext);
@@ -71,10 +70,6 @@ export const FeedItem = ({
       <CommentList comments={item.comments} postId={item.id} />
 
       <PostTimestamp timestamp={item.timestamp} />
-
-      {item.showSuggestions && item.suggestedPosts.length > 0 && (
-        <SuggestedPostsSection posts={item.suggestedPosts} />
-      )}
     </View>
   );
 };

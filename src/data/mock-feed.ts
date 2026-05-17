@@ -1312,10 +1312,7 @@ function generateMockFeed(count: number): FeedPost[] {
 
     const commentVariant = i % 100;
     let commentCount: number;
-    if (i < 5) {
-      // First 5 posts are "viral" — lots of comments for a heavy thread
-      commentCount = 15 + i * 5;
-    } else if (commentVariant < 10) {
+    if (commentVariant < 10) {
       commentCount = 0;
     } else {
       commentCount = 1 + (i % 5);
@@ -1514,6 +1511,21 @@ function generateMockFeed(count: number): FeedPost[] {
 
 // Generate 5000 posts for realistic performance testing
 export const MOCK_FEED = generateMockFeed(5000);
+
+const HEAVY_COMMENTS_BY_POST_ID: Record<string, () => FeedComment[]> = {
+  "1": () => generateComments(0, 15),
+  "2": () => generateComments(1, 20),
+  "3": () => generateComments(2, 25),
+  "4": () => generateComments(3, 30),
+  "5": () => generateComments(4, 35),
+};
+
+export const findPostForDetails = (id: string): FeedPost | undefined => {
+  const post = MOCK_FEED.find((p) => p.id === id);
+  if (!post) return undefined;
+  const heavy = HEAVY_COMMENTS_BY_POST_ID[id];
+  return heavy ? { ...post, comments: heavy() } : post;
+};
 
 export interface FeedPostSlim {
   id: string;

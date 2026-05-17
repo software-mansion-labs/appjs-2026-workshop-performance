@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
-import { View, Text, Image, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
 import { VerifiedIcon } from "@/components/feed/icons/verified-icon";
+import { ImageWithShimmer } from "@/components/feed/shimmer/image-with-shimmer";
 import { PostOptionsMenu } from "./post-options-menu";
 
 export const PostHeader = ({
@@ -45,7 +46,7 @@ export const PostHeader = ({
         >
           <View style={shadowStyles.avatarShadow}>
             <View style={styles.avatarClip}>
-              <Image source={{ uri: avatar }} style={styles.avatar} />
+              <ImageWithShimmer source={{ uri: avatar }} style={styles.avatar} />
               <View style={styles.avatarOverlay} />
             </View>
           </View>
