@@ -55,7 +55,7 @@ export const FeedList = ({
             )}
           </Reanimated.View>
         )}
-        keyExtractor={(_item, index) => String(index)}
+        keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
         windowSize={21}
