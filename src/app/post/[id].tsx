@@ -16,7 +16,7 @@ import { PostDetailHeader } from "@/components/feed/post-detail-header";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { ColorsContext } from "@/context/colors-context";
-import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
+import { findPostForDetails, FeedPost, FeedComment } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { buildMentionSuggestions } from "@/utils/mention-utils";
 import { detectSpam } from "@/utils/spam-detection";
@@ -47,7 +47,7 @@ const PostDetailScreen = () => {
   const colors = Colors[colorScheme ?? "light"];
 
   useEffect(() => {
-    const foundPost = MOCK_FEED.find((p) => p.id === id);
+    const foundPost = findPostForDetails(id);
     if (foundPost) {
       setPost(foundPost);
       setIsLiked(foundPost.isLiked);
