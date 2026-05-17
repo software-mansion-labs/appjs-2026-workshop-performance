@@ -52,7 +52,7 @@ export const FeedList = ({
             <FeedItem item={item} onLike={onLike} />
           )
         )}
-        keyExtractor={(_item, index) => String(index)}
+        keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
         windowSize={21}
