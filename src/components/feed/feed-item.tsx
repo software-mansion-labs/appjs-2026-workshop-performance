@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, memo } from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
@@ -14,7 +14,7 @@ import { PostTimestamp } from "./content/post-timestamp";
 import { TagList } from "./content/tag-list";
 import { PostHeader } from "./header/post-header";
 
-export const FeedItem = ({
+export const FeedItem = memo(({
   item,
 }: {
   item: FeedPostSlim;
@@ -68,7 +68,9 @@ export const FeedItem = ({
       <PostTimestamp timestamp={item.timestamp} />
     </View>
   );
-};
+});
+
+FeedItem.displayName = "FeedItem";
 
 const styles = StyleSheet.create({
   container: {
