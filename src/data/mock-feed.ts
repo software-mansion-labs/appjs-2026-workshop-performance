@@ -1,5 +1,7 @@
 // Complex nested interfaces for realistic data weight
 
+export const DEFAULT_BLURHASH = "L6PZfSi_.AyE_3t7t7R**0o#DgR4";
+
 export interface UserBadge {
   id: string;
   name: string;

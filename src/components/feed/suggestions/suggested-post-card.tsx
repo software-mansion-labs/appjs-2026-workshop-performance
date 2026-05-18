@@ -1,10 +1,10 @@
 import { useState, useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
-import { ImageWithShimmer } from "@/components/feed/shimmer/image-with-shimmer";
-import { SuggestedPost } from "@/data/mock-feed";
+import { DEFAULT_BLURHASH, SuggestedPost } from "@/data/mock-feed";
 
 export const SuggestedPostCard = ({ post }: { post: SuggestedPost }) => {
   const colors = useContext(ColorsContext);
@@ -22,11 +22,21 @@ export const SuggestedPostCard = ({ post }: { post: SuggestedPost }) => {
   return (
     <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.cardBackground }]}>
       <TouchableOpacity onPress={openPost}>
-        <ImageWithShimmer source={{ uri: post.image }} style={styles.image} />
+        <Image
+          source={{ uri: post.image }}
+          placeholder={{ blurhash: DEFAULT_BLURHASH }}
+          contentFit="cover"
+          style={styles.image}
+        />
       </TouchableOpacity>
       <View style={styles.info}>
         <TouchableOpacity onPress={openProfile} style={styles.userRow}>
-          <ImageWithShimmer source={{ uri: post.avatar }} style={styles.avatar} />
+          <Image
+            source={{ uri: post.avatar }}
+            placeholder={{ blurhash: DEFAULT_BLURHASH }}
+            contentFit="cover"
+            style={styles.avatar}
+          />
           <Text numberOfLines={1} style={[styles.username, { color: colors.text }]}>
             {post.username}
           </Text>
