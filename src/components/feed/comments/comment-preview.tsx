@@ -4,8 +4,9 @@ import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { ImageWithShimmer } from "@/components/feed/shimmer/image-with-shimmer";
-import { FeedComment } from "@/data/mock-feed";
+import { Image } from "expo-image";
+
+import { DEFAULT_BLURHASH, FeedComment } from "@/data/mock-feed";
 import { formatRelativeTime } from "@/utils/feed-utils";
 
 export const CommentPreview = ({ comment, postId }: { comment: FeedComment; postId: string }) => {
@@ -27,7 +28,12 @@ export const CommentPreview = ({ comment, postId }: { comment: FeedComment; post
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={openProfile}>
-        <ImageWithShimmer source={{ uri: comment.avatar }} style={[styles.avatar, styles.avatarClip]} />
+        <Image
+          source={{ uri: comment.avatar }}
+          placeholder={{ blurhash: DEFAULT_BLURHASH }}
+          contentFit="cover"
+          style={[styles.avatar, styles.avatarClip]}
+        />
       </TouchableOpacity>
       <View style={styles.body}>
         <Text style={{ fontSize: 13, color: colors.text, lineHeight: 18 }}>
