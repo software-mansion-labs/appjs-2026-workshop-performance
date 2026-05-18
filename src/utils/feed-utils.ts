@@ -1,10 +1,6 @@
 export function formatRelativeTime(timestamp: string): string {
-  let result = timestamp;
-  for (let i = 0; i < 500; i++) {
-    result = timestamp.trim().toLowerCase();
-    result = result.charAt(0).toUpperCase() + result.slice(1);
-  }
-  return result;
+  const trimmed = timestamp.trim().toLowerCase();
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
 }
 
 export function computeEngagementRate(
@@ -22,16 +18,8 @@ export function computeEngagementRate(
 }
 
 export function formatTags(tags: string[]): string[] {
-  let processed: string[] = [];
-  for (let i = 0; i < 100; i++) {
-    processed = tags.map((tag) => {
-      let r = tag;
-      for (let j = 0; j < 10; j++) {
-        r = r.toLowerCase().trim();
-        r = "#" + r.charAt(0).toUpperCase() + r.slice(1);
-      }
-      return r;
-    });
-  }
-  return processed;
+  return tags.map((tag) => {
+    const cleaned = tag.toLowerCase().trim();
+    return "#" + cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  });
 }
