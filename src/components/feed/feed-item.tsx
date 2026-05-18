@@ -31,7 +31,6 @@ export const FeedItem = memo(({
     <View
       style={[
         styles.container,
-        shadowStyles.card,
         {
           backgroundColor: colors.cardBackground,
           borderBottomColor: colors.border,
@@ -77,15 +76,5 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 4,
     borderBottomWidth: 0.5,
-  },
-});
-
-const shadowStyles = StyleSheet.create({
-  card: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
   },
 });

@@ -27,9 +27,7 @@ export const CommentPreview = ({ comment, postId }: { comment: FeedComment; post
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={openProfile}>
-        <View style={shadowStyles.avatarShadow}>
-          <ImageWithShimmer source={{ uri: comment.avatar }} style={[styles.avatar, styles.avatarClip]} />
-        </View>
+        <ImageWithShimmer source={{ uri: comment.avatar }} style={[styles.avatar, styles.avatarClip]} />
       </TouchableOpacity>
       <View style={styles.body}>
         <Text style={{ fontSize: 13, color: colors.text, lineHeight: 18 }}>
@@ -53,9 +51,7 @@ export const CommentPreview = ({ comment, postId }: { comment: FeedComment; post
         }}
         style={styles.heartButton}
       >
-        <View style={isLiked ? shadowStyles.heartActiveShadow : shadowStyles.heartShadow}>
-          <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={12} color={isLiked ? "#FF6B6B" : colors.icon} />
-        </View>
+        <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={12} color={isLiked ? "#FF6B6B" : colors.icon} />
       </TouchableOpacity>
     </View>
   );
@@ -90,31 +86,5 @@ const styles = StyleSheet.create({
   },
   heartButton: {
     paddingTop: 4,
-  },
-});
-
-const shadowStyles = StyleSheet.create({
-  avatarShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  heartShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    borderRadius: 6,
-    overflow: "hidden",
-  },
-  heartActiveShadow: {
-    shadowColor: "#FF6B6B",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.4,
-    shadowRadius: 2,
-    borderRadius: 6,
-    overflow: "hidden",
   },
 });

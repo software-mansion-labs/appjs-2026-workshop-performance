@@ -20,7 +20,7 @@ export const ImageCarousel = ({ images }: { images: FeedImage[] }) => {
   };
 
   return (
-    <View style={shadowStyles.carouselShadow}>
+    <View>
       <ScrollView
         horizontal
         pagingEnabled
@@ -38,17 +38,13 @@ export const ImageCarousel = ({ images }: { images: FeedImage[] }) => {
           {images.map((_, i) => (
             <View
               key={`dot-${i}`}
-              style={i === activeIndex ? shadowStyles.activeDotShadow : shadowStyles.inactiveDotShadow}
-            >
-              <View
-                style={[
-                  styles.dot,
-                  i === activeIndex
-                    ? [styles.dotActive, { backgroundColor: colors.tint }]
-                    : { backgroundColor: colors.icon + "40" },
-                ]}
-              />
-            </View>
+              style={[
+                styles.dot,
+                i === activeIndex
+                  ? [styles.dotActive, { backgroundColor: colors.tint }]
+                  : { backgroundColor: colors.icon + "40" },
+              ]}
+            />
           ))}
         </View>
       )}
@@ -74,27 +70,5 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-  },
-});
-
-const shadowStyles = StyleSheet.create({
-  carouselShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  activeDotShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 3,
-  },
-  inactiveDotShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
   },
 });
