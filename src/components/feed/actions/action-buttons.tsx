@@ -3,9 +3,7 @@ import { View, TouchableOpacity, Share, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
-import { HeartIcon } from "@/components/feed/icons/heart-icon";
-import { CommentIcon } from "@/components/feed/icons/comment-icon";
-import { ShareIcon } from "@/components/feed/icons/share-icon";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { LikesCount } from "@/components/feed/content/likes-count";
 
 export const ActionButtons = ({
@@ -57,17 +55,17 @@ export const ActionButtons = ({
         <View style={styles.leftButtons}>
           <TouchableOpacity onPress={handleLike} style={styles.iconButton}>
             <View style={isLiked ? shadowStyles.likeActiveShadow : shadowStyles.iconShadow}>
-              <HeartIcon size={26} color={isLiked ? "#FF6B6B" : colors.text} filled={isLiked} />
+              <IconSymbol name={isLiked ? "heart.fill" : "heart"} size={26} color={isLiked ? "#FF6B6B" : colors.text} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={handleComment}>
             <View style={shadowStyles.iconShadow}>
-              <CommentIcon size={24} color={colors.text} />
+              <IconSymbol name="bubble.right" size={24} color={colors.text} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
             <View style={shadowStyles.iconShadow}>
-              <ShareIcon size={24} color={colors.text} />
+              <IconSymbol name="paperplane" size={24} color={colors.text} />
             </View>
           </TouchableOpacity>
         </View>

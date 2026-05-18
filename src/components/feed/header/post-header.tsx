@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet } from 
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
-import { VerifiedIcon } from "@/components/feed/icons/verified-icon";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ImageWithShimmer } from "@/components/feed/shimmer/image-with-shimmer";
 import { PostOptionsMenu } from "./post-options-menu";
 
@@ -58,7 +58,7 @@ export const PostHeader = ({
               </View>
               {isVerified && (
                 <View style={shadowStyles.badgeShadow}>
-                  <VerifiedIcon size={14} color="#3d2847" />
+                  <IconSymbol name="checkmark.seal.fill" size={14} color="#3d2847" />
                 </View>
               )}
             </View>
