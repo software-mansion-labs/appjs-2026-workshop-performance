@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import Reanimated, { FadeIn } from "react-native-reanimated";
 
 import { ColorsContext } from "@/context/colors-context";
 import { SuggestedPost } from "@/data/mock-feed";
@@ -26,9 +25,7 @@ export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => 
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {posts.map((post) => (
-          <Reanimated.View key={post.id} entering={FadeIn.duration(400)}>
-            <SuggestedPostCard post={post} />
-          </Reanimated.View>
+          <SuggestedPostCard key={post.id} post={post} />
         ))}
       </ScrollView>
     </View>

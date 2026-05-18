@@ -1,12 +1,12 @@
 import { useCallback, useRef, useState } from "react";
 import {
+  FlatList,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
   StyleSheet,
   View,
 } from "react-native";
-import Reanimated, { FadeIn, LinearTransition } from "react-native-reanimated";
 
 import { FeedItem } from "@/components/feed/feed-item";
 import { SuggestedPostsSection } from "@/components/feed/suggestions/suggested-posts-section";
@@ -22,13 +22,11 @@ export const FeedList = ({
   const [progress, setProgress] = useState(0);
 
   const renderItem = useCallback(({ item }: { item: FeedListItem }) => (
-    <Reanimated.View entering={FadeIn.duration(400)}>
-      {item.type === "suggestions" ? (
-        <SuggestedPostsSection posts={item.posts} />
-      ) : (
-        <FeedItem item={item} />
-      )}
-    </Reanimated.View>
+    item.type === "suggestions" ? (
+      <SuggestedPostsSection posts={item.posts} />
+    ) : (
+      <FeedItem item={item} />
+    )
   ), []);
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -51,9 +49,8 @@ export const FeedList = ({
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
       </View>
-      <Reanimated.FlatList
+      <FlatList
         data={data}
-        itemLayoutAnimation={LinearTransition}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
