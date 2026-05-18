@@ -786,7 +786,7 @@ function generateSuggestedPosts(postIndex: number): SuggestedPost[] {
       id: `suggested-${postIndex}-${i}`,
       username: usernames[userIdx],
       avatar: `https://i.pravatar.cc/150?img=${(userIdx % 70) + 1}`,
-      image: `https://picsum.photos/id/${picsumId}/1080/1080`,
+      image: `https://picsum.photos/id/${picsumId}/320/320`,
       caption:
         captions[(postIndex + i * 2) % captions.length].slice(0, 60) + "...",
       likes: Math.floor(Math.random() * 5000),
