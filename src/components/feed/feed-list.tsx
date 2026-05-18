@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   LayoutChangeEvent,
   NativeScrollEvent,
@@ -20,6 +20,16 @@ export const FeedList = ({
   const contentHeight = useRef(0);
   const layoutHeight = useRef(0);
   const [progress, setProgress] = useState(0);
+
+  const renderItem = useCallback(({ item }: { item: FeedListItem }) => (
+    <Reanimated.View entering={FadeIn.duration(400)}>
+      {item.type === "suggestions" ? (
+        <SuggestedPostsSection posts={item.posts} />
+      ) : (
+        <FeedItem item={item} />
+      )}
+    </Reanimated.View>
+  ), []);
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = e.nativeEvent.contentOffset.y;
@@ -44,15 +54,7 @@ export const FeedList = ({
       <Reanimated.FlatList
         data={data}
         itemLayoutAnimation={LinearTransition}
-        renderItem={({ item }) => (
-          <Reanimated.View entering={FadeIn.duration(400)}>
-            {item.type === "suggestions" ? (
-              <SuggestedPostsSection posts={item.posts} />
-            ) : (
-              <FeedItem item={item} />
-            )}
-          </Reanimated.View>
-        )}
+        renderItem={renderItem}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 
 import { FeedHeader } from "@/components/feed/feed-header";
@@ -11,7 +12,7 @@ const feedData = toSlimFeed(MOCK_FEED);
 
 const HomeScreen = () => {
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
+  const colors = useMemo(() => Colors[colorScheme ?? "light"], [colorScheme]);
 
   return (
     <ColorsContext.Provider value={colors}>
