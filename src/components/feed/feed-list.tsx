@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   FlatList,
   LayoutChangeEvent,
@@ -20,6 +20,14 @@ export const FeedList = ({
   const contentHeight = useRef(0);
   const layoutHeight = useRef(0);
   const [progress, setProgress] = useState(0);
+
+  const renderItem = useCallback(({ item }: { item: FeedListItem }) => (
+    item.type === "suggestions" ? (
+      <SuggestedPostsSection posts={item.posts} />
+    ) : (
+      <FeedItem item={item} />
+    )
+  ), []);
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = e.nativeEvent.contentOffset.y;
@@ -43,13 +51,7 @@ export const FeedList = ({
       </View>
       <FlatList
         data={data}
-        renderItem={({ item }) => (
-          item.type === "suggestions" ? (
-            <SuggestedPostsSection posts={item.posts} />
-          ) : (
-            <FeedItem item={item} />
-          )
-        )}
+        renderItem={renderItem}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
