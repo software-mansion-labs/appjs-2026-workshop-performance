@@ -22,7 +22,7 @@ export const SuggestedPostCard = ({ post }: { post: SuggestedPost }) => {
   return (
     <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.cardBackground }]}>
       <TouchableOpacity onPress={openPost}>
-        <ImageWithShimmer source={{ uri: post.image }} style={styles.image} resizeMode="cover" />
+        <ImageWithShimmer source={{ uri: post.image }} style={styles.image} />
       </TouchableOpacity>
       <View style={styles.info}>
         <TouchableOpacity onPress={openProfile} style={styles.userRow}>
