@@ -14,10 +14,8 @@ import { FeedListItem } from "@/data/mock-feed";
 
 export const FeedList = ({
   data,
-  onLike,
 }: {
   data: FeedListItem[];
-  onLike: (id: string) => void;
 }) => {
   const contentHeight = useRef(0);
   const layoutHeight = useRef(0);
@@ -51,7 +49,7 @@ export const FeedList = ({
             {item.type === "suggestions" ? (
               <SuggestedPostsSection posts={item.posts} />
             ) : (
-              <FeedItem item={item} onLike={onLike} />
+              <FeedItem item={item} />
             )}
           </Reanimated.View>
         )}
