@@ -1,12 +1,10 @@
-import { useCallback, useRef, useState } from "react";
-import {
-  FlatList,
-  LayoutChangeEvent,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleSheet,
-  View,
-} from "react-native";
+import { useCallback } from "react";
+import { StyleSheet, View } from "react-native";
+import Animated, {
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 
 import { FeedItem } from "@/components/feed/feed-item";
 import { SuggestedPostsSection } from "@/components/feed/suggestions/suggested-posts-section";
@@ -17,9 +15,7 @@ export const FeedList = ({
 }: {
   data: FeedListItem[];
 }) => {
-  const contentHeight = useRef(0);
-  const layoutHeight = useRef(0);
-  const [progress, setProgress] = useState(0);
+  const progress = useSharedValue(0);
 
   const renderItem = useCallback(({ item }: { item: FeedListItem }) => (
     item.type === "suggestions" ? (
@@ -29,36 +25,28 @@ export const FeedList = ({
     )
   ), []);
 
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const offset = e.nativeEvent.contentOffset.y;
-    const max = Math.max(1, contentHeight.current - layoutHeight.current);
-    const p = Math.min(1, Math.max(0, offset / max));
-    setProgress(p);
-  };
+  const scrollHandler = useAnimatedScrollHandler(e => {
+    const max = Math.max(1, e.contentSize.height - e.layoutMeasurement.height);
+    const p = e.contentOffset.y / max;
+    progress.value = Math.min(1, Math.max(0, p));
+  });
 
-  const handleContentSizeChange = (_w: number, h: number) => {
-    contentHeight.current = h;
-  };
-
-  const handleLayout = (e: LayoutChangeEvent) => {
-    layoutHeight.current = e.nativeEvent.layout.height;
-  };
+  const progressStyle = useAnimatedStyle(() => ({
+    width: `${progress.value * 100}%`,
+  }));
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+        <Animated.View style={[styles.progressFill, progressStyle]} />
       </View>
-      <FlatList
+      <Animated.FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        onContentSizeChange={handleContentSizeChange}
-        onLayout={handleLayout}
+        onScroll={scrollHandler}
       />
     </View>
   );
