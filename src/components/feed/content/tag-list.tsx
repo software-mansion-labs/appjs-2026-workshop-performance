@@ -1,3 +1,4 @@
+import { useMappingHelper } from "@shopify/flash-list";
 import { useContext, useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
@@ -12,6 +13,7 @@ export const TagList = ({
 }) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
+  const { getMappingKey } = useMappingHelper();
 
   const formattedTags = useMemo(() => formatTags(tags), [tags]);
 
@@ -25,7 +27,7 @@ export const TagList = ({
   return (
     <View style={styles.container}>
       {formattedTags.map((tag, i) => (
-        <TouchableOpacity key={`${tag}-${i}`} onPress={() => openHashtag(tag)}>
+        <TouchableOpacity key={getMappingKey(tag, i)} onPress={() => openHashtag(tag)}>
           <Text style={{ fontSize: 13, color: colors.tint }}>{tag}</Text>
         </TouchableOpacity>
       ))}

@@ -1,3 +1,4 @@
+import { useMappingHelper } from "@shopify/flash-list";
 import { useState, useContext } from "react";
 import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
 
@@ -10,6 +11,7 @@ const IMAGE_WIDTH = 400;
 export const ImageCarousel = ({ images }: { images: FeedImage[] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const colors = useContext(ColorsContext);
+  const { getMappingKey } = useMappingHelper();
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = e.nativeEvent.contentOffset.x;
@@ -29,15 +31,15 @@ export const ImageCarousel = ({ images }: { images: FeedImage[] }) => {
         scrollEventThrottle={16}
       >
         {images.map((image, i) => (
-          <CarouselImage key={`${image.uri}-${i}`} image={image} />
+          <CarouselImage key={getMappingKey(image.uri, i)} image={image} />
         ))}
       </ScrollView>
 
       {images.length > 1 && (
         <View style={styles.dotsContainer}>
-          {images.map((_, i) => (
+          {images.map((image, i) => (
             <View
-              key={`dot-${i}`}
+              key={getMappingKey(`dot-${image.uri}`, i)}
               style={[
                 styles.dot,
                 i === activeIndex
