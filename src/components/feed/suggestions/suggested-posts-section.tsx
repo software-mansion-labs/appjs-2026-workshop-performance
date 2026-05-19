@@ -1,3 +1,4 @@
+import { useMappingHelper } from "@shopify/flash-list";
 import { useContext } from "react";
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
@@ -10,6 +11,7 @@ import { SuggestedPostCard } from "./suggested-post-card";
 export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => {
   const colors = useContext(ColorsContext);
   const router = useRouter();
+  const { getMappingKey } = useMappingHelper();
 
   const openSuggestions = () => {
     router.push("/suggestions");
@@ -24,8 +26,8 @@ export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => 
         </TouchableOpacity>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {posts.map((post) => (
-          <SuggestedPostCard key={post.id} post={post} />
+        {posts.map((post, i) => (
+          <SuggestedPostCard key={getMappingKey(post.id, i)} post={post} />
         ))}
       </ScrollView>
     </View>
