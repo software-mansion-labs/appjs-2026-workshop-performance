@@ -3,12 +3,13 @@ import { useCallback, useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
+import { AnimatedFrostedLayer, AnimatedTranslucentCardBg } from "@/components/feed/feed-immersive-layers";
 import { ColorsContext } from "@/context/colors-context";
 import { SuggestedPost } from "@/data/mock-feed";
 
 import { SuggestedPostCard } from "./suggested-post-card";
 
-const CARD_HEIGHT = 252;
+const CARD_HEIGHT = 280;
 
 export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => {
   const colors = useContext(ColorsContext);
@@ -24,6 +25,8 @@ export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => 
 
   return (
     <View style={styles.container}>
+      <AnimatedTranslucentCardBg color={colors.cardBackground} />
+      <AnimatedFrostedLayer />
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>Suggested for you</Text>
         <TouchableOpacity onPress={openSuggestions}>
@@ -44,8 +47,15 @@ export const SuggestedPostsSection = ({ posts }: { posts: SuggestedPost[] }) => 
   );
 };
 
+const CARD_BORDER_RADIUS = 20;
+
 const styles = StyleSheet.create({
   container: {
+    marginHorizontal: 12,
+    marginBottom: 36,
+    borderRadius: CARD_BORDER_RADIUS,
+    overflow: "hidden",
+    isolation: "isolate",
     paddingVertical: 12,
   },
   header: {

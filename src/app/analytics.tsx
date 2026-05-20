@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
-import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, StyleSheet } from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import Engagement, { type PostEngagementAggregate } from "engagement";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { PostAnalyticsChart } from "@/components/analytics/PostAnalyticsChart";
@@ -9,6 +11,44 @@ import { SkiaRenderer } from "@/components/analytics/renderers";
 import { Colors } from "@/constants/theme";
 import { MOCK_FEED } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+
+const ACTIVITY_LABELS: Record<keyof PostEngagementAggregate["activityBreakdown"], string> = {
+  stationary: "stationary",
+  walking: "walking",
+  running: "running",
+  automotive: "in transit",
+  cycling: "cycling",
+  unknown: "unknown",
+};
+
+const formatDuration = (totalMs: number): string => {
+  const totalSeconds = Math.max(0, Math.floor(totalMs / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
+};
+
+const dominantActivity = (
+  breakdown: PostEngagementAggregate["activityBreakdown"],
+): string => {
+  const entries = Object.entries(breakdown) as [
+    keyof PostEngagementAggregate["activityBreakdown"],
+    number,
+  ][];
+  let topKey: keyof PostEngagementAggregate["activityBreakdown"] | null = null;
+  let topVal = 0;
+  for (const [key, value] of entries) {
+    if (value > topVal) {
+      topVal = value;
+      topKey = key;
+    }
+  }
+  if (!topKey || topVal === 0) return "no activity data";
+  return `mostly ${ACTIVITY_LABELS[topKey]}`;
+};
 
 // Unique users from the feed
 const USERS = (() => {
@@ -19,6 +59,8 @@ const USERS = (() => {
     return true;
   }).slice(0, 20);
 })();
+
+const POSTS_BY_ID = new Map(MOCK_FEED.map(p => [p.id, p]));
 
 type DataSeries = "likes" | "comments" | "shares";
 
@@ -39,6 +81,32 @@ export default function AnalyticsScreen() {
     new Set<DataSeries>(["likes", "comments", "shares"])
   );
   const [dataPoints, setDataPoints] = useState(365);
+
+  const [topPosts, setTopPosts] = useState<PostEngagementAggregate[]>([]);
+  const [topLoading, setTopLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      setTopLoading(true);
+      Engagement.getTopPosts(5)
+        .then(top => {
+          if (!cancelled) {
+            setTopPosts(top);
+            setTopLoading(false);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setTopPosts([]);
+            setTopLoading(false);
+          }
+        });
+      return () => {
+        cancelled = true;
+      };
+    }, []),
+  );
 
   const selectedPost = USERS[selectedUserIndex];
 
@@ -247,7 +315,127 @@ export default function AnalyticsScreen() {
             days={dataPoints}
           />
         </View>
+
+        {/* Top engaged posts */}
+        <Text style={[topPostsStyles.heading, { color: colors.text }]}>Top engaged posts</Text>
+
+        {topLoading ? (
+          <View style={topPostsStyles.loadingWrapper}>
+            <ActivityIndicator color={colors.tint} />
+          </View>
+        ) : topPosts.length === 0 ? (
+          <Text style={[topPostsStyles.emptyState, { color: colors.icon }]}>
+            No engagement data yet — scroll the feed to start collecting.
+          </Text>
+        ) : (
+          <View style={topPostsStyles.list}>
+            {topPosts.map(item => {
+              const post = POSTS_BY_ID.get(item.postId);
+              const username = post?.user.username ?? "unknown";
+              const thumbnail = post?.images[0]?.thumbnailUri ?? post?.images[0]?.uri;
+              const totalLabel = formatDuration(item.totalTimeMs);
+              const activityLabel = dominantActivity(item.activityBreakdown);
+              const avg = Math.round(item.avgScrollVelocity);
+              const peak = Math.round(item.peakScrollVelocity);
+
+              return (
+                <TouchableOpacity
+                  key={item.postId}
+                  onPress={() => router.push(`/post/${item.postId}`)}
+                  style={[
+                    topPostsStyles.row,
+                    { backgroundColor: colors.background, borderColor: colors.border },
+                  ]}
+                >
+                  {thumbnail ? (
+                    <Image
+                      source={{ uri: thumbnail }}
+                      style={[
+                        topPostsStyles.thumbnail,
+                        { backgroundColor: colors.cardBackgroundAlt },
+                      ]}
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        topPostsStyles.thumbnail,
+                        { backgroundColor: colors.cardBackgroundAlt },
+                      ]}
+                    />
+                  )}
+                  <View style={topPostsStyles.body}>
+                    <Text
+                      style={[topPostsStyles.username, { color: colors.text }]}
+                      numberOfLines={1}
+                    >
+                      @{username}
+                    </Text>
+                    <Text style={[topPostsStyles.metaPrimary, { color: colors.icon }]} numberOfLines={1}>
+                      {totalLabel} · {activityLabel}
+                    </Text>
+                    <Text style={[topPostsStyles.metaSecondary, { color: colors.icon }]} numberOfLines={1}>
+                      avg {avg} px/s · peak {peak} px/s
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
 }
+
+const topPostsStyles = StyleSheet.create({
+  heading: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 10,
+  },
+  loadingWrapper: {
+    paddingVertical: 24,
+    alignItems: "center",
+  },
+  emptyState: {
+    fontSize: 13,
+    marginHorizontal: 16,
+    marginTop: 4,
+    marginBottom: 16,
+    lineHeight: 18,
+  },
+  list: {
+    marginHorizontal: 16,
+    gap: 8,
+  },
+  row: {
+    flexDirection: "row",
+    borderRadius: 10,
+    padding: 10,
+    gap: 12,
+    borderWidth: 1,
+  },
+  thumbnail: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+  },
+  body: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  username: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  metaPrimary: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  metaSecondary: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+});

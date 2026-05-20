@@ -788,7 +788,7 @@ function generateSuggestedPosts(postIndex: number): SuggestedPost[] {
       id: `suggested-${postIndex}-${i}`,
       username: usernames[userIdx],
       avatar: `https://i.pravatar.cc/150?img=${(userIdx % 70) + 1}`,
-      image: `https://picsum.photos/id/${picsumId}/320/320`,
+      image: `https://picsum.photos/seed/${picsumId}/320/320`,
       caption:
         captions[(postIndex + i * 2) % captions.length].slice(0, 60) + "...",
       likes: Math.floor(Math.random() * 5000),
@@ -1171,7 +1171,7 @@ function generateRelatedPosts(postIndex: number): RelatedPost[] {
     const userIdx = relatedIdx % usernames.length;
     related.push({
       id: `related-${postIndex}-${i}`,
-      thumbnail: `https://picsum.photos/id/${relatedIdx}/400/400`,
+      thumbnail: `https://picsum.photos/seed/${relatedIdx}/400/400`,
       username: usernames[userIdx],
       likes: Math.floor(Math.random() * 5000),
       similarity: 0.6 + Math.random() * 0.4,
@@ -1264,7 +1264,10 @@ const THUMBNAIL_SIZE = 400;
 function picsumUrl(id: number, aspectRatio: number, thumbnail = false): string {
   const w = thumbnail ? THUMBNAIL_SIZE : PHOTO_SIZE;
   const h = Math.round(w / aspectRatio);
-  return `https://picsum.photos/id/${id}/${w}/${h}`;
+  // `seed/<n>` instead of `id/<n>` because picsum's id catalog has gaps
+  // (150, 470, 540, 710, 720, 750, 850, 920 all 404). seed-based URLs
+  // pick deterministically from the available catalog — never 404.
+  return `https://picsum.photos/seed/${id}/${w}/${h}`;
 }
 
 function generateMockFeed(count: number): FeedPost[] {
@@ -1392,7 +1395,7 @@ function generateMockFeed(count: number): FeedPost[] {
             title: `App.js Conf 2026 - Talk ${i}`,
             description:
               "Join us for the biggest React Native & Expo conference in Europe!",
-            image: `https://picsum.photos/id/${(i * 3) % 1000}/400/210`,
+            image: `https://picsum.photos/seed/${(i * 3) % 1000}/400/210`,
             siteName: "App.js Conf",
             favicon: "https://appjs.co/favicon.ico",
           }
@@ -1502,7 +1505,7 @@ function generateMockFeed(count: number): FeedPost[] {
                 "LoopLogic",
               ][i % 5],
               duration: 180 + (i % 120),
-              coverArt: `https://picsum.photos/id/${(i * 7) % 1000}/300/300`,
+              coverArt: `https://picsum.photos/seed/${(i * 7) % 1000}/300/300`,
             }
           : undefined,
       chartData: generateChartSeries(i + 1, likes, Math.floor(likes * 0.05)),
