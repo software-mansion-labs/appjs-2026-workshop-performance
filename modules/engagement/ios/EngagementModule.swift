@@ -159,7 +159,8 @@ public class EngagementModule: Module {
   }
 
   private func beginActivityCollection() {
-    self.activitySource.start { sample in
+    self.activitySource.start { [weak self] sample in
+      guard let self = self else { return }
       self.workQueue.async {
         self.sampleBuffer.appendToAll(self.sessionTracker.activePostIds(), sample)
       }
