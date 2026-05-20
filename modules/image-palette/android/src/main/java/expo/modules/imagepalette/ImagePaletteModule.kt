@@ -1,7 +1,6 @@
 package expo.modules.imagepalette
 
 import android.util.Log
-import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -69,7 +68,6 @@ class ImagePaletteModule : Module() {
       log("resolved")
       respond(swatches, cfg)
     }
-    .runOnQueue(Queues.MAIN)
   }
 
   private fun respond(swatches: List<InternalSwatch>, config: Config): Map<String, Any> {
