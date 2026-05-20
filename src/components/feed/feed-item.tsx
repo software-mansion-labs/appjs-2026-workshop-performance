@@ -26,7 +26,7 @@ interface FeedItemImageProps {
 
 const FeedItemImage = ({ postId, images, imageClipRef }: FeedItemImageProps) => {
   const router = useRouter();
-  useImagePalette(postId, images[0]?.uri);
+  useImagePalette(postId);
 
   return (
     <View ref={imageClipRef} style={styles.imageClip}>
