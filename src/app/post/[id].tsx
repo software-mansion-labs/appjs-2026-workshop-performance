@@ -23,6 +23,7 @@ import { detectSpam } from "@/utils/spam-detection";
 
 import { CommentInput } from "@/components/feed/comment-input";
 import { CommentItem } from "@/components/feed/comments/comment-item";
+import { useDetailEngagementTracking } from "@/hooks/use-detail-engagement-tracking";
 import { findRelatedPosts } from "@/utils/related-posts";
 
 interface ReplyInfo {
@@ -36,6 +37,7 @@ const PostDetailScreen = () => {
   const insets = useSafeAreaInsets();
   const inputRef = useRef<TextInput>(null);
   const prevCommentsLengthRef = useRef(0);
+  useDetailEngagementTracking(id);
   const [post, setPost] = useState<FeedPost | null>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);

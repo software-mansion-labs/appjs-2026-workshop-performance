@@ -11,7 +11,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.staszekscp.appjs-performance-workshop",
-      "appleTeamId": "Z24A5V6FXQ"
+      "appleTeamId": "Z24A5V6FXQ",
+      "infoPlist": {
+        "NSMotionUsageDescription": "Used to anonymously track how you interact with posts so we can show your engagement stats."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +25,10 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.staszekscp.appjsperformanceworkshop"
+      "package": "com.staszekscp.appjsperformanceworkshop",
+      "permissions": [
+        "android.permission.ACTIVITY_RECOGNITION"
+      ]
     },
     "web": {
       "output": "static",
