@@ -52,6 +52,7 @@ class EngagementModule : Module() {
     }
 
     OnDestroy {
+      activitySource.teardown()
       stopFlushLoop()
       workExecutor.execute {
         persistence?.writeToDisk()
