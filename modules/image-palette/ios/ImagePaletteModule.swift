@@ -78,7 +78,6 @@ public class ImagePaletteModule: Module {
       self.log("resolved")
       return self.respond(swatches: swatches, config: cfg)
     }
-    .runOnQueue(.main)
   }
 
   private func respond(swatches: [InternalSwatch], config: Config) -> [String: Any] {
