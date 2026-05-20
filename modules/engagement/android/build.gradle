@@ -15,4 +15,5 @@ android {
 
 dependencies {
   implementation 'com.google.android.gms:play-services-location:21.3.0'
+  implementation 'com.squareup.leakcanary:leakcanary-object-watcher-android:2.13'
 }

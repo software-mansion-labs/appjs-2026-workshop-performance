@@ -22,8 +22,13 @@ class EngagementActivitySource(
   private var receiver: BroadcastReceiver? = null
   private var pendingIntent: PendingIntent? = null
   private var fakeExecutor: ScheduledExecutorService? = null
+  @Volatile private var paused = false
+
+  val isActive: Boolean
+    get() = pendingIntent != null || fakeExecutor != null
 
   fun start(onSample: (EngagementSample) -> Unit) {
+    paused = false
     if (Environment.isEmulator) {
       startFakeSource(onSample)
       return
@@ -39,6 +44,7 @@ class EngagementActivitySource(
 
     val rcv = object : BroadcastReceiver() {
       override fun onReceive(context: Context, intent: Intent) {
+        if (paused) return
         if (!ActivityRecognitionResult.hasResult(intent)) return
         val result = ActivityRecognitionResult.extractResult(intent) ?: return
         val detected = result.mostProbableActivity
@@ -75,7 +81,16 @@ class EngagementActivitySource(
     }
   }
 
-  fun stop() {
+  fun pause() {
+    paused = true
+  }
+
+  fun resume() {
+    paused = false
+  }
+
+  fun teardown() {
+    paused = false
     fakeExecutor?.shutdownNow()
     fakeExecutor = null
     val ctx = contextProvider()
@@ -102,6 +117,7 @@ class EngagementActivitySource(
       Thread(r, "Engagement-fake-activity")
     }
     executor.scheduleAtFixedRate({
+      if (paused) return@scheduleAtFixedRate
       val phase = (System.currentTimeMillis() / FAKE_PHASE_DURATION_MS % FAKE_ROTATION.size).toInt()
       val sample = EngagementSample(
         timestampMs = System.currentTimeMillis(),

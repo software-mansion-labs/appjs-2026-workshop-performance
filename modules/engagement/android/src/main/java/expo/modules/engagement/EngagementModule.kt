@@ -187,19 +187,23 @@ class EngagementModule : Module() {
 
   private fun startCollection() {
     sessionTracker.resumeAll()
-    beginActivityCollection()
+    if (activitySource.isActive) {
+      activitySource.resume()
+    } else {
+      beginActivityCollection()
+    }
     startFlushLoop()
   }
 
-  private fun stopCollection() {
+  private fun suspendCollection() {
     flush()
     sessionTracker.pauseAll()
-    activitySource.stop()
+    activitySource.pause()
     stopFlushLoop()
   }
 
   private fun disableCollection() {
-    stopCollection()
+    suspendCollection()
     enabled = false
     persistence?.setEnabled(false)
     sampleBuffer.clearAll()
@@ -208,7 +212,7 @@ class EngagementModule : Module() {
   private fun pauseCollection() {
     if (!enabled) return
     EngagementLog.info("pauseCollection (app background) — clocks frozen, data preserved")
-    stopCollection()
+    suspendCollection()
   }
 
   private fun resumeCollection() {
