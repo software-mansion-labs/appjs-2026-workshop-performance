@@ -12,7 +12,8 @@
     "ios:palette-logs": "log stream --level info --predicate 'subsystem == \"com.imagepalette\" OR eventMessage CONTAINS \"[ImagePalette]\"' --style compact",
     "android:palette-logs": "adb logcat -v color | grep --line-buffered -i 'imagepalette'",
     "ios:engagement-logs": "log stream --level info --predicate 'subsystem == \"com.engagement\" OR eventMessage CONTAINS \"[Engagement]\"' --style compact",
-    "android:engagement-logs": "adb logcat -v color | grep --line-buffered -i 'engagement'"
+    "android:engagement-logs": "adb logcat -v color | grep --line-buffered -i 'engagement'",
+    "generate-palettes": "node scripts/generate-palettes.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -49,6 +50,7 @@
     "@types/react": "~19.2.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~55.0.0",
+    "sharp": "^0.34.5",
     "typescript": "~5.9.2"
   },
   "private": true,
