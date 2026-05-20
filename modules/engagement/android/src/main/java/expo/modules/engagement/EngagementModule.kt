@@ -246,6 +246,7 @@ class EngagementModule : Module() {
       val merged = EngagementAggregator.merge(store.get(postId), partial)
       store.put(postId, merged)
     }
+    sampleBuffer.clearAll()
     store.writeToDisk()
   }
 }
