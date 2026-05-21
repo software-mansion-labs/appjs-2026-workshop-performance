@@ -1,10 +1,10 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { TouchableOpacity, Share } from "react-native";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 
-export function ShareButton({
+function ShareButtonComponent({
   postId,
   username,
   colors,
@@ -35,3 +35,5 @@ export function ShareButton({
     </TouchableOpacity>
   );
 }
+
+export const ShareButton = memo(ShareButtonComponent);
