@@ -37,8 +37,6 @@ const PostDetailScreen = () => {
   const inputRef = useRef<TextInput>(null);
   const prevCommentsLengthRef = useRef(0);
   const [post, setPost] = useState<FeedPost | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<FeedComment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null);
@@ -50,8 +48,6 @@ const PostDetailScreen = () => {
     const foundPost = MOCK_FEED.find((p) => p.id === id);
     if (foundPost) {
       setPost(foundPost);
-      setIsLiked(foundPost.isLiked);
-      setLikesCount(foundPost.likes);
       setComments(foundPost.comments);
     }
   }, [id]);
@@ -128,15 +124,6 @@ const PostDetailScreen = () => {
     setNewComment("");
   }, []);
 
-  const handleLike = useCallback(() => {
-    setIsLiked((prevIsLiked) => {
-      const nextIsLiked = !prevIsLiked;
-      setLikesCount(
-        (prevLikesCount) => prevLikesCount + (nextIsLiked ? 1 : -1),
-      );
-      return nextIsLiked;
-    });
-  }, []);
 
   if (!post) {
     return (
@@ -196,16 +183,13 @@ const PostDetailScreen = () => {
         {/* Comments List */}
         <FlatList
           data={comments}
-          extraData={[isLiked, likesCount, shareCount]}
+          extraData={[shareCount]}
           ListHeaderComponent={
             <PostDetailHeader
               post={post}
-              isLiked={isLiked}
-              likesCount={likesCount}
               shareCount={shareCount}
               commentsCount={comments.length}
               hasNewComments={hasNewComments}
-              onLike={handleLike}
               onShareComplete={() =>
                 setShareCount((prevShareCount) => prevShareCount + 1)
               }
