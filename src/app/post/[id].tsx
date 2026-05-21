@@ -193,7 +193,7 @@ const PostDetailScreen = () => {
           </Text>
         </View>
 
-        {/* Comments List */}
+        {/* Post Content and Comments List */}
         <FlatList
           data={comments}
           extraData={[isLiked, likesCount, shareCount]}
