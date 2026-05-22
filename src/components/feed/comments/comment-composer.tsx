@@ -20,12 +20,13 @@ interface CommentComposerProps {
   post: FeedPost;
   comments: FeedComment[];
   onAddComment: (comment: FeedComment, replyToCommentId?: string) => void;
+  onRemoveComment?: (commentId: string) => void;
   colors: typeof Colors.light;
   bottomInset: number;
 }
 
 export const CommentComposer = forwardRef<CommentComposerRef, CommentComposerProps>(function CommentComposer(
-  { post, comments, onAddComment, colors, bottomInset },
+  { post, comments, onAddComment, onRemoveComment, colors, bottomInset },
   ref
 ) {
   const inputRef = useRef<TextInput>(null);
@@ -44,13 +45,6 @@ export const CommentComposer = forwardRef<CommentComposerRef, CommentComposerPro
     if (!newComment.trim() || !post) return;
 
     const commentText = replyInfo ? newComment.replace(`@${replyInfo.username} `, "") : newComment;
-
-    // Run spam detection — blocks the JS thread
-    const { isSpam, maxSimilarity } = detectSpam(commentText, comments);
-    if (isSpam) {
-      console.warn(`[Spam] Comment blocked (similarity: ${maxSimilarity.toFixed(2)})`);
-      return;
-    }
 
     const mentionRegex = /@(\w+)/g;
     const mentions: Mention[] = [];
@@ -78,7 +72,16 @@ export const CommentComposer = forwardRef<CommentComposerRef, CommentComposerPro
     onAddComment(newCommentObj, replyInfo?.commentId);
     setNewComment("");
     setReplyInfo(null);
-  }, [newComment, post, replyInfo, comments, onAddComment]);
+
+    // Run spam check after the render, remove if spam
+    setTimeout(() => {
+      const { isSpam, maxSimilarity } = detectSpam(commentText, comments);
+      if (isSpam) {
+        console.warn(`[Spam] Comment discarded (similarity: ${maxSimilarity.toFixed(2)})`);
+        onRemoveComment?.(newCommentObj.id);
+      }
+    }, 0);
+  }, [newComment, post, replyInfo, comments, onAddComment, onRemoveComment]);
 
   const cancelReply = useCallback(() => {
     setReplyInfo(null);

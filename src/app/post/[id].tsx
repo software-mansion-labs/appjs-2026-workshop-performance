@@ -204,6 +204,7 @@ const PostDetailScreen = () => {
           post={post}
           comments={comments}
           onAddComment={handleAddComment}
+          onRemoveComment={commentId => setComments(prev => prev.filter(c => c.id !== commentId))}
           colors={colors}
           bottomInset={insets.bottom}
         />
