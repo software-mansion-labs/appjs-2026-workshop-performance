@@ -4,8 +4,7 @@ import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { CommentInput } from "@/components/feed/comment-input";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
-import { FeedComment, FeedPost } from "@/data/mock-feed";
-import { buildMentionSuggestions } from "@/utils/mention-utils";
+import { FeedComment, FeedPost, Mention } from "@/data/mock-feed";
 import { detectSpam } from "@/utils/spam-detection";
 
 interface ReplyInfo {
@@ -53,8 +52,16 @@ export const CommentComposer = forwardRef<CommentComposerRef, CommentComposerPro
       return;
     }
 
-    // Build mention suggestions for the comment context
-    const mentionSuggestions = buildMentionSuggestions(comments, commentText);
+    const mentionRegex = /@(\w+)/g;
+    const mentions: Mention[] = [];
+    let match: RegExpExecArray | null;
+    while ((match = mentionRegex.exec(commentText)) !== null) {
+      mentions.push({
+        username: match[1],
+        position: { start: match.index, end: match.index + match[0].length },
+        userId: match[1]
+      });
+    }
 
     const newCommentObj: FeedComment = {
       id: `new-comment-${Date.now()}`,
@@ -64,11 +71,7 @@ export const CommentComposer = forwardRef<CommentComposerRef, CommentComposerPro
       likes: 0,
       timestamp: "Just now",
       replyingTo: replyInfo?.username,
-      mentions: mentionSuggestions.slice(0, 5).map((s, i) => ({
-        username: s.username,
-        position: { start: i, end: i + s.username.length },
-        userId: s.username
-      })),
+      mentions,
       replies: []
     };
 
