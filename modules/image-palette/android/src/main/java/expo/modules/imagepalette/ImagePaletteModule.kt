@@ -1,5 +1,6 @@
 package expo.modules.imagepalette
 
+import android.os.Trace
 import android.util.Log
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -33,40 +34,45 @@ class ImagePaletteModule : Module() {
     }
 
     AsyncFunction("getDominantColors") { uri: String ->
-      firstReadOccurred = true
-      val cfg = config.copy()
-      log("start")
+      Trace.beginSection("ImagePalette.getDominantColors")
+      try {
+        firstReadOccurred = true
+        val cfg = config.copy()
+        log("start")
 
-      val key = PaletteKey.fromConfig(uri, cfg)
-      if (cfg.cache) {
-        paletteCache.get(key)?.let {
-          log("cache HIT")
-          return@AsyncFunction respond(it, cfg)
+        val key = PaletteKey.fromConfig(uri, cfg)
+        if (cfg.cache) {
+          paletteCache.get(key)?.let {
+            log("cache HIT")
+            return@AsyncFunction respond(it, cfg)
+          }
+          log("cache MISS")
         }
-        log("cache MISS")
+
+        val path = if (uri.startsWith("file://")) uri.removePrefix("file://") else uri
+
+        val bitmap = ImageDecoder.decode(path, cfg.downsample, cfg.downsampleTargetSize)
+          ?: return@AsyncFunction null
+
+        val decoded = ImageDecoder.extractARGB(bitmap)
+
+        val swatches = HistogramQuantizer.quantize(
+          decoded,
+          cfg.gridWidth,
+          cfg.gridHeight,
+          cfg.edgesOnly,
+          cfg.bitsPerChannel
+        )
+
+        if (cfg.cache) {
+          paletteCache.set(key, swatches)
+        }
+
+        log("resolved")
+        respond(swatches, cfg)
+      } finally {
+        Trace.endSection()
       }
-
-      val path = if (uri.startsWith("file://")) uri.removePrefix("file://") else uri
-
-      val bitmap = ImageDecoder.decode(path, cfg.downsample, cfg.downsampleTargetSize)
-        ?: return@AsyncFunction null
-
-      val decoded = ImageDecoder.extractARGB(bitmap)
-
-      val swatches = HistogramQuantizer.quantize(
-        decoded,
-        cfg.gridWidth,
-        cfg.gridHeight,
-        cfg.edgesOnly,
-        cfg.bitsPerChannel
-      )
-
-      if (cfg.cache) {
-        paletteCache.set(key, swatches)
-      }
-
-      log("resolved")
-      respond(swatches, cfg)
     }
   }
 

@@ -1,5 +1,7 @@
 package expo.modules.imagepalette
 
+import android.os.Trace
+
 object HistogramQuantizer {
 
   private const val SATURATION_BOOST: Double = 1.7
@@ -12,64 +14,79 @@ object HistogramQuantizer {
     edgesOnly: Boolean,
     bitsPerChannel: Int
   ): List<InternalSwatch> {
-    val width = decoded.width
-    val height = decoded.height
-    val pixels = decoded.pixels
+    Trace.beginSection("ImagePalette.quantize")
+    try {
+      val width = decoded.width
+      val height = decoded.height
+      val pixels = decoded.pixels
 
-    val cellWidth = (width / gridWidth).coerceAtLeast(1)
-    val cellHeight = (height / gridHeight).coerceAtLeast(1)
+      val cellWidth = (width / gridWidth).coerceAtLeast(1)
+      val cellHeight = (height / gridHeight).coerceAtLeast(1)
 
-    val channelShift = 8 - bitsPerChannel
-    val channelMask = (1 shl bitsPerChannel) - 1
-    val restoreMult = 1 shl channelShift
-    val restoreOffset = restoreMult / 2
-    val secondShift = bitsPerChannel * 2
+      val channelShift = 8 - bitsPerChannel
+      val channelMask = (1 shl bitsPerChannel) - 1
+      val restoreMult = 1 shl channelShift
+      val restoreOffset = restoreMult / 2
+      val secondShift = bitsPerChannel * 2
 
-    val histograms = Array(gridWidth * gridHeight) { HashMap<Int, Int>(256) }
+      val histograms = Array(gridWidth * gridHeight) { HashMap<Int, Int>(256) }
 
-    for (y in 0 until height) {
-      val row = minOf(y / cellHeight, gridHeight - 1)
-      val rowOffset = y * width
-      for (x in 0 until width) {
-        val col = minOf(x / cellWidth, gridWidth - 1)
-        if (edgesOnly && !isEdge(row, col, gridHeight, gridWidth)) {
-          continue
+      Trace.beginSection("ImagePalette.quantize.histogram")
+      try {
+        for (y in 0 until height) {
+          val row = minOf(y / cellHeight, gridHeight - 1)
+          val rowOffset = y * width
+          for (x in 0 until width) {
+            val col = minOf(x / cellWidth, gridWidth - 1)
+            if (edgesOnly && !isEdge(row, col, gridHeight, gridWidth)) {
+              continue
+            }
+            val pixel = pixels[rowOffset + x]
+            val r = (pixel shr 16) and 0xFF
+            val g = (pixel shr 8) and 0xFF
+            val b = pixel and 0xFF
+            val rq = r shr channelShift
+            val gq = g shr channelShift
+            val bq = b shr channelShift
+            val key = (rq shl secondShift) or (gq shl bitsPerChannel) or bq
+
+            val regionIndex = row * gridWidth + col
+            histograms[regionIndex][key] = (histograms[regionIndex][key] ?: 0) + 1
+          }
         }
-        val pixel = pixels[rowOffset + x]
-        val r = (pixel shr 16) and 0xFF
-        val g = (pixel shr 8) and 0xFF
-        val b = pixel and 0xFF
-        val rq = r shr channelShift
-        val gq = g shr channelShift
-        val bq = b shr channelShift
-        val key = (rq shl secondShift) or (gq shl bitsPerChannel) or bq
-
-        val regionIndex = row * gridWidth + col
-        histograms[regionIndex][key] = (histograms[regionIndex][key] ?: 0) + 1
+      } finally {
+        Trace.endSection() // ImagePalette.quantize.histogram
       }
-    }
 
-    val result = mutableListOf<InternalSwatch>()
-    for (row in 0 until gridHeight) {
-      for (col in 0 until gridWidth) {
-        if (edgesOnly && !isEdge(row, col, gridHeight, gridWidth)) {
-          continue
+      val result = mutableListOf<InternalSwatch>()
+      Trace.beginSection("ImagePalette.quantize.pickSwatches")
+      try {
+        for (row in 0 until gridHeight) {
+          for (col in 0 until gridWidth) {
+            if (edgesOnly && !isEdge(row, col, gridHeight, gridWidth)) {
+              continue
+            }
+            val regionIndex = row * gridWidth + col
+            result.add(pickSwatch(
+              histogram = histograms[regionIndex],
+              row = row,
+              col = col,
+              channelMask = channelMask,
+              restoreMult = restoreMult,
+              restoreOffset = restoreOffset,
+              secondShift = secondShift,
+              bitsPerChannel = bitsPerChannel
+            ))
+          }
         }
-        val regionIndex = row * gridWidth + col
-        result.add(pickSwatch(
-          histogram = histograms[regionIndex],
-          row = row,
-          col = col,
-          channelMask = channelMask,
-          restoreMult = restoreMult,
-          restoreOffset = restoreOffset,
-          secondShift = secondShift,
-          bitsPerChannel = bitsPerChannel
-        ))
+      } finally {
+        Trace.endSection() // ImagePalette.quantize.pickSwatches
       }
-    }
 
-    return result
+      return result
+    } finally {
+      Trace.endSection() // ImagePalette.quantize
+    }
   }
 
   private fun isEdge(row: Int, col: Int, gridHeight: Int, gridWidth: Int): Boolean {
