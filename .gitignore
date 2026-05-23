@@ -52,3 +52,6 @@ modules/*/ios/Pods/
 .vscode
 .cursor
 .claude
+
+# Workshop traces
+/traces
