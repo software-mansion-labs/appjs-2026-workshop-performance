@@ -4,6 +4,7 @@ import Foundation
 final class EngagementActivitySource {
   private let activityManager = CMMotionActivityManager()
   private var active = false
+  private var onSample: ((EngagementSample) -> Void)?
 
   #if targetEnvironment(simulator)
   private var fakeTimer: DispatchSourceTimer?
@@ -15,6 +16,7 @@ final class EngagementActivitySource {
 
   func start(onSample: @escaping (EngagementSample) -> Void) {
     if active { return }
+    self.onSample = onSample
 
     #if targetEnvironment(simulator)
     active = true
@@ -22,7 +24,8 @@ final class EngagementActivitySource {
     let timer = DispatchSource.makeTimerSource(queue: .main)
     let interval = DispatchTimeInterval.milliseconds(Int(Config.activityUpdateIntervalMs))
     timer.schedule(deadline: .now() + interval, repeating: interval)
-    timer.setEventHandler {
+    timer.setEventHandler { [weak self] in
+      guard let self else { return }
       let nowMs = Int64(Date().timeIntervalSince1970 * 1000)
       let phase = Int(nowMs / Self.fakePhaseDurationMs % Int64(Self.fakeRotation.count))
       let sample = EngagementSample(
@@ -31,7 +34,7 @@ final class EngagementActivitySource {
         confidence: .high,
         scrollVelocity: 0
       )
-      onSample(sample)
+      self.onSample?(sample)
     }
     timer.resume()
     fakeTimer = timer
@@ -39,15 +42,15 @@ final class EngagementActivitySource {
     guard CMMotionActivityManager.isActivityAvailable() else { return }
     active = true
 
-    activityManager.startActivityUpdates(to: .main) { activity in
-      guard let activity = activity else { return }
+    activityManager.startActivityUpdates(to: .main) { [weak self] activity in
+      guard let self, let activity else { return }
       let sample = EngagementSample(
         timestampMs: Int64(Date().timeIntervalSince1970 * 1000),
         activity: Self.mapActivity(activity),
         confidence: Self.mapConfidence(activity.confidence),
         scrollVelocity: 0
       )
-      onSample(sample)
+      self.onSample?(sample)
     }
     #endif
   }
