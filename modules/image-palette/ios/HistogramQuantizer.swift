@@ -1,6 +1,9 @@
 import Foundation
+import os
 
 enum HistogramQuantizer {
+
+  private static let signposter = OSSignposter(logHandle: OSLog(subsystem: "ImagePalette", category: .pointsOfInterest))
 
   private static let SATURATION_BOOST: Double = 1.7
   private static let SATURATION_FLOOR: Double = 0.05
@@ -12,6 +15,8 @@ enum HistogramQuantizer {
     edgesOnly: Bool,
     bitsPerChannel: Int
   ) -> [InternalSwatch] {
+    let quantizeInterval = signposter.beginInterval("ImagePalette.quantize")
+    defer { signposter.endInterval("ImagePalette.quantize", quantizeInterval) }
     let width = decoded.width
     let height = decoded.height
     let bytesPerRow = width * 4
@@ -27,27 +32,31 @@ enum HistogramQuantizer {
 
     var histograms: [[Int: Int]] = Array(repeating: [:], count: gridWidth * gridHeight)
 
-    decoded.pixelData.withUnsafeBytes { (rawBuffer: UnsafeRawBufferPointer) in
-      let bytes = rawBuffer.bindMemory(to: UInt8.self)
-      for y in 0..<height {
-        let row = min(y / cellHeight, gridHeight - 1)
-        let rowOffset = y * bytesPerRow
-        for x in 0..<width {
-          let col = min(x / cellWidth, gridWidth - 1)
-          if edgesOnly && !isEdge(row: row, col: col, gridHeight: gridHeight, gridWidth: gridWidth) {
-            continue
-          }
-          let i = rowOffset + x * 4
-          let r = Int(bytes[i])
-          let g = Int(bytes[i + 1])
-          let b = Int(bytes[i + 2])
-          let rq = r >> channelShift
-          let gq = g >> channelShift
-          let bq = b >> channelShift
-          let key = (rq << secondShift) | (gq << bitsPerChannel) | bq
+    do {
+      let histogramInterval = signposter.beginInterval("ImagePalette.quantize.histogram")
+      defer { signposter.endInterval("ImagePalette.quantize.histogram", histogramInterval) }
+      decoded.pixelData.withUnsafeBytes { (rawBuffer: UnsafeRawBufferPointer) in
+        let bytes = rawBuffer.bindMemory(to: UInt8.self)
+        for y in 0..<height {
+          let row = min(y / cellHeight, gridHeight - 1)
+          let rowOffset = y * bytesPerRow
+          for x in 0..<width {
+            let col = min(x / cellWidth, gridWidth - 1)
+            if edgesOnly && !isEdge(row: row, col: col, gridHeight: gridHeight, gridWidth: gridWidth) {
+              continue
+            }
+            let i = rowOffset + x * 4
+            let r = Int(bytes[i])
+            let g = Int(bytes[i + 1])
+            let b = Int(bytes[i + 2])
+            let rq = r >> channelShift
+            let gq = g >> channelShift
+            let bq = b >> channelShift
+            let key = (rq << secondShift) | (gq << bitsPerChannel) | bq
 
-          let regionIndex = row * gridWidth + col
-          histograms[regionIndex][key, default: 0] += 1
+            let regionIndex = row * gridWidth + col
+            histograms[regionIndex][key, default: 0] += 1
+          }
         }
       }
     }
@@ -55,22 +64,26 @@ enum HistogramQuantizer {
     var result: [InternalSwatch] = []
     result.reserveCapacity(gridWidth * gridHeight)
 
-    for row in 0..<gridHeight {
-      for col in 0..<gridWidth {
-        if edgesOnly && !isEdge(row: row, col: col, gridHeight: gridHeight, gridWidth: gridWidth) {
-          continue
+    do {
+      let pickSwatchesInterval = signposter.beginInterval("ImagePalette.quantize.pickSwatches")
+      defer { signposter.endInterval("ImagePalette.quantize.pickSwatches", pickSwatchesInterval) }
+      for row in 0..<gridHeight {
+        for col in 0..<gridWidth {
+          if edgesOnly && !isEdge(row: row, col: col, gridHeight: gridHeight, gridWidth: gridWidth) {
+            continue
+          }
+          let regionIndex = row * gridWidth + col
+          result.append(pickSwatch(
+            histogram: histograms[regionIndex],
+            row: row,
+            col: col,
+            channelMask: channelMask,
+            restoreMult: restoreMult,
+            restoreOffset: restoreOffset,
+            secondShift: secondShift,
+            bitsPerChannel: bitsPerChannel
+          ))
         }
-        let regionIndex = row * gridWidth + col
-        result.append(pickSwatch(
-          histogram: histograms[regionIndex],
-          row: row,
-          col: col,
-          channelMask: channelMask,
-          restoreMult: restoreMult,
-          restoreOffset: restoreOffset,
-          secondShift: secondShift,
-          bitsPerChannel: bitsPerChannel
-        ))
       }
     }
 

@@ -9,6 +9,7 @@ public class ImagePaletteModule: Module {
   private let paletteCache = PaletteCache()
 
   private static let logger = Logger(subsystem: "com.imagepalette", category: "main")
+  private static let signposter = OSSignposter(logHandle: OSLog(subsystem: "ImagePalette", category: .pointsOfInterest))
 
   private func log(_ msg: String) {
     let line = "[ImagePalette] \(msg)"
@@ -36,6 +37,8 @@ public class ImagePaletteModule: Module {
     }
 
     AsyncFunction("getDominantColors") { (uri: String) -> [String: Any]? in
+      let interval = Self.signposter.beginInterval("ImagePalette.getDominantColors")
+      defer { Self.signposter.endInterval("ImagePalette.getDominantColors", interval) }
       self.firstReadOccurred = true
       let cfg = self.config
       self.log("start")

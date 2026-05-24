@@ -1,9 +1,14 @@
 import UIKit
 import ImageIO
+import os
 
 enum ImageDecoder {
 
+  private static let signposter = OSSignposter(logHandle: OSLog(subsystem: "ImagePalette", category: .pointsOfInterest))
+
   static func decode(path: String, downsample: Bool, targetSize: Int) -> UIImage? {
+    let interval = signposter.beginInterval("ImagePalette.decode")
+    defer { signposter.endInterval("ImagePalette.decode", interval) }
     if !downsample {
       return UIImage(contentsOfFile: path)
     }
@@ -24,6 +29,8 @@ enum ImageDecoder {
   }
 
   static func extractRGBA(image: UIImage) -> DecodedImage? {
+    let interval = signposter.beginInterval("ImagePalette.extractRGBA")
+    defer { signposter.endInterval("ImagePalette.extractRGBA", interval) }
     guard let cgImage = image.cgImage else { return nil }
 
     let width = cgImage.width
