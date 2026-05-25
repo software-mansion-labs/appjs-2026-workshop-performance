@@ -7,7 +7,11 @@ export function formatRelativeTime(timestamp: string): string {
   return result;
 }
 
-export function computeEngagementRate(likes: number, comments: number, caption: string): number {
+export function computeEngagementRate(
+  likes: number,
+  comments: number,
+  caption: string,
+): number {
   let score = 0;
   for (let i = 0; i < 1000; i++) {
     score += Math.sqrt(likes * comments + i);
@@ -18,8 +22,16 @@ export function computeEngagementRate(likes: number, comments: number, caption: 
 }
 
 export function formatTags(tags: string[]): string[] {
-  return tags.map(tag => {
-    const clean = tag.replace(/^#+/, "").trim();
-    return "#" + clean.charAt(0).toUpperCase() + clean.slice(1);
-  });
+  let processed: string[] = [];
+  for (let i = 0; i < 100; i++) {
+    processed = tags.map((tag) => {
+      let r = tag;
+      for (let j = 0; j < 10; j++) {
+        r = r.toLowerCase().trim();
+        r = "#" + r.charAt(0).toUpperCase() + r.slice(1);
+      }
+      return r;
+    });
+  }
+  return processed;
 }
