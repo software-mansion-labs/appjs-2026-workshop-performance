@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
-import { FeedPost } from "@/data/mock-feed";
+import { FeedPostSlim } from "@/data/mock-feed";
 
 import { ActionButtons } from "./actions/action-buttons";
 import { CommentList } from "./comments/comment-list";
@@ -13,13 +13,12 @@ import { PostCaption } from "./content/post-caption";
 import { PostTimestamp } from "./content/post-timestamp";
 import { TagList } from "./content/tag-list";
 import { PostHeader } from "./header/post-header";
-import { SuggestedPostsSection } from "./suggestions/suggested-posts-section";
 
 export const FeedItem = ({
   item,
   onLike,
 }: {
-  item: FeedPost;
+  item: FeedPostSlim;
   onLike: (id: string) => void;
 }) => {
   const colors = useContext(ColorsContext);
@@ -34,7 +33,6 @@ export const FeedItem = ({
     <View
       style={[
         styles.container,
-        shadowStyles.card,
         {
           backgroundColor: colors.cardBackground,
           borderBottomColor: colors.border,
@@ -50,9 +48,10 @@ export const FeedItem = ({
         onHidePost={() => setIsHidden(true)}
       />
 
-      <Pressable onPress={() => router.push(`/post/${item.id}`)}>
-        <ImageCarousel images={item.images} />
-      </Pressable>
+      <ImageCarousel
+        images={item.images}
+        onImagePress={() => router.push(`/post/${item.id}`)}
+      />
 
       <ActionButtons
         postId={item.id}
@@ -71,10 +70,6 @@ export const FeedItem = ({
       <CommentList comments={item.comments} postId={item.id} />
 
       <PostTimestamp timestamp={item.timestamp} />
-
-      {item.showSuggestions && item.suggestedPosts.length > 0 && (
-        <SuggestedPostsSection posts={item.suggestedPosts} />
-      )}
     </View>
   );
 };
@@ -83,15 +78,5 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 4,
     borderBottomWidth: 0.5,
-  },
-});
-
-const shadowStyles = StyleSheet.create({
-  card: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
   },
 });

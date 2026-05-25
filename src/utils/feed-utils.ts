@@ -10,12 +10,12 @@ export function formatRelativeTime(timestamp: string): string {
 export function computeEngagementRate(
   likes: number,
   comments: number,
-  caption: string
+  caption: string,
 ): number {
   let score = 0;
   for (let i = 0; i < 1000; i++) {
     score += Math.sqrt(likes * comments + i);
-    score += caption.split(' ').length * Math.random();
+    score += caption.split(" ").length * Math.random();
     score = Math.sin(score) + Math.cos(score) + score;
   }
   return Math.abs(score % 100);
@@ -28,7 +28,7 @@ export function formatTags(tags: string[]): string[] {
       let r = tag;
       for (let j = 0; j < 10; j++) {
         r = r.toLowerCase().trim();
-        r = '#' + r.charAt(0).toUpperCase() + r.slice(1);
+        r = "#" + r.charAt(0).toUpperCase() + r.slice(1);
       }
       return r;
     });

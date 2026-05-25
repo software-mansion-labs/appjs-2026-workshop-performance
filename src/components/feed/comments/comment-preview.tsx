@@ -1,9 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
 import { HeartIcon } from "@/components/feed/icons/heart-icon";
+import { ImageWithShimmer } from "@/components/feed/shimmer/image-with-shimmer";
 import { FeedComment } from "@/data/mock-feed";
 import { formatRelativeTime } from "@/utils/feed-utils";
 
@@ -30,11 +31,7 @@ export const CommentPreview = ({ comment, postId }: { comment: FeedComment; post
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={openProfile}>
-        <View style={shadowStyles.avatarShadow}>
-          <View style={styles.avatarClip}>
-            <Image source={{ uri: comment.avatar }} style={styles.avatar} />
-          </View>
-        </View>
+        <ImageWithShimmer source={{ uri: comment.avatar }} style={[styles.avatar, styles.avatarClip]} />
       </TouchableOpacity>
       <View style={styles.body}>
         <Text style={{ fontSize: 13, color: colors.text, lineHeight: 18 }}>
@@ -58,9 +55,7 @@ export const CommentPreview = ({ comment, postId }: { comment: FeedComment; post
         }}
         style={styles.heartButton}
       >
-        <View style={isLiked ? shadowStyles.heartActiveShadow : shadowStyles.heartShadow}>
-          <HeartIcon size={12} color={isLiked ? "#FF6B6B" : colors.icon} filled={isLiked} />
-        </View>
+        <HeartIcon size={12} color={isLiked ? "#FF6B6B" : colors.icon} filled={isLiked} />
       </TouchableOpacity>
     </View>
   );
@@ -95,31 +90,5 @@ const styles = StyleSheet.create({
   },
   heartButton: {
     paddingTop: 4,
-  },
-});
-
-const shadowStyles = StyleSheet.create({
-  avatarShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  heartShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    borderRadius: 6,
-    overflow: "hidden",
-  },
-  heartActiveShadow: {
-    shadowColor: "#FF6B6B",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.4,
-    shadowRadius: 2,
-    borderRadius: 6,
-    overflow: "hidden",
   },
 });
