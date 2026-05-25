@@ -1,33 +1,23 @@
-import { useState } from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 import { FeedImage } from "@/data/mock-feed";
-import { ImageShimmer } from "@/components/feed/shimmer/image-shimmer";
+import { ImageWithShimmer } from "@/components/feed/shimmer/image-with-shimmer";
 
 const IMAGE_WIDTH = 400;
 
-export const CarouselImage = ({ image }: { image: FeedImage }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  return (
-    <View style={styles.imageClip}>
-      <Image
-        source={{ uri: image.uri }}
-        style={{ width: IMAGE_WIDTH, aspectRatio: image.aspectRatio }}
-        onLoad={() => setIsLoaded(true)}
-      />
-      {!isLoaded && <ImageShimmer />}
-      <View style={styles.vignetteTop} />
-      <View style={styles.vignetteBottom} />
-      <View style={styles.cornerDecoration} />
-    </View>
-  );
-};
+export const CarouselImage = ({ image }: { image: FeedImage }) => (
+  <View>
+    <ImageWithShimmer
+      source={{ uri: image.uri }}
+      style={{ width: IMAGE_WIDTH, aspectRatio: image.aspectRatio }}
+    />
+    <View style={styles.vignetteTop} />
+    <View style={styles.vignetteBottom} />
+    <View style={styles.cornerDecoration} />
+  </View>
+);
 
 const styles = StyleSheet.create({
-  imageClip: {
-    overflow: "hidden",
-  },
   vignetteTop: {
     position: "absolute",
     top: 0,
