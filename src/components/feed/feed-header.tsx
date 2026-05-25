@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -16,15 +16,11 @@ export const FeedHeader = () => {
         {
           paddingTop: insets.top + 8,
           backgroundColor: colors.background,
-          borderBottomColor: colors.border,
-        },
+          borderBottomColor: colors.border
+        }
       ]}
     >
-      <View style={styles.titleRow}>
-        <Text style={[styles.title, { color: colors.text }]}>App.js</Text>
-        <Text style={[styles.star, { color: colors.text }]}>{"\u2731"}</Text>
-        <Text style={[styles.title, { color: colors.text }]}>Conf</Text>
-      </View>
+      <Image source={require("../../../assets/images/logo_appjs.png")} style={styles.logo} />
       <View style={styles.actions}>
         <View style={[styles.dateBadge, { borderColor: colors.text }]}>
           <IconSymbol name="calendar" size={14} color={colors.text} />
@@ -42,25 +38,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingBottom: 12,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: 0.5
   },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    letterSpacing: -0.5,
-  },
-  star: {
-    fontSize: 18,
-    fontWeight: "400",
+  logo: {
+    height: 32,
+    width: 36
   },
   actions: {
     flexDirection: "row",
-    gap: 8,
+    gap: 8
   },
   dateBadge: {
     borderWidth: 1.5,
@@ -69,10 +55,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 6
   },
   dateText: {
     fontSize: 12,
-    fontWeight: "500",
-  },
+    fontWeight: "500"
+  }
 });
