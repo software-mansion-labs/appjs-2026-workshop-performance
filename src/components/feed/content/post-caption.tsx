@@ -16,7 +16,7 @@ export const PostCaption = ({
 
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.card, shadowStyles.cardShadow, { backgroundColor: colors.cardBackgroundAlt }]}>
+      <View style={[styles.card, { backgroundColor: colors.cardBackgroundAlt }]}>
         <View style={[styles.accentBar, { backgroundColor: colors.tint + "30" }]} />
         <Text style={[styles.text, { color: colors.text }]}>
           <Text style={styles.username}>{username}</Text> {caption}
@@ -53,15 +53,5 @@ const styles = StyleSheet.create({
   },
   username: {
     fontWeight: "600",
-  },
-});
-
-const shadowStyles = StyleSheet.create({
-  cardShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
   },
 });

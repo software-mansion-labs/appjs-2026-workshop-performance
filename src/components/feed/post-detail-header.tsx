@@ -109,7 +109,7 @@ export const PostDetailHeader = ({
             postId={post.id}
             username={post.user.username}
             colors={colors}
-            onShareComplete={onShareComplete}
+            onShareComplete={() => onShareComplete()}
           />
         </View>
         <BookmarkButton initialIsBookmarked={post.isBookmarked} colors={colors} />
