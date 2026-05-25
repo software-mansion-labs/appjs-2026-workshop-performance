@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
-import { View, Text, Image, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, GestureResponderEvent, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ColorsContext } from "@/context/colors-context";
 import { VerifiedIcon } from "@/components/feed/icons/verified-icon";
+import { ImageWithShimmer } from "@/components/feed/shimmer/image-with-shimmer";
 import { PostOptionsMenu } from "./post-options-menu";
 
 export const PostHeader = ({
@@ -43,27 +44,21 @@ export const PostHeader = ({
           style={styles.userRow}
           onPress={() => router.push(`/profile/${username}`)}
         >
-          <View style={shadowStyles.avatarShadow}>
-            <View style={styles.avatarClip}>
-              <Image source={{ uri: avatar }} style={styles.avatar} />
-              <View style={styles.avatarOverlay} />
-            </View>
+          <View style={styles.avatarClip}>
+            <ImageWithShimmer source={{ uri: avatar }} style={styles.avatar} />
+            <View style={styles.avatarOverlay} />
           </View>
 
           <View>
             <View style={styles.nameRow}>
-              <View style={shadowStyles.usernameShadow}>
-                <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{username}</Text>
-              </View>
+              <Text style={{ fontWeight: "600", fontSize: 14, color: colors.text }}>{username}</Text>
               {isVerified && (
-                <View style={shadowStyles.badgeShadow}>
-                  <VerifiedIcon size={14} color="#3d2847" />
-                </View>
+                <VerifiedIcon size={14} color="#3d2847" />
               )}
             </View>
             <TouchableOpacity onPress={openLocation}>
               <View style={styles.locationRow}>
-                <View style={[styles.locationDot, shadowStyles.locationDotShadow, { backgroundColor: colors.tint + "50" }]} />
+                <View style={[styles.locationDot, { backgroundColor: colors.tint + "50" }]} />
                 <Text style={{ fontSize: 11, color: colors.icon }}>{locationName}</Text>
               </View>
             </TouchableOpacity>
@@ -134,35 +129,5 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 2.5,
-  },
-});
-
-const shadowStyles = StyleSheet.create({
-  avatarShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  usernameShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  badgeShadow: {
-    shadowColor: "#3d2847",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    borderRadius: 7,
-    overflow: "hidden",
-  },
-  locationDotShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.4,
-    shadowRadius: 2,
   },
 });

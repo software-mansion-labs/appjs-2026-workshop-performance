@@ -5,24 +5,23 @@ import { FeedHeader } from "@/components/feed/feed-header";
 import { FeedList } from "@/components/feed/feed-list";
 import { Colors } from "@/constants/theme";
 import { ColorsContext } from "@/context/colors-context";
-import { MOCK_FEED, FeedPost } from "@/data/mock-feed";
+import { MOCK_FEED, FeedListItem, toSlimFeed } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 const HomeScreen = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
-  const [feedData, setFeedData] = useState<FeedPost[]>(MOCK_FEED);
+  const [feedData, setFeedData] = useState<FeedListItem[]>(toSlimFeed(MOCK_FEED));
 
 
 
   const handleLike = (id: string) => {
     setFeedData(prev =>
-      prev.map(post =>
-        post.id === id
-          ? { ...post, isLiked: !post.isLiked, likes: post.isLiked ? post.likes - 1 : post.likes + 1 }
-          : post
-      )
+      prev.map(item => {
+        if (item.type !== "post" || item.id !== id) return item;
+        return { ...item, isLiked: !item.isLiked, likes: item.isLiked ? item.likes - 1 : item.likes + 1 };
+      })
     );
   };
 

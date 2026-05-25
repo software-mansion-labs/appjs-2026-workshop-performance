@@ -7,7 +7,7 @@ import { PostDetailHeader } from "@/components/feed/post-detail-header";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { ColorsContext } from "@/context/colors-context";
-import { MOCK_FEED, FeedPost, FeedComment } from "@/data/mock-feed";
+import { FeedPost, FeedComment, MOCK_FEED } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 import { CommentComposer, CommentComposerRef } from "@/components/feed/comments/comment-composer";
@@ -105,7 +105,7 @@ const PostDetailScreen = () => {
           </Text>
         </View>
 
-        {/* Comments List */}
+        {/* Post Content and Comments List */}
         <FlatList
           data={comments}
           extraData={[shareCount]}
