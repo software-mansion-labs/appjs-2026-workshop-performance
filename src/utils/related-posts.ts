@@ -166,11 +166,9 @@ export function findRelatedPosts(
   currentPost: FeedPost,
   limit: number = 6
 ): RelatedPostResult[] {
-  console.log("Computing related posts for", currentPost.id);
   const cache = getCandidateCache();
 
   const currentTags = currentPost.tags.map(t => t.toLowerCase());
-  const currentTagSet = new Set(currentTags);
   const currentCaptionTF = buildTFVector(tokenize(currentPost.caption));
   const currentCommentTF = buildTFVector(collectCommentWords(currentPost));
 

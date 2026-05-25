@@ -60,19 +60,13 @@ export const ActionButtons = ({
       <View style={styles.container}>
         <View style={styles.leftButtons}>
           <TouchableOpacity onPress={handleLike} style={styles.iconButton}>
-            <View style={isLiked ? shadowStyles.likeActiveShadow : shadowStyles.iconShadow}>
-              <HeartIcon size={26} color={isLiked ? "#FF6B6B" : colors.text} filled={isLiked} />
-            </View>
+            <HeartIcon size={26} color={isLiked ? "#FF6B6B" : colors.text} filled={isLiked} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={handleComment}>
-            <View style={shadowStyles.iconShadow}>
-              <CommentIcon size={24} color={colors.text} />
-            </View>
+            <CommentIcon size={24} color={colors.text} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
-            <View style={shadowStyles.iconShadow}>
-              <ShareIcon size={24} color={colors.text} />
-            </View>
+            <ShareIcon size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
       </View>
@@ -97,24 +91,5 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 2
-  }
-});
-
-const shadowStyles = StyleSheet.create({
-  iconShadow: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    borderRadius: 12,
-    overflow: "hidden"
-  },
-  likeActiveShadow: {
-    shadowColor: "#FF6B6B",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    borderRadius: 13,
-    overflow: "hidden"
   }
 });

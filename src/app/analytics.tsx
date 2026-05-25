@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { PostAnalyticsChart } from "@/components/analytics/PostAnalyticsChart";
-import { SVGRenderer, SkiaRenderer } from "@/components/analytics/renderers";
+import { SkiaRenderer } from "@/components/analytics/renderers";
 import { Colors } from "@/constants/theme";
 import { MOCK_FEED } from "@/data/mock-feed";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -20,7 +20,6 @@ const USERS = (() => {
   }).slice(0, 20);
 })();
 
-type Renderer = "svg" | "skia";
 type DataSeries = "likes" | "comments" | "shares";
 
 const DATA_SERIES_OPTIONS: { key: DataSeries; label: string; color: string }[] = [
@@ -35,7 +34,6 @@ export default function AnalyticsScreen() {
   const colors = Colors[colorScheme ?? "light"];
   const insets = useSafeAreaInsets();
 
-  const [renderer, setRenderer] = useState<Renderer>("svg");
   const [selectedUserIndex, setSelectedUserIndex] = useState(0);
   const [enabledSeries, setEnabledSeries] = useState<Set<DataSeries>>(
     new Set<DataSeries>(["likes", "comments", "shares"])
@@ -55,8 +53,6 @@ export default function AnalyticsScreen() {
       return next;
     });
   };
-
-  const activeRenderer = renderer === "svg" ? SVGRenderer : SkiaRenderer;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.cardBackground }}>
@@ -85,45 +81,6 @@ export default function AnalyticsScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Renderer toggle */}
-        <View
-          style={{
-            flexDirection: "row",
-            marginHorizontal: 16,
-            marginTop: 12,
-            backgroundColor: colors.background,
-            borderRadius: 10,
-            padding: 3
-          }}
-        >
-          {(["svg", "skia"] as Renderer[]).map(option => {
-            const active = renderer === option;
-            return (
-              <TouchableOpacity
-                key={option}
-                onPress={() => setRenderer(option)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 8,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  backgroundColor: active ? colors.cardBackground : "transparent"
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 13,
-                    fontWeight: active ? "700" : "500",
-                    color: active ? colors.text : colors.icon
-                  }}
-                >
-                  {option === "svg" ? "react-native-svg" : "react-native-skia"}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
         {/* User picker */}
         <Text
           style={{
@@ -282,10 +239,10 @@ export default function AnalyticsScreen() {
         {/* Chart */}
         <View style={{ marginTop: 16 }}>
           <PostAnalyticsChart
-            key={`${renderer}-${dataPoints}`}
+            key={dataPoints}
             post={selectedPost}
             colors={colors}
-            renderer={activeRenderer}
+            renderer={SkiaRenderer}
             enabledSeries={enabledSeries}
             days={dataPoints}
           />
