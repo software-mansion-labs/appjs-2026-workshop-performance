@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# App.js 2026 - React Native Performance Workshop
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A hands-on workshop for diagnosing and fixing performance problems in a React Native.
 
-## Get started
+## Workshop scope
 
-1. Install dependencies
+The workshop is split into three parts:
 
-   ```bash
-   npm install
-   ```
+- **React Native DevTools and the JS profiler with AI.** Reading flame graphs, spotting wasted renders, and using the Profiler tab together with AI assistance to find which component is actually expensive.
+- **List performance.** Why feeds drop frames and the fixes that take a broken list back to the device refresh rate.
+- **Native performance.** Debugging on the native side and understanding the native tools and code under a React Native app: what the platform profilers show, how to read native traces, and how to navigate the iOS and Android code that sits beneath JS.
 
-2. Start the app
+The three parts are designed to stack. Profiling teaches you how to see the problem, list performance gives you the JS-side fixes, and the native session covers what is left.
 
-   ```bash
-   npx expo start
-   ```
+## Requirements
 
-In the output, you'll find options to open the app in a
+- A local native Expo / React Native development environment capable of running `npx expo run:ios` and `npx expo run:android`.
+- Node 20.19.x.
+- npm or Yarn Classic.
+- For iOS local development: macOS, Xcode 26.2+, iOS Simulator, CocoaPods, and Watchman recommended.
+- For Android local development: Android Studio, JDK 17, Android SDK Platform 36, Android emulator, and Android NDK.
+- Runtime targets for this project: iOS 15.1+ and Android 7.0+ / API 24+.
+- A physical device is strongly recommended. The simulator hides the exact problems this workshop is about.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Running the app
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+This is an Expo project with the New Architecture enabled, and it uses a few libraries that need native code (Reanimated, Skia, gesture handler, expo-image with blurhash). Run a clean prebuild before the first launch:
 
 ```bash
-npm run reset-project
+npx expo prebuild --clean && npm run ios
+# or
+npx expo prebuild --clean && npm run android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+`--clean` wipes any stale `ios/` and `android/` folders so the prebuild matches the current `app.json` and `package.json`. Run it again whenever you switch to a branch that changes native config.
 
-## Learn more
+After the first successful build, `npm run ios` or `npm run android` alone is enough for incremental JS changes.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Workshop tasks (Notion board)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+All list-performance tasks are mirrored on a public Notion board so you can browse them with descriptions, hints, and explanations laid out side by side instead of scrolling one long markdown file:
 
-## Join the community
+https://honey-digit-2bf.notion.site/18208897bf51461a841214b5f8f9156f?v=515a5db545604338bf6fbab6c30bac69
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The link is read-only - you can view every task without an account. If you have a Notion account and want to track your own progress, open the board, click `Duplicate` in the top-right to copy it into your own workspace, and then flip rows from `Todo` to `Done` as you work through them.
