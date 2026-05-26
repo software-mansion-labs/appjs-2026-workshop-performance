@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, startTransition } from "react";
 import { View, Text, Image, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,6 +23,7 @@ const PostDetailScreen = () => {
   const [post, setPost] = useState<FeedPost | null>(null);
   const [comments, setComments] = useState<FeedComment[]>([]);
   const [shareCount, setShareCount] = useState(0);
+  const [rendered, setRendered] = useState(false);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
@@ -33,6 +34,12 @@ const PostDetailScreen = () => {
       setComments(foundPost.comments);
     }
   }, [id]);
+
+  useEffect(() => {
+    startTransition(() => {
+      setRendered(true);
+    });
+  }, []);
 
   const hasNewComments = comments.length > prevCommentsLengthRef.current;
   prevCommentsLengthRef.current = comments.length;
@@ -136,7 +143,7 @@ const PostDetailScreen = () => {
             </View>
           }
           ListFooterComponent={
-            relatedPosts.length > 0 ? (
+            relatedPosts.length > 0 && rendered ? (
               <View
                 style={{
                   paddingTop: 16,
